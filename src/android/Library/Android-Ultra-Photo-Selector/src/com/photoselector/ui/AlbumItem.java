@@ -30,6 +30,7 @@ public class AlbumItem extends LinearLayout {
 
 	public AlbumItem(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		fakeR = new FakeR(context);
 		LayoutInflater.from(context).inflate(fakeR.getId("layout", "layout_album"), this, true);
 
 		ivAlbum = (ImageView) findViewById(fakeR.getId("id", "iv_album_la"));
@@ -40,6 +41,7 @@ public class AlbumItem extends LinearLayout {
 
 	public AlbumItem(Context context, AttributeSet attrs, int defStyle) {
 		this(context, attrs);
+		fakeR = new FakeR(context);
 	}
 
 	/** ÉèÖÃÏà²á·âÃæ */
