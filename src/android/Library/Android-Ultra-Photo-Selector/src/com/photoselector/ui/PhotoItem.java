@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.photoselector.R;
+import com.synconset.FakeR;;
 import com.photoselector.model.PhotoModel;
 
 /**
@@ -24,6 +24,7 @@ import com.photoselector.model.PhotoModel;
 public class PhotoItem extends LinearLayout implements OnCheckedChangeListener,
 		OnLongClickListener {
 
+	private FakeR fakeR;
 	private ImageView ivPhoto;
 	private CheckBox cbPhoto;
 	private onPhotoItemCheckedListener listener;
@@ -34,18 +35,19 @@ public class PhotoItem extends LinearLayout implements OnCheckedChangeListener,
 
 	private PhotoItem(Context context) {
 		super(context);
+		fakeR = new FakeR(context);
 	}
 
 	public PhotoItem(Context context, onPhotoItemCheckedListener listener) {
 		this(context);
-		LayoutInflater.from(context).inflate(R.layout.layout_photoitem, this,
+		LayoutInflater.from(context).inflate(fakeR.getId("layout", "layout_photoitem"), this,
 				true);
 		this.listener = listener;
 
 		setOnLongClickListener(this);
 
-		ivPhoto = (ImageView) findViewById(R.id.iv_photo_lpsi);
-		cbPhoto = (CheckBox) findViewById(R.id.cb_photo_lpsi);
+		ivPhoto = (ImageView) findViewById(fakeR.getId("id", "iv_photo_lpsi"));
+		cbPhoto = (CheckBox) findViewById(fakeR.getId("id", "cb_photo_lpsi"));
 
 		cbPhoto.setOnCheckedChangeListener(this); // CheckBox选中状态改变监听器
 	}

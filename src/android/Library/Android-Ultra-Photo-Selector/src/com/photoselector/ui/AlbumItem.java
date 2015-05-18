@@ -13,26 +13,29 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.photoselector.R;
+import com.synconset.FakeR;
 import com.photoselector.model.AlbumModel;
 
 public class AlbumItem extends LinearLayout {
+
+	private FakeR fakeR;
 
 	private ImageView ivAlbum, ivIndex;
 	private TextView tvName, tvCount;
 
 	public AlbumItem(Context context) {
 		this(context, null);
+		fakeR = new FakeR(context);
 	}
 
 	public AlbumItem(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		LayoutInflater.from(context).inflate(R.layout.layout_album, this, true);
+		LayoutInflater.from(context).inflate(fakeR.getId("layout", "layout_album"), this, true);
 
-		ivAlbum = (ImageView) findViewById(R.id.iv_album_la);
-		ivIndex = (ImageView) findViewById(R.id.iv_index_la);
-		tvName = (TextView) findViewById(R.id.tv_name_la);
-		tvCount = (TextView) findViewById(R.id.tv_count_la);
+		ivAlbum = (ImageView) findViewById(fakeR.getId("id", "iv_album_la"));
+		ivIndex = (ImageView) findViewById(fakeR.getId("id", "iv_index_la"));
+		tvName = (TextView) findViewById(fakeR.getId("id", "tv_name_la"));
+		tvCount = (TextView) findViewById(fakeR.getId("id", "tv_count_la"));
 	}
 
 	public AlbumItem(Context context, AttributeSet attrs, int defStyle) {

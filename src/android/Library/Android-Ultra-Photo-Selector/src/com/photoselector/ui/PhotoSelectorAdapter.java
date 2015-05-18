@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView.LayoutParams;
 import android.widget.TextView;
 
-import com.photoselector.R;
+import com.synconset.FakeR;
 import com.photoselector.model.PhotoModel;
 import com.photoselector.ui.PhotoItem.onItemClickListener;
 import com.photoselector.ui.PhotoItem.onPhotoItemCheckedListener;
@@ -25,6 +25,7 @@ import com.photoselector.util.CommonUtils;
 
 public class PhotoSelectorAdapter extends MBaseAdapter<PhotoModel> {
 
+	private FakeR fakeR;
 	private int itemWidth;
 	private int horizentalNum = 3;
 	private onPhotoItemCheckedListener listener;
@@ -34,6 +35,7 @@ public class PhotoSelectorAdapter extends MBaseAdapter<PhotoModel> {
 
 	private PhotoSelectorAdapter(Context context, ArrayList<PhotoModel> models) {
 		super(context, models);
+		fakeR = new FakeR(context);
 	}
 
 	public PhotoSelectorAdapter(Context context, ArrayList<PhotoModel> models, int screenWidth, onPhotoItemCheckedListener listener, onItemClickListener mCallback,
@@ -47,7 +49,7 @@ public class PhotoSelectorAdapter extends MBaseAdapter<PhotoModel> {
 
 	/** 设置每一个Item的宽高 */
 	public void setItemWidth(int screenWidth) {
-		int horizentalSpace = context.getResources().getDimensionPixelSize(R.dimen.sticky_item_horizontalSpacing);
+		int horizentalSpace = context.getResources().getDimensionPixelSize(fakeR.getId("dimen", "sticky_item_horizontalSpacing"));
 		this.itemWidth = (screenWidth - (horizentalSpace * (horizentalNum - 1))) / horizentalNum;
 		this.itemLayoutParams = new LayoutParams(itemWidth, itemWidth);
 	}

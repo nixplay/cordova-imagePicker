@@ -12,3 +12,6 @@
 xcuserdata/
 project.xcworkspace/
 tags
+
+*.swp
+*.swo

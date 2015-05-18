@@ -16,22 +16,24 @@ import android.widget.ProgressBar;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-import com.photoselector.R;
+import com.synconset.FakeR;
 import com.photoselector.model.PhotoModel;
 import com.polites.GestureImageView;
 
 public class PhotoPreview extends LinearLayout implements OnClickListener {
 
+	private FakeR fakeR;
 	private ProgressBar pbLoading;
 	private GestureImageView ivContent;
 	private OnClickListener l;
 
 	public PhotoPreview(Context context) {
 		super(context);
-		LayoutInflater.from(context).inflate(R.layout.view_photopreview, this, true);
+		fakeR = new FakeR(context);
+		LayoutInflater.from(context).inflate(fakeR.getId("layout", "view_photopreview"), this, true);
 
-		pbLoading = (ProgressBar) findViewById(R.id.pb_loading_vpp);
-		ivContent = (GestureImageView) findViewById(R.id.iv_content_vpp);
+		pbLoading = (ProgressBar) findViewById(fakeR.getId("id", "pb_loading_vpp"));
+		ivContent = (GestureImageView) findViewById(fakeR.getId("id", "iv_content_vpp"));
 		ivContent.setOnClickListener(this);
 	}
 
@@ -57,7 +59,7 @@ public class PhotoPreview extends LinearLayout implements OnClickListener {
 
 			@Override
 			public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-				ivContent.setImageDrawable(getResources().getDrawable(R.drawable.ic_picture_loadfailed));
+				ivContent.setImageDrawable(getResources().getDrawable(fakeR.getId("drawable", "ic_picture_loadfailed")));
 				pbLoading.setVisibility(View.GONE);
 			}
 		});
@@ -70,7 +72,7 @@ public class PhotoPreview extends LinearLayout implements OnClickListener {
 
 	@Override
 	public void onClick(View v) {
-		if (v.getId() == R.id.iv_content_vpp && l != null)
+		if (v.getId() == fakeR.getId("id", "iv_content_vpp") && l != null)
 			l.onClick(ivContent);
 	};
 

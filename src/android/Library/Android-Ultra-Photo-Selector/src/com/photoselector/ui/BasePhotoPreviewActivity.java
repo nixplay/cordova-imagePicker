@@ -20,12 +20,13 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.photoselector.R;
+import com.synconset.FakeR;
 import com.photoselector.model.PhotoModel;
 import com.photoselector.util.AnimationUtil;
 
 public class BasePhotoPreviewActivity extends Activity implements OnPageChangeListener, OnClickListener {
 
+	private FakeR fakeR;
 	private ViewPager mViewPager;
 	private RelativeLayout layoutTop;
 	private ImageButton btnBack;
@@ -36,17 +37,18 @@ public class BasePhotoPreviewActivity extends Activity implements OnPageChangeLi
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		fakeR = new FakeR(this);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);// 去掉标题栏
-		setContentView(R.layout.activity_photopreview);
-		layoutTop = (RelativeLayout) findViewById(R.id.layout_top_app);
-		btnBack = (ImageButton) findViewById(R.id.btn_back_app);
-		tvPercent = (TextView) findViewById(R.id.tv_percent_app);
-		mViewPager = (ViewPager) findViewById(R.id.vp_base_app);
+		setContentView(fakeR.getId("layout", "activity_photopreview"));
+		layoutTop = (RelativeLayout) findViewById(fakeR.getId("id", "layout_top_app"));
+		btnBack = (ImageButton) findViewById(fakeR.getId("id", "btn_back_app"));
+		tvPercent = (TextView) findViewById(fakeR.getId("id", "tv_percent_app"));
+		mViewPager = (ViewPager) findViewById(fakeR.getId("id", "vp_base_app"));
 
 		btnBack.setOnClickListener(this);
 		mViewPager.setOnPageChangeListener(this);
 
-		overridePendingTransition(R.anim.activity_alpha_action_in, 0); // 渐入效果
+		overridePendingTransition(fakeR.getId("anim", "activity_alpha_action_in"), 0); // 渐入效果
 
 	}
 
@@ -91,7 +93,7 @@ public class BasePhotoPreviewActivity extends Activity implements OnPageChangeLi
 
 	@Override
 	public void onClick(View v) {
-		if (v.getId() == R.id.btn_back_app)
+		if (v.getId() == fakeR.getId("id", "btn_back_app"))
 			finish();
 	}
 
@@ -120,11 +122,11 @@ public class BasePhotoPreviewActivity extends Activity implements OnPageChangeLi
 		@Override
 		public void onClick(View v) {
 			if (!isUp) {
-				new AnimationUtil(getApplicationContext(), R.anim.translate_up)
+				new AnimationUtil(getApplicationContext(), fakeR.getId("anim", "translate_up"))
 						.setInterpolator(new LinearInterpolator()).setFillAfter(true).startAnimation(layoutTop);
 				isUp = true;
 			} else {
-				new AnimationUtil(getApplicationContext(), R.anim.translate_down_current)
+				new AnimationUtil(getApplicationContext(), fakeR.getId("anim", "translate_down_current"))
 						.setInterpolator(new LinearInterpolator()).setFillAfter(true).startAnimation(layoutTop);
 				isUp = false;
 			}

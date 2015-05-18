@@ -13,18 +13,21 @@ import android.os.Message;
 import android.provider.MediaStore.Images.ImageColumns;
 import android.provider.MediaStore.Images.Media;
 
-import com.photoselector.R;
+import com.synconset.FakeR;
 import com.photoselector.model.AlbumModel;
 import com.photoselector.model.PhotoModel;
 
 public class AlbumController {
+
+	private FakeR fakeR;
 
 	private ContentResolver resolver;
 	public static String RECCENT_PHOTO = null;
 
 	public AlbumController(Context context) {
 		resolver = context.getContentResolver();
-		RECCENT_PHOTO = context.getResources().getString(R.string.recent_photos);
+		fakeR = new FakeR(context);
+		RECCENT_PHOTO = context.getResources().getString(fakeR.getId("string", "recent_photos"));
 	}
 
 	/** 获取最近照片列表 */

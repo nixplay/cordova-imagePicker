@@ -48,7 +48,7 @@ import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.decode.BaseImageDecoder;
 import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
 import com.nostra13.universalimageloader.utils.StorageUtils;
-import com.photoselector.R;
+import com.synconset.FakeR;
 import com.photoselector.domain.PhotoSelectorDomain;
 import com.photoselector.model.AlbumModel;
 import com.photoselector.model.PhotoModel;
@@ -65,11 +65,12 @@ public class PhotoSelectorActivity extends Activity implements
 		onItemClickListener, onPhotoItemCheckedListener, OnItemClickListener,
 		OnClickListener {
 
+	private FakeR fakeR;
 	public static final int SINGLE_IMAGE = 1;
 	public static final String KEY_MAX = "MAX_IMAGES";
-    public static final String WIDTH_KEY = "WIDTH";
-    public static final String HEIGHT_KEY = "HEIGHT";
-    public static final String QUALITY_KEY = "QUALITY";
+	public static final String WIDTH_KEY = "WIDTH";
+	public static final String HEIGHT_KEY = "HEIGHT";
+	public static final String QUALITY_KEY = "QUALITY";
 	private int MAX_IMAGE;
 
 	public static final int REQUEST_PHOTO = 0;
@@ -88,17 +89,18 @@ public class PhotoSelectorActivity extends Activity implements
 	private ArrayList<PhotoModel> selected;
 	private TextView tvNumber;
 	private int imageOrder=0;
-    private int desiredWidth;
-    private int desiredHeight;
-    private int quality;
+	private int desiredWidth;
+	private int desiredHeight;
+	private int quality;
 
-    private ProgressDialog progress;
+	private ProgressDialog progress;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		RECCENT_PHOTO = getResources().getString(R.string.recent_photos);
+		fakeR = new FakeR(this);
+		RECCENT_PHOTO = getResources().getString(fakeR.getId("string", "recent_photos"));
 		requestWindowFeature(Window.FEATURE_NO_TITLE);// 去掉标题栏
-		setContentView(R.layout.activity_photoselector);
+		setContentView(fakeR.getId("layout", "activity_photoselector"));
 
 		if (getIntent().getExtras() != null) {
 			MAX_IMAGE = getIntent().getIntExtra(KEY_MAX, 10);
@@ -113,14 +115,14 @@ public class PhotoSelectorActivity extends Activity implements
 
 		selected = new ArrayList<PhotoModel>();
 
-		tvTitle = (TextView) findViewById(R.id.tv_title_lh);
-		gvPhotos = (GridView) findViewById(R.id.gv_photos_ar);
-		lvAblum = (ListView) findViewById(R.id.lv_ablum_ar);
-		btnOk = (Button) findViewById(R.id.btn_right_lh);
-		tvAlbum = (TextView) findViewById(R.id.tv_album_ar);
-		tvPreview = (TextView) findViewById(R.id.tv_preview_ar);
-		layoutAlbum = (RelativeLayout) findViewById(R.id.layout_album_ar);
-		tvNumber = (TextView) findViewById(R.id.tv_number);
+		tvTitle = (TextView) findViewById(fakeR.getId("id", "tv_title_lh"));
+		gvPhotos = (GridView) findViewById(fakeR.getId("id", "gv_photos_ar"));
+		lvAblum = (ListView) findViewById(fakeR.getId("id", "lv_ablum_ar"));
+		btnOk = (Button) findViewById(fakeR.getId("id", "btn_right_lh"));
+		tvAlbum = (TextView) findViewById(fakeR.getId("id", "tv_album_ar"));
+		tvPreview = (TextView) findViewById(fakeR.getId("id", "tv_preview_ar"));
+		layoutAlbum = (RelativeLayout) findViewById(fakeR.getId("id", "layout_album_ar"));
+		tvNumber = (TextView) findViewById(fakeR.getId("id", "tv_number"));
 
 		btnOk.setOnClickListener(this);
 		tvAlbum.setOnClickListener(this);
@@ -136,19 +138,19 @@ public class PhotoSelectorActivity extends Activity implements
 		lvAblum.setAdapter(albumAdapter);
 		lvAblum.setOnItemClickListener(this);
 
-		findViewById(R.id.bv_back_lh).setOnClickListener(this); // 返回
+		findViewById(fakeR.getId("id", "bv_back_lh")).setOnClickListener(this); // 返回
 
 		photoSelectorDomain.getReccent(reccentListener); // 更新最近照片
 		photoSelectorDomain.updateAlbum(albumListener); // 跟新相册信息
-        progress = new ProgressDialog(this);
-        progress.setTitle(R.string.progress_title);
-        progress.setMessage(getString(R.string.progress_message));
+		progress = new ProgressDialog(this);
+		progress.setTitle(fakeR.getId("string", "progress_title"));
+		progress.setMessage(getString(fakeR.getId("string", "progress_message")));
 	}
 
 	private void initImageLoader() {
 		DisplayImageOptions imageOptions = new DisplayImageOptions.Builder()
-				.showImageOnLoading(R.drawable.ic_picture_loading)
-				.showImageOnFail(R.drawable.ic_picture_loadfailed)
+				.showImageOnLoading(fakeR.getId("drawable", "ic_picture_loading"))
+				.showImageOnFail(fakeR.getId("drawable", "ic_picture_loadfailed"))
 				.cacheInMemory(true).cacheOnDisk(true)
 				.resetViewBeforeLoading(true).considerExifParams(false)
 				.bitmapConfig(Bitmap.Config.RGB_565).build();
@@ -189,15 +191,15 @@ public class PhotoSelectorActivity extends Activity implements
 
 	@Override
 	public void onClick(View v) {
-		if (v.getId() == R.id.btn_right_lh)
+		if (v.getId() == fakeR.getId("id", "btn_right_lh"))
 			ok(); // 选完照片
-		else if (v.getId() == R.id.tv_album_ar)
+		else if (v.getId() == fakeR.getId("id", "tv_album_ar"))
 			album();
-		else if (v.getId() == R.id.tv_preview_ar)
+		else if (v.getId() == fakeR.getId("id", "tv_preview_ar"))
 			priview();
-		else if (v.getId() == R.id.tv_camera_vc)
+		else if (v.getId() == fakeR.getId("id", "tv_camera_vc"))
 			catchPicture();
-		else if (v.getId() == R.id.bv_back_lh)
+		else if (v.getId() == fakeR.getId("id", "bv_back_lh"))
 			finish();
 	}
 
@@ -223,7 +225,7 @@ public class PhotoSelectorActivity extends Activity implements
 				Toast.makeText(
 						this,
 						String.format(
-								getString(R.string.max_img_limit_reached),
+								getString(fakeR.getId("string", "max_img_limit_reached")),
 								MAX_IMAGE), Toast.LENGTH_SHORT).show();
 				photoModel.setChecked(false);
 				photoAdapter.notifyDataSetChanged();
@@ -271,13 +273,13 @@ public class PhotoSelectorActivity extends Activity implements
 	/** 弹出相册列表 */
 	private void popAlbum() {
 		layoutAlbum.setVisibility(View.VISIBLE);
-		new AnimationUtil(getApplicationContext(), R.anim.translate_up_current)
+		new AnimationUtil(getApplicationContext(), fakeR.getId("anim", "translate_up_current"))
 				.setLinearInterpolator().startAnimation(layoutAlbum);
 	}
 
 	/** 隐藏相册列表 */
 	private void hideAlbum() {
-		new AnimationUtil(getApplicationContext(), R.anim.translate_down)
+		new AnimationUtil(getApplicationContext(), fakeR.getId("anim", "translate_down"))
 				.setLinearInterpolator().startAnimation(layoutAlbum);
 		layoutAlbum.setVisibility(View.GONE);
 	}
@@ -306,56 +308,56 @@ public class PhotoSelectorActivity extends Activity implements
 	public void onCheckedChanged(PhotoModel photoModel,
 			CompoundButton buttonView, boolean isChecked) {
 		if (isChecked) {
-		    if(imageOrder>MAX_IMAGE-1)
-		    {
-	            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	            Resources res = getResources();
-	            String title = String.format(res.getString(R.string.alert_limit_title), MAX_IMAGE);
-	            String message = String.format(res.getString(R.string.alert_limit_message), MAX_IMAGE);
-	            builder.setTitle(title);
-	            builder.setMessage(message);
-	            builder.setPositiveButton(res.getString(R.string.ok), new DialogInterface.OnClickListener() {
-	                public void onClick(DialogInterface dialog, int which) { 
-	                    dialog.cancel();
-	                }
-	            });
-	            AlertDialog alert = builder.create();
-	            alert.show();
-	            buttonView.toggle();
-		    }
-		    else
-		    {
+			if(imageOrder>MAX_IMAGE-1)
+			{
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+				Resources res = getResources();
+				String title = String.format(res.getString(fakeR.getId("string", "alert_limit_title")), MAX_IMAGE);
+				String message = String.format(res.getString(fakeR.getId("string", "alert_limit_message")), MAX_IMAGE);
+				builder.setTitle(title);
+				builder.setMessage(message);
+				builder.setPositiveButton(res.getString(fakeR.getId("string", "ok")), new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) { 
+						dialog.cancel();
+					}
+				});
+				AlertDialog alert = builder.create();
+				alert.show();
+				buttonView.toggle();
+			}
+			else
+			{
 				if (!selected.contains(photoModel))
-			    {
-			    	photoModel.setOrder(imageOrder);
-			    	selected.add(photoModel);
+				{
+					photoModel.setOrder(imageOrder);
+					selected.add(photoModel);
 					imageOrder++;
-			    }
+				}
 				tvPreview.setEnabled(true);
-		    }
+			}
 		} else {
 			PhotoModel photomodel=null;
-        	for (int i=0; i<selected.size();i++){
-        		if(photomodel!=null)
-        		{
-        			selected.get(i).setOrder(selected.get(i).getOrder()-1);
-        		}
-        		if(selected.get(i).equals(photoModel))
-        		{
-        			photomodel = selected.get(i);
-        		}
-        	}
-        	if(photomodel!=null)
-        	{
-        		selected.remove(photomodel);
-        		imageOrder--;
-        	}
+			for (int i=0; i<selected.size();i++){
+				if(photomodel!=null)
+				{
+					selected.get(i).setOrder(selected.get(i).getOrder()-1);
+				}
+				if(selected.get(i).equals(photoModel))
+				{
+					photomodel = selected.get(i);
+				}
+			}
+			if(photomodel!=null)
+			{
+				selected.remove(photomodel);
+				imageOrder--;
+			}
 			//selected.remove(photoModel);
 		}
 		tvNumber.setText("(" + selected.size() + ")");
 		if (selected.isEmpty()) {
 			tvPreview.setEnabled(false);
-			tvPreview.setText(getString(R.string.preview));
+			tvPreview.setText(getString(fakeR.getId("string", "preview")));
 		}
 	}
 
@@ -376,7 +378,7 @@ public class PhotoSelectorActivity extends Activity implements
 			AlbumModel album = (AlbumModel) parent.getItemAtPosition(i);
 			if (i == position)
 			{
-		    	album.setCheck(true);
+				album.setCheck(true);
 			}
 			else
 				album.setCheck(false);
@@ -437,250 +439,250 @@ public class PhotoSelectorActivity extends Activity implements
 
 		}
 	};
-    
-    
-    private class ResizeImagesTask extends AsyncTask<ArrayList<PhotoModel>, Void, ArrayList<String>> {
-        private Exception asyncTaskError = null;
+	
+	
+	private class ResizeImagesTask extends AsyncTask<ArrayList<PhotoModel>, Void, ArrayList<String>> {
+		private Exception asyncTaskError = null;
 
-        @Override
-        protected ArrayList<String> doInBackground(ArrayList<PhotoModel>... fileSets) {
-            ArrayList<PhotoModel> fileNames = fileSets[0];
-            Bitmap bmp = null;
-            int rotate = 0;
-            String filename=null;
-            ArrayList<String> al = new ArrayList<String>();
-            try {
-		    	for(int i=0; i<fileNames.size();i++)
-		    	{
-		    		if(i!=fileNames.get(i).getOrder())
-		    		{
-		    			for(int j=0; j<fileNames.size();j++)
-		    			{
-		    				if(i==fileNames.get(j).getOrder())
-		    				{
-		      	    	        filename=fileNames.get(j).getOriginalPath();
-		    		            rotate = fileNames.get(j).getRotation();
-		    					break;
-		    				}
-		    			}
-		    		}
-		    		else
-		    		{
-		    		  filename=fileNames.get(i).getOriginalPath();
-		    		  rotate = fileNames.get(i).getRotation();
-		    		}
-		            int index = filename.lastIndexOf('.');
-		            String ext = filename.substring(index);
-		            if (ext.compareToIgnoreCase(".gif") != 0) {
-		            filename = filename.replaceAll("file://", "");
-		            File file = new File(filename);
-				    BitmapFactory.Options options = new BitmapFactory.Options();
-				    options.inSampleSize = 1;
-				    options.inJustDecodeBounds = true;
-				    BitmapFactory.decodeFile(file.getAbsolutePath(), options);
-				    int width = options.outWidth;
-				    int height = options.outHeight;
-				    float scale = calculateScale(width, height);
-				    if (scale < 1) {
-				        int finalWidth = (int)(width * scale);
-				        int finalHeight = (int)(height * scale);
-				        int inSampleSize = calculateInSampleSize(options, finalWidth, finalHeight);
-				        options = new BitmapFactory.Options();
-				        options.inSampleSize = inSampleSize;
-				        try {
-				            try {
+		@Override
+		protected ArrayList<String> doInBackground(ArrayList<PhotoModel>... fileSets) {
+			ArrayList<PhotoModel> fileNames = fileSets[0];
+			Bitmap bmp = null;
+			int rotate = 0;
+			String filename=null;
+			ArrayList<String> al = new ArrayList<String>();
+			try {
+				for(int i=0; i<fileNames.size();i++)
+				{
+					if(i!=fileNames.get(i).getOrder())
+					{
+						for(int j=0; j<fileNames.size();j++)
+						{
+							if(i==fileNames.get(j).getOrder())
+							{
+								filename=fileNames.get(j).getOriginalPath();
+								rotate = fileNames.get(j).getRotation();
+								break;
+							}
+						}
+					}
+					else
+					{
+					  filename=fileNames.get(i).getOriginalPath();
+					  rotate = fileNames.get(i).getRotation();
+					}
+					int index = filename.lastIndexOf('.');
+					String ext = filename.substring(index);
+					if (ext.compareToIgnoreCase(".gif") != 0) {
+					filename = filename.replaceAll("file://", "");
+					File file = new File(filename);
+					BitmapFactory.Options options = new BitmapFactory.Options();
+					options.inSampleSize = 1;
+					options.inJustDecodeBounds = true;
+					BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+					int width = options.outWidth;
+					int height = options.outHeight;
+					float scale = calculateScale(width, height);
+					if (scale < 1) {
+						int finalWidth = (int)(width * scale);
+						int finalHeight = (int)(height * scale);
+						int inSampleSize = calculateInSampleSize(options, finalWidth, finalHeight);
+						options = new BitmapFactory.Options();
+						options.inSampleSize = inSampleSize;
+						try {
+							try {
 								bmp = this.tryToGetBitmap(file, options, rotate, true);
 							} catch (IOException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
-				        } catch (OutOfMemoryError e) {
-				            options.inSampleSize = calculateNextSampleSize(options.inSampleSize);
-				            try {
-				                try {
+						} catch (OutOfMemoryError e) {
+							options.inSampleSize = calculateNextSampleSize(options.inSampleSize);
+							try {
+								try {
 									bmp = this.tryToGetBitmap(file, options, rotate, false);
 								} catch (IOException e1) {
 									// TODO Auto-generated catch block
 									e1.printStackTrace();
 								}
-				            } catch (OutOfMemoryError e2) {
-				                throw new IOException("Unable to load image into memory.");
-				            }
-				        }
-				    } else {
-				        try {
-				            bmp = this.tryToGetBitmap(file, null, rotate, false);
-				        } catch(OutOfMemoryError e) {
-				            options = new BitmapFactory.Options();
-				            options.inSampleSize = 2;
-				            try {
-				                bmp = this.tryToGetBitmap(file, options, rotate, false);
-				            } catch(OutOfMemoryError e2) {
-				                options = new BitmapFactory.Options();
-				                options.inSampleSize = 4;
-				                try {
-				                    bmp = this.tryToGetBitmap(file, options, rotate, false);
-				                } catch (OutOfMemoryError e3) {
-				                    throw new IOException("Unable to load image into memory.");
-				                }
-				            }
-				        }
-				    }
-				    file = this.storeImage(bmp, file.getName());
-				    al.add(Uri.fromFile(file).toString());
-		            }
-		            else
-		            {
-		                al.add(filename);
-		            }
-		    	}
+							} catch (OutOfMemoryError e2) {
+								throw new IOException("Unable to load image into memory.");
+							}
+						}
+					} else {
+						try {
+							bmp = this.tryToGetBitmap(file, null, rotate, false);
+						} catch(OutOfMemoryError e) {
+							options = new BitmapFactory.Options();
+							options.inSampleSize = 2;
+							try {
+								bmp = this.tryToGetBitmap(file, options, rotate, false);
+							} catch(OutOfMemoryError e2) {
+								options = new BitmapFactory.Options();
+								options.inSampleSize = 4;
+								try {
+									bmp = this.tryToGetBitmap(file, options, rotate, false);
+								} catch (OutOfMemoryError e3) {
+									throw new IOException("Unable to load image into memory.");
+								}
+							}
+						}
+					}
+					file = this.storeImage(bmp, file.getName());
+					al.add(Uri.fromFile(file).toString());
+					}
+					else
+					{
+						al.add(filename);
+					}
+				}
 
-                return al;
-            } catch(IOException e) {
-                try {
-                    asyncTaskError = e;
-                    for (int i = 0; i < al.size(); i++) {
-                        URI uri = new URI(al.get(i));
-                        File file = new File(uri);
-                        file.delete();
-                    }
-                } catch(Exception exception) {
-                    // the finally does what we want to do
-                } finally {
-                    return new ArrayList<String>();
-                }
-            }
-        }
-        
-        @Override
-        protected void onPostExecute(ArrayList<String> al) {
-            Intent data = new Intent();
+				return al;
+			} catch(IOException e) {
+				try {
+					asyncTaskError = e;
+					for (int i = 0; i < al.size(); i++) {
+						URI uri = new URI(al.get(i));
+						File file = new File(uri);
+						file.delete();
+					}
+				} catch(Exception exception) {
+					// the finally does what we want to do
+				} finally {
+					return new ArrayList<String>();
+				}
+			}
+		}
+		
+		@Override
+		protected void onPostExecute(ArrayList<String> al) {
+			Intent data = new Intent();
 
-            if (asyncTaskError != null) {
-                Bundle res = new Bundle();
-                res.putString("ERRORMESSAGE", asyncTaskError.getMessage());
-                data.putExtras(res);
-                setResult(RESULT_CANCELED, data);
-            } else if (al.size() > 0) {
-                Bundle res = new Bundle();
-                res.putStringArrayList("MULTIPLEFILENAMES", al);
-                if (selected != null) {
-                    res.putInt("TOTALFILES", selected.size());
-                }
-                data.putExtras(res);
-                setResult(RESULT_OK, data);
-            } else {
-                setResult(RESULT_CANCELED, data);
-            }
-            progress.dismiss();
-            finish();
-        }
+			if (asyncTaskError != null) {
+				Bundle res = new Bundle();
+				res.putString("ERRORMESSAGE", asyncTaskError.getMessage());
+				data.putExtras(res);
+				setResult(RESULT_CANCELED, data);
+			} else if (al.size() > 0) {
+				Bundle res = new Bundle();
+				res.putStringArrayList("MULTIPLEFILENAMES", al);
+				if (selected != null) {
+					res.putInt("TOTALFILES", selected.size());
+				}
+				data.putExtras(res);
+				setResult(RESULT_OK, data);
+			} else {
+				setResult(RESULT_CANCELED, data);
+			}
+			progress.dismiss();
+			finish();
+		}
 
-        private Bitmap tryToGetBitmap(File file, BitmapFactory.Options options, int rotate, boolean shouldScale) throws IOException, OutOfMemoryError {
-            Bitmap bmp;
-            if (options == null) {
-                bmp = BitmapFactory.decodeFile(file.getAbsolutePath());
-            } else {
-                bmp = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
-            }
-            if (bmp == null) {
-                throw new IOException("The image file could not be opened.");
-            }
-            if (options != null && shouldScale) {
-                float scale = calculateScale(options.outWidth, options.outHeight);
-                bmp = this.getResizedBitmap(bmp, scale);
-            }
-            if (rotate != 0) {
-                Matrix matrix = new Matrix();
-                matrix.setRotate(rotate);
-                bmp = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
-            }
-            return bmp;
-        }
-        
-        /*
-        * The following functions are originally from
-        * https://github.com/raananw/PhoneGap-Image-Resizer
-        * 
-        * They have been modified by Andrew Stephan for Sync OnSet
-        *
-        * The software is open source, MIT Licensed.
-        * Copyright (C) 2012, webXells GmbH All Rights Reserved.
-        */
-        private File storeImage(Bitmap bmp, String fileName) throws IOException {
-            int index = fileName.lastIndexOf('.');
-            String name = "Temp_" + fileName.substring(0, index).replaceAll("([^a-zA-Z0-9])", "");
-            String ext = fileName.substring(index);
-            File file = File.createTempFile(name, ext);
-            OutputStream outStream = new FileOutputStream(file);
-            bmp.compress(Bitmap.CompressFormat.JPEG, quality, outStream);
-            outStream.flush();
-            outStream.close();
-            return file;
-        }
-    
-        private Bitmap getResizedBitmap(Bitmap bm, float factor) {
-            int width = bm.getWidth();
-            int height = bm.getHeight();
-            // create a matrix for the manipulation
-            Matrix matrix = new Matrix();
-            // resize the bit map
-            matrix.postScale(factor, factor);
-            // recreate the new Bitmap
-            Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
-            return resizedBitmap;
-        }
-    }
-    
-    private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
-        // Raw height and width of image
-        final int height = options.outHeight;
-        final int width = options.outWidth;
-        int inSampleSize = 1;
-    
-        if (height > reqHeight || width > reqWidth) {
-            final int halfHeight = height / 2;
-            final int halfWidth = width / 2;
-    
-            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-            // height and width larger than the requested height and width.
-            while ((halfHeight / inSampleSize) > reqHeight && (halfWidth / inSampleSize) > reqWidth) {
-                inSampleSize *= 2;
-            }
-        }
-    
-        return inSampleSize;
-    }
+		private Bitmap tryToGetBitmap(File file, BitmapFactory.Options options, int rotate, boolean shouldScale) throws IOException, OutOfMemoryError {
+			Bitmap bmp;
+			if (options == null) {
+				bmp = BitmapFactory.decodeFile(file.getAbsolutePath());
+			} else {
+				bmp = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+			}
+			if (bmp == null) {
+				throw new IOException("The image file could not be opened.");
+			}
+			if (options != null && shouldScale) {
+				float scale = calculateScale(options.outWidth, options.outHeight);
+				bmp = this.getResizedBitmap(bmp, scale);
+			}
+			if (rotate != 0) {
+				Matrix matrix = new Matrix();
+				matrix.setRotate(rotate);
+				bmp = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
+			}
+			return bmp;
+		}
+		
+		/*
+		* The following functions are originally from
+		* https://github.com/raananw/PhoneGap-Image-Resizer
+		* 
+		* They have been modified by Andrew Stephan for Sync OnSet
+		*
+		* The software is open source, MIT Licensed.
+		* Copyright (C) 2012, webXells GmbH All Rights Reserved.
+		*/
+		private File storeImage(Bitmap bmp, String fileName) throws IOException {
+			int index = fileName.lastIndexOf('.');
+			String name = "Temp_" + fileName.substring(0, index).replaceAll("([^a-zA-Z0-9])", "");
+			String ext = fileName.substring(index);
+			File file = File.createTempFile(name, ext);
+			OutputStream outStream = new FileOutputStream(file);
+			bmp.compress(Bitmap.CompressFormat.JPEG, quality, outStream);
+			outStream.flush();
+			outStream.close();
+			return file;
+		}
+	
+		private Bitmap getResizedBitmap(Bitmap bm, float factor) {
+			int width = bm.getWidth();
+			int height = bm.getHeight();
+			// create a matrix for the manipulation
+			Matrix matrix = new Matrix();
+			// resize the bit map
+			matrix.postScale(factor, factor);
+			// recreate the new Bitmap
+			Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
+			return resizedBitmap;
+		}
+	}
+	
+	private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+		// Raw height and width of image
+		final int height = options.outHeight;
+		final int width = options.outWidth;
+		int inSampleSize = 1;
+	
+		if (height > reqHeight || width > reqWidth) {
+			final int halfHeight = height / 2;
+			final int halfWidth = width / 2;
+	
+			// Calculate the largest inSampleSize value that is a power of 2 and keeps both
+			// height and width larger than the requested height and width.
+			while ((halfHeight / inSampleSize) > reqHeight && (halfWidth / inSampleSize) > reqWidth) {
+				inSampleSize *= 2;
+			}
+		}
+	
+		return inSampleSize;
+	}
 
-    private int calculateNextSampleSize(int sampleSize) {
-        double logBaseTwo = (int)(Math.log(sampleSize) / Math.log(2));
-        return (int)Math.pow(logBaseTwo + 1, 2);
-    }
-    
-    private float calculateScale(int width, int height) {
-        float widthScale = 1.0f;
-        float heightScale = 1.0f;
-        float scale = 1.0f;
-        if (desiredWidth > 0 || desiredHeight > 0) {
-            if (desiredHeight == 0 && desiredWidth < width) {
-                scale = (float)desiredWidth/width;
-            } else if (desiredWidth == 0 && desiredHeight < height) {
-                scale = (float)desiredHeight/height;
-            } else {
-                if (desiredWidth > 0 && desiredWidth < width) {
-                    widthScale = (float)desiredWidth/width;
-                }
-                if (desiredHeight > 0 && desiredHeight < height) {
-                    heightScale = (float)desiredHeight/height;
-                }
-                if (widthScale < heightScale) {
-                    scale = widthScale;
-                } else {
-                    scale = heightScale;
-                }
-            }
-        }
-        
-        return scale;
-    }
+	private int calculateNextSampleSize(int sampleSize) {
+		double logBaseTwo = (int)(Math.log(sampleSize) / Math.log(2));
+		return (int)Math.pow(logBaseTwo + 1, 2);
+	}
+	
+	private float calculateScale(int width, int height) {
+		float widthScale = 1.0f;
+		float heightScale = 1.0f;
+		float scale = 1.0f;
+		if (desiredWidth > 0 || desiredHeight > 0) {
+			if (desiredHeight == 0 && desiredWidth < width) {
+				scale = (float)desiredWidth/width;
+			} else if (desiredWidth == 0 && desiredHeight < height) {
+				scale = (float)desiredHeight/height;
+			} else {
+				if (desiredWidth > 0 && desiredWidth < width) {
+					widthScale = (float)desiredWidth/width;
+				}
+				if (desiredHeight > 0 && desiredHeight < height) {
+					heightScale = (float)desiredHeight/height;
+				}
+				if (widthScale < heightScale) {
+					scale = widthScale;
+				} else {
+					scale = heightScale;
+				}
+			}
+		}
+		
+		return scale;
+	}
 }
