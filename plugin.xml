@@ -197,55 +197,55 @@
 		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/src/com/polites/ZoomAnimation.java" target-dir="src/com/polites" />
 		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/src/com/polites/ZoomAnimationListener.java" target-dir="src/com/polites" />
 
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/anim/activity_alpha_action_in.xml" target-dir="photoselector/res/anim" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/anim/pb_default.xml" target-dir="photoselector/res/anim" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/anim/translate_down.xml" target-dir="photoselector/res/anim" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/anim/translate_down_current.xml" target-dir="photoselector/res/anim" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/anim/translate_up.xml" target-dir="photoselector/res/anim" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/anim/translate_up_current.xml" target-dir="photoselector/res/anim" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable/bg_back_arrow_white_selector.xml" target-dir="photoselector/res/drawable" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable/bg_dark_selector.xml" target-dir="photoselector/res/drawable" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable/btn_back_selector.xml" target-dir="photoselector/res/drawable" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable/btn_black_textcolor_selector.xml" target-dir="photoselector/res/drawable" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable/btn_camera_selector.xml" target-dir="photoselector/res/drawable" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable/btn_checkbox_selector.xml" target-dir="photoselector/res/drawable" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable/btn_green_selector_rectangle.xml" target-dir="photoselector/res/drawable" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/bg_album_border.9.png" target-dir="photoselector/res/drawable-hdpi" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/bg_dark.png" target-dir="photoselector/res/drawable-hdpi" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/bg_dark_translucent.png" target-dir="photoselector/res/drawable-hdpi" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/bg_grey_dark.png" target-dir="photoselector/res/drawable-hdpi" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/bg_title.png" target-dir="photoselector/res/drawable-hdpi" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/bg_title_normal.png" target-dir="photoselector/res/drawable-hdpi" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/bg_title_pressed.png" target-dir="photoselector/res/drawable-hdpi" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/ic_back_arrow_white_normal.png" target-dir="photoselector/res/drawable-hdpi" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/ic_back_arrow_white_pressed.png" target-dir="photoselector/res/drawable-hdpi" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/ic_camera_normal.png" target-dir="photoselector/res/drawable-hdpi" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/ic_camera_pressed.png" target-dir="photoselector/res/drawable-hdpi" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/ic_checkbox_normal.9.png" target-dir="photoselector/res/drawable-hdpi" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/ic_checkbox_pressed.9.png" target-dir="photoselector/res/drawable-hdpi" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/ic_choice_green.png" target-dir="photoselector/res/drawable-hdpi" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/ic_launcher.png" target-dir="photoselector/res/drawable-hdpi" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/ic_loading_white.png" target-dir="photoselector/res/drawable-hdpi" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/ic_picture_loadfailed.png" target-dir="photoselector/res/drawable-hdpi" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/ic_picture_loading.png" target-dir="photoselector/res/drawable-hdpi" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/ic_spinner_white.png" target-dir="photoselector/res/drawable-hdpi" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/ic_title_btn_back.9.png" target-dir="photoselector/res/drawable-hdpi" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-mdpi/ic_launcher.png" target-dir="photoselector/res/drawable-mdpi" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-xhdpi/ic_checkbox_normal.9.png" target-dir="photoselector/res/drawable-xhdpi" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-xhdpi/ic_checkbox_pressed.9.png" target-dir="photoselector/res/drawable-xhdpi" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-xhdpi/ic_launcher.png" target-dir="photoselector/res/drawable-xhdpi" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-xxhdpi/arrow.png" target-dir="photoselector/res/drawable-xxhdpi" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-xxhdpi/ic_launcher.png" target-dir="photoselector/res/drawable-xxhdpi" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/layout/activity_photopreview.xml" target-dir="photoselector/res/layout" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/layout/activity_photoselector.xml" target-dir="photoselector/res/layout" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/layout/layout_album.xml" target-dir="photoselector/res/layout" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/layout/layout_photoitem.xml" target-dir="photoselector/res/layout" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/layout/view_camera.xml" target-dir="photoselector/res/layout" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/layout/view_photopreview.xml" target-dir="photoselector/res/layout" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/values/colors.xml" target-dir="photoselector/res/values" />
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/values/dimens.xml" target-dir="photoselector/res/values" />
-		<!-- <source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/values/strings.xml" target-dir="photoselector/res/values" /> -->
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/values/styles.xml" target-dir="photoselector/res/values" />
-		<!-- <source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/values-zh/strings.xml" target-dir="photoselector/res/values-zh" /> -->
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/anim/activity_alpha_action_in.xml" target-dir="res/anim" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/anim/pb_default.xml" target-dir="res/anim" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/anim/translate_down.xml" target-dir="res/anim" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/anim/translate_down_current.xml" target-dir="res/anim" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/anim/translate_up.xml" target-dir="res/anim" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/anim/translate_up_current.xml" target-dir="res/anim" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable/bg_back_arrow_white_selector.xml" target-dir="res/drawable" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable/bg_dark_selector.xml" target-dir="res/drawable" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable/btn_back_selector.xml" target-dir="res/drawable" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable/btn_black_textcolor_selector.xml" target-dir="res/drawable" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable/btn_camera_selector.xml" target-dir="res/drawable" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable/btn_checkbox_selector.xml" target-dir="res/drawable" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable/btn_green_selector_rectangle.xml" target-dir="res/drawable" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/bg_album_border.9.png" target-dir="res/drawable-hdpi" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/bg_dark.png" target-dir="res/drawable-hdpi" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/bg_dark_translucent.png" target-dir="res/drawable-hdpi" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/bg_grey_dark.png" target-dir="res/drawable-hdpi" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/bg_title.png" target-dir="res/drawable-hdpi" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/bg_title_normal.png" target-dir="res/drawable-hdpi" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/bg_title_pressed.png" target-dir="res/drawable-hdpi" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/ic_back_arrow_white_normal.png" target-dir="res/drawable-hdpi" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/ic_back_arrow_white_pressed.png" target-dir="res/drawable-hdpi" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/ic_camera_normal.png" target-dir="res/drawable-hdpi" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/ic_camera_pressed.png" target-dir="res/drawable-hdpi" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/ic_checkbox_normal.9.png" target-dir="res/drawable-hdpi" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/ic_checkbox_pressed.9.png" target-dir="res/drawable-hdpi" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/ic_choice_green.png" target-dir="res/drawable-hdpi" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/ic_launcher.png" target-dir="res/drawable-hdpi" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/ic_loading_white.png" target-dir="res/drawable-hdpi" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/ic_picture_loadfailed.png" target-dir="res/drawable-hdpi" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/ic_picture_loading.png" target-dir="res/drawable-hdpi" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/ic_spinner_white.png" target-dir="res/drawable-hdpi" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-hdpi/ic_title_btn_back.9.png" target-dir="res/drawable-hdpi" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-mdpi/ic_launcher.png" target-dir="res/drawable-mdpi" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-xhdpi/ic_checkbox_normal.9.png" target-dir="res/drawable-xhdpi" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-xhdpi/ic_checkbox_pressed.9.png" target-dir="res/drawable-xhdpi" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-xhdpi/ic_launcher.png" target-dir="res/drawable-xhdpi" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-xxhdpi/arrow.png" target-dir="res/drawable-xxhdpi" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/drawable-xxhdpi/ic_launcher.png" target-dir="res/drawable-xxhdpi" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/layout/activity_photopreview.xml" target-dir="res/layout" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/layout/activity_photoselector.xml" target-dir="res/layout" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/layout/layout_album.xml" target-dir="res/layout" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/layout/layout_photoitem.xml" target-dir="res/layout" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/layout/view_camera.xml" target-dir="res/layout" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/layout/view_photopreview.xml" target-dir="res/layout" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/values/colors.xml" target-dir="res/values" />
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/values/dimens.xml" target-dir="res/values" />
+		<!-- <source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/values/strings.xml" target-dir="res/values" /> -->
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/values/styles.xml" target-dir="res/values" />
+		<!-- <source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/values-zh/strings.xml" target-dir="res/values-zh" /> -->
 	</platform>
 </plugin>
