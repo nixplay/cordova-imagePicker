@@ -8,8 +8,8 @@
 "albumTitle" = "Photos";
 “back” = "Back";
 "cancel" = "Cancel";
-"send" = "send";
-"preview" = "preview";
+"send" = "Send";
+"preview" = "Preview";
 "fullImage" = "Full Image";
 "alertTitle" = "Tips";
 "alertContent" = "Can not select more than 9 photos";
