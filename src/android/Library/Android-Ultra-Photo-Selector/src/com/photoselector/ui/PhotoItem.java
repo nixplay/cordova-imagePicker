@@ -68,7 +68,6 @@ public class PhotoItem extends LinearLayout implements OnCheckedChangeListener,
 			ivPhoto.clearColorFilter();
 			photo.setChecked(false);
 		}
-		photo.setChecked(isChecked);
 	}
 
 	/** 设置路径下的图片对应的缩略图 */
