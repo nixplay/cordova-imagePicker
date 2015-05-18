@@ -11,7 +11,7 @@
 "send" = "Send";
 "preview" = "Preview";
 "fullImage" = "Full Image";
-"alertTitle" = "Tips";
+"alertTitle" = "Error";
 "alertContent" = "Can not select more than %d photos";
 "alertButton" = "OK";
 "UnAuthorizedTip" = "Allow %@ to access your album in \"Settings\"->\"Privacy\"->\"Photos\"";
