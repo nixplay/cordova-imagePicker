@@ -67,9 +67,13 @@ extern NSUInteger kDNImageFlowMaxSeletedNumber;
             ALAssetRepresentation *assetRep = [asset defaultRepresentation];
             CGImageRef imgRef = NULL;
             
+            if (!fullImage && (self.width == 0 || self.height == 0)) {
+                fullImage = YES;
+            }
+            
             //defaultRepresentation returns image as it appears in photo picker, rotated and sized,
             //so use UIImageOrientationUp when creating our image below.
-	    if (fullImage) {
+            if (fullImage) {
                 //imgRef = [assetRep fullResolutionImage];
                 //orientation = [assetRep orientation];
                 Byte *buffer = (Byte*)malloc(assetRep.size);
