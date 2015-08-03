@@ -63,6 +63,11 @@
     [self updateSelestedNumber];
     [self updateNavigationBarAndToolBar];
     // Do any additional setup after loading the view.
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(assetsLibraryDidChange:)
+                                                 name:ALAssetsLibraryChangedNotification
+                                               object:nil];
 }
 - (void)viewWillAppear:(BOOL)animated {
     
@@ -94,7 +99,7 @@
         _viewIsActive = NO;
         [self restorePreviousNavBarAppearance:animated];
     }
-
+    
     [self.navigationController.navigationBar.layer removeAllAnimations];
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
     [self setControlsHidden:NO animated:NO];
@@ -118,8 +123,8 @@
     [self toolbar];
     [self setupBarButtonItems];
     [self createBarButtonItemAtPosition:DNImagePickerNavigationBarPositionLeft
-				statusNormalImage:[UIImage imageNamed:@"back_normal"]
-				statusHighlightImage:[UIImage imageNamed:@"back_highlight"]
+                      statusNormalImage:[UIImage imageNamed:@"back_normal"]
+                   statusHighlightImage:[UIImage imageNamed:@"back_highlight"]
                                  action:@selector(backButtonAction)];
     UIBarButtonItem *rightButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.checkButton];
     self.navigationItem.rightBarButtonItem = rightButtonItem;
@@ -137,7 +142,7 @@
     UIBarButtonItem *item3 = [[UIBarButtonItem alloc] initWithCustomView:self.sendButton];
     UIBarButtonItem *item4 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     item4.width = -10;
-
+    
     [self.toolbar setItems:@[item1,item2,item3,item4]];
 }
 
@@ -390,7 +395,7 @@
         NSInteger page = offsetX / itemWidth;
         [self didScrollToPage:page];
     }
-
+    
     [self.fullImageButton shouldAnimating:NO];
 }
 
@@ -451,4 +456,10 @@
 - (BOOL)areControlsHidden { return (_toolbar.alpha == 0); }
 - (void)hideControls { [self setControlsHidden:YES animated:YES]; }
 - (void)toggleControls { [self setControlsHidden:![self areControlsHidden] animated:YES]; }
+
+#pragma mark - ALAssetsLibraryChangedNotification Handler
+- (void)assetsLibraryDidChange:(NSNotification *)notif {
+    [self updateSelestedNumber];
+}
+
 @end
