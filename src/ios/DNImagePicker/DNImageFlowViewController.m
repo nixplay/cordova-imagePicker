@@ -175,7 +175,9 @@ static NSString* const dnAssetsViewCellReuseIdentifier = @"DNAssetsViewCell";
 
 - (void)addAssetsObject:(ALAsset *)asset
 {
-    [self.selectedAssetsArray addObject:asset];
+    if ([asset defaultRepresentation]) {
+        [self.selectedAssetsArray addObject:asset];
+    }
 }
 
 - (DNAsset *)dnassetFromALAsset:(ALAsset *)ALAsset
@@ -347,9 +349,12 @@ static NSString* const dnAssetsViewCellReuseIdentifier = @"DNAssetsViewCell";
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     DNAssetsViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:dnAssetsViewCellReuseIdentifier forIndexPath:indexPath];
-    ALAsset *asset = self.assetsArray[indexPath.row];
+    ALAsset *asset = nil;
+    if (indexPath.row < self.assetsArray.count)
+        asset = self.assetsArray[indexPath.row];
     cell.delegate = self;
-    [cell fillWithAsset:asset isSelected:[self assetIsSelected:asset]];
+    if (asset)
+        [cell fillWithAsset:asset isSelected:[self assetIsSelected:asset]];
     return cell;
 }
 
@@ -378,7 +383,10 @@ static NSString* const dnAssetsViewCellReuseIdentifier = @"DNAssetsViewCell";
         [self seletedAssets:asset];
         [self.imageFlowCollectionView reloadData];
     }
-    [self sendImages];
+    
+    if (self.selectedAssetsArray.count) {
+        [self sendImages];
+    }
 }
 
 - (NSUInteger)seletedPhotosNumberInPhotoBrowser:(DNPhotoBrowser *)photoBrowser
