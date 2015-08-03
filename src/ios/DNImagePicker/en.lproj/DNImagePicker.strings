@@ -14,4 +14,6 @@
 "alertTitle" = "Error";
 "alertContent" = "Can not select more than %d photos";
 "alertButton" = "OK";
+"alertImageLoadingTitle" = "Image Loading";
+"alertImageLoadingMessage" = "This image is being downloaded. Please try again later.";
 "UnAuthorizedTip" = "Allow %@ to access your album in \"Settings\"->\"Privacy\"->\"Photos\"";

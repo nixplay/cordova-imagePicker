@@ -221,7 +221,16 @@ static NSString* const dnAssetsViewCellReuseIdentifier = @"DNAssetsViewCell";
 
 - (BOOL)seletedAssets:(ALAsset *)asset
 {
-    if ([self assetIsSelected:asset] || ![asset defaultRepresentation]) {
+    if ([self assetIsSelected:asset]) {
+        return NO;
+    }
+    if (![asset defaultRepresentation]) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedStringFromTable(@"alertImageLoadingTitle", @"DNImagePicker", nil)
+                                                            message:NSLocalizedStringFromTable(@"alertImageLoadingMessage", @"DNImagePicker", nil)
+                                                           delegate:self
+                                                  cancelButtonTitle:NSLocalizedStringFromTable(@"alertButton", @"DNImagePicker", nil)
+                                                  otherButtonTitles:nil];
+        [alertView show];
         return NO;
     }
     UIBarButtonItem *firstItem = self.toolbarItems.firstObject;
