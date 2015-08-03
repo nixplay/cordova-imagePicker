@@ -221,7 +221,7 @@ static NSString* const dnAssetsViewCellReuseIdentifier = @"DNAssetsViewCell";
 
 - (BOOL)seletedAssets:(ALAsset *)asset
 {
-    if ([self assetIsSelected:asset]) {
+    if ([self assetIsSelected:asset] || ![asset defaultRepresentation]) {
         return NO;
     }
     UIBarButtonItem *firstItem = self.toolbarItems.firstObject;
