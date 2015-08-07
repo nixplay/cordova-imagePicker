@@ -69,6 +69,10 @@ static NSString* const dnAssetsViewCellReuseIdentifier = @"DNAssetsViewCell";
     self.navigationController.toolbarHidden = YES;
 }
 
+- (NSUInteger)supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }

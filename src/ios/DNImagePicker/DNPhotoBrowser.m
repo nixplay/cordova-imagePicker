@@ -110,6 +110,10 @@
     _viewIsActive = YES;
 }
 
+- (NSUInteger)supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;
+}
+
 #pragma mark - priviate
 - (void)setupView {
     self.automaticallyAdjustsScrollViewInsets = NO;
