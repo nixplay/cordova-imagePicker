@@ -8,6 +8,7 @@
 
 #import "SOSPicker.h"
 #import "DNImagePickerController.h"
+#import "MBProgressHUD.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 
 extern NSUInteger kDNImageFlowMaxSeletedNumber;
@@ -43,76 +44,88 @@ extern NSUInteger kDNImageFlowMaxSeletedNumber;
     //NSArray *assetsArray = [NSMutableArray arrayWithArray:imageAssets];
     NSArray *info = [NSMutableArray arrayWithArray:imageAssets];
 
-    CDVPluginResult* result = nil;
-    NSMutableArray *resultStrings = [[NSMutableArray alloc] init];
-    NSData* data = nil;
-    NSString* docsPath = [self getDraftsDirectory];
-    NSError* err = nil;
-    NSFileManager* fileMgr = [[NSFileManager alloc] init];
-    NSString* filePath;
-    ALAsset* asset = nil;
-    UIImageOrientation orientation = UIImageOrientationUp;
-    CGSize targetSize = CGSizeMake(self.width, self.height);
+    __block CDVPluginResult* result = nil;
+    __block NSMutableArray *resultStrings = [[NSMutableArray alloc] init];
 
-    for (NSObject *dict in info) {
-        asset = [dict valueForKey:@"ALAsset"];
-        // From ELCImagePickerController.m
+    dispatch_group_t dispatchGroup = dispatch_group_create();
+    
+    MBProgressHUD *progressHUD = [MBProgressHUD showHUDAddedTo:self.viewController.view animated:YES];
+    progressHUD.labelText = NSLocalizedStringFromTable(
+                                                       @"loadingAlertTitle",
+                                                       @"DNImagePicker",
+                                                       @"Loading"
+                                                       );
+    
+    dispatch_group_async(dispatchGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        NSData* data = nil;
+        NSString* docsPath = [self getDraftsDirectory];
+        NSError* err = nil;
+        NSFileManager* fileMgr = [[NSFileManager alloc] init];
+        NSString* filePath;
+        ALAsset* asset = nil;
+        BOOL useFullImage = fullImage;
+        CGSize targetSize = CGSizeMake(self.width, self.height);
         
-        int i = 1;
-        do {
-            filePath = [NSString stringWithFormat:@"%@/%@%03d.%@", docsPath, CDV_PHOTO_PREFIX, i++, @"jpg"];
-        } while ([fileMgr fileExistsAtPath:filePath]);
-        
-        @autoreleasepool {
-            ALAssetRepresentation *assetRep = [asset defaultRepresentation];
-            CGImageRef imgRef = NULL;
+        for (NSObject *dict in info) {
+            UIImageOrientation orientation = UIImageOrientationUp;
+            asset = [dict valueForKey:@"ALAsset"];
+            // From ELCImagePickerController.m
             
-            if (!fullImage && (self.width == 0 || self.height == 0)) {
-                fullImage = YES;
-            }
+            int i = 1;
+            do {
+                filePath = [NSString stringWithFormat:@"%@/%@%03d.%@", docsPath, CDV_PHOTO_PREFIX, i++, @"jpg"];
+            } while ([fileMgr fileExistsAtPath:filePath]);
             
-            //defaultRepresentation returns image as it appears in photo picker, rotated and sized,
-            //so use UIImageOrientationUp when creating our image below.
-            if (fullImage) {
-                //imgRef = [assetRep fullResolutionImage];
-                //orientation = [assetRep orientation];
-//                Byte *buffer = (Byte*)malloc(assetRep.size);
-//                NSUInteger buffered = [assetRep getBytes:buffer fromOffset:0.0 length:assetRep.size error:nil];
-//                data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
-                orientation = [[asset valueForProperty:ALAssetPropertyOrientation] intValue];
-                imgRef = [assetRep fullResolutionImage];
-                UIImage *image = [UIImage imageWithCGImage:imgRef scale:1.0f orientation:orientation];
-                UIImage *scaledImage = [self imageByScalingNotCroppingForSize:image toSize:image.size];
-                data = UIImageJPEGRepresentation(scaledImage, 1.0f);
-            } else {
-                imgRef = [assetRep fullScreenImage];
-                UIImage* image = [UIImage imageWithCGImage:imgRef scale:1.0f orientation:orientation];
-                if ([self checkIfGif:asset]) {
-                    data = UIImageJPEGRepresentation(image, 1.0f);
-                } else if (self.width == 0 && self.height == 0) {
-                    data = UIImageJPEGRepresentation(image, self.quality/100.0f);
+            @autoreleasepool {
+                ALAssetRepresentation *assetRep = [asset defaultRepresentation];
+                CGImageRef imgRef = NULL;
+                
+                if (!useFullImage && (self.width == 0 || self.height == 0)) {
+                    useFullImage = YES;
+                }
+                
+                //defaultRepresentation returns image as it appears in photo picker, rotated and sized,
+                //so use UIImageOrientationUp when creating our image below.
+                if (useFullImage) {
+                    orientation = [[asset valueForProperty:ALAssetPropertyOrientation] intValue];
+                    imgRef = [assetRep fullResolutionImage];
+                    UIImage *image = [UIImage imageWithCGImage:imgRef scale:1.0f orientation:orientation];
+                    
+                    // Scale image to same size to correct orientation
+                    UIImage *scaledImage = [self imageByScalingNotCroppingForSize:image toSize:image.size];
+                    data = UIImageJPEGRepresentation(scaledImage, 1.0f);
                 } else {
-                    UIImage* scaledImage = [self imageByScalingNotCroppingForSize:image toSize:targetSize];
-                    data = UIImageJPEGRepresentation(scaledImage, self.quality/100.0f);
+                    imgRef = [assetRep fullScreenImage];
+                    UIImage* image = [UIImage imageWithCGImage:imgRef scale:1.0f orientation:orientation];
+                    if ([self checkIfGif:asset]) {
+                        data = UIImageJPEGRepresentation(image, 1.0f);
+                    } else if (self.width == 0 && self.height == 0) {
+                        data = UIImageJPEGRepresentation(image, self.quality/100.0f);
+                    } else {
+                        UIImage* scaledImage = [self imageByScalingNotCroppingForSize:image toSize:targetSize];
+                        data = UIImageJPEGRepresentation(scaledImage, self.quality/100.0f);
+                    }
+                }
+
+                if (![data writeToFile:filePath options:NSAtomicWrite error:&err]) {
+                    result = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:[err localizedDescription]];
+                    break;
+                } else {
+                    [resultStrings addObject:[[NSURL fileURLWithPath:filePath] absoluteString]];
                 }
             }
-
-            if (![data writeToFile:filePath options:NSAtomicWrite error:&err]) {
-                result = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:[err localizedDescription]];
-                break;
-            } else {
-                [resultStrings addObject:[[NSURL fileURLWithPath:filePath] absoluteString]];
-            }
+        }
+    });
+    
+    dispatch_group_notify(dispatchGroup, dispatch_get_main_queue(), ^{
+        if (nil == result) {
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:resultStrings];
         }
         
-    }
-    
-    if (nil == result) {
-        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:resultStrings];
-    }
-    
-    [self.viewController dismissViewControllerAnimated:YES completion:nil];
-    [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
+        [progressHUD hide:YES];
+        [self.viewController dismissViewControllerAnimated:YES completion:nil];
+        [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
+    });
 }
 
 - (void)dnImagePickerControllerDidCancel:(DNImagePickerController *)imagePicker
