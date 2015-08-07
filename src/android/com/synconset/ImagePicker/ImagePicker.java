@@ -15,27 +15,44 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 
+import android.app.ActivityManager;
+import android.content.Context;
+
 import com.photoselector.ui.PhotoSelectorActivity;
 
 public class ImagePicker extends CordovaPlugin {
 	public static String TAG = "ImagePicker";
-	 
+
 	private CallbackContext callbackContext;
 	private JSONObject params;
-	 
+
 	public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
-		 this.callbackContext = callbackContext;
-		 this.params = args.getJSONObject(0);
+		this.callbackContext = callbackContext;
+		this.params = args.getJSONObject(0);
+		ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
+		ActivityManager activityManager = (ActivityManager) this.cordova.getActivity().getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
+		activityManager.getMemoryInfo(mi);
+		long totalMegs = mi.totalMem / 1048576L;
+		// long availableMegs = mi.availMem / 1048576L;
+		// long threshold = mi.threshold / 1048576L;
+
+		System.out.println("[NIX] totalMegs: " + totalMegs);
+		// System.out.println("[NIX] availableMegs: " + availableMegs);
+		// System.out.println("[NIX] threshold: " + threshold);
+
 		if (action.equals("getPictures")) {
 			Intent intent = new Intent(cordova.getActivity(), PhotoSelectorActivity.class);
 			//Intent intent = new Intent(cordova.getActivity(), MultiImageChooserActivity.class);
-			int max = 20;
+			int max = 5;
 			int desiredWidth = 0;
 			int desiredHeight = 0;
 			int quality = 100;
 			if (this.params.has("maximumImagesCount")) {
-				max = this.params.getInt("maximumImagesCount");
+				if(totalMegs > 1000) {
+					max = this.params.getInt("maximumImagesCount");
+				}
 			}
+			System.out.println("[NIX] Maximum images: " + max);
 			if (this.params.has("width")) {
 				desiredWidth = this.params.getInt("width");
 			}
@@ -61,7 +78,7 @@ public class ImagePicker extends CordovaPlugin {
 		}
 		return true;
 	}
-	
+
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == Activity.RESULT_OK && data != null) {
 			ArrayList<String> fileNames = data.getStringArrayListExtra("MULTIPLEFILENAMES");
