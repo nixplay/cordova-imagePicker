@@ -16,4 +16,5 @@
 "alertButton" = "OK";
 "alertImageLoadingTitle" = "Image Loading";
 "alertImageLoadingMessage" = "This image is being downloaded. Please try again later.";
+"loadingAlertTitle" = "Processing...";
 "UnAuthorizedTip" = "Allow %@ to access your album in \"Settings\"->\"Privacy\"->\"Photos\"";

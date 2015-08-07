@@ -49,7 +49,10 @@ extern NSUInteger kDNImageFlowMaxSeletedNumber;
 
     dispatch_group_t dispatchGroup = dispatch_group_create();
     
-    MBProgressHUD *progressHUD = [MBProgressHUD showHUDAddedTo:self.viewController.view animated:YES];
+    MBProgressHUD *progressHUD = [MBProgressHUD showHUDAddedTo:self.viewController.presentedViewController.view
+                                                      animated:YES];
+    progressHUD.mode = MBProgressHUDModeDeterminate;
+    progressHUD.dimBackground = YES;
     progressHUD.labelText = NSLocalizedStringFromTable(
                                                        @"loadingAlertTitle",
                                                        @"DNImagePicker",
@@ -66,7 +69,14 @@ extern NSUInteger kDNImageFlowMaxSeletedNumber;
         BOOL useFullImage = fullImage;
         CGSize targetSize = CGSizeMake(self.width, self.height);
         
+        NSUInteger current = 0;
+        NSUInteger total = info.count;
+        
         for (NSObject *dict in info) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                progressHUD.progress = (float)current / total;
+            });
+            
             UIImageOrientation orientation = UIImageOrientationUp;
             asset = [dict valueForKey:@"ALAsset"];
             // From ELCImagePickerController.m
@@ -114,6 +124,8 @@ extern NSUInteger kDNImageFlowMaxSeletedNumber;
                     [resultStrings addObject:[[NSURL fileURLWithPath:filePath] absoluteString]];
                 }
             }
+            
+            current++;
         }
     });
     
@@ -122,6 +134,7 @@ extern NSUInteger kDNImageFlowMaxSeletedNumber;
             result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:resultStrings];
         }
         
+        progressHUD.progress = 1.f;
         [progressHUD hide:YES];
         [self.viewController dismissViewControllerAnimated:YES completion:nil];
         [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
