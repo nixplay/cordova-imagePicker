@@ -121,20 +121,23 @@
 		</config-file>
 
 		<config-file target="AndroidManifest.xml" parent="/manifest/application">
-			<activity android:label="@string/multi_app_name" android:name="com.synconset.MultiImageChooserActivity" android:theme="@android:style/Theme.Holo.Light">
+			<activity android:label="@string/multi_app_name" android:name="com.synconset.MultiImageChooserActivity" android:theme="@android:style/Theme.Holo.Light" android:screenOrientation="portrait">
 				<!-- <intent-filter /> -->
 			</activity>
 		<activity
 			android:name="com.photoselector.ui.PhotoSelectorActivity"
-			android:label="图片选择" >
+			android:label="图片选择"
+			android:screenOrientation="portrait" >
 		</activity>
 		<activity
 			android:name="com.photoselector.ui.PhotoPreviewActivity"
-			android:label="图片预览" >
+			android:label="图片预览"
+			android:screenOrientation="portrait" >
 		</activity>
 		<activity
 			android:name="com.photoselector.ui.PhotoSelectorPreview"
-			android:label="点击图片" >
+			android:label="点击图片"
+			android:screenOrientation="portrait" >
 		</activity>
 		</config-file>
 
@@ -259,20 +262,23 @@
 		</config-file>
 
 		<config-file target="AndroidManifest.xml" parent="/manifest/application">
-			<activity android:label="@string/multi_app_name" android:name="com.synconset.MultiImageChooserActivity" android:theme="@android:style/Theme.Holo.Light">
+			<activity android:label="@string/multi_app_name" android:name="com.synconset.MultiImageChooserActivity" android:theme="@android:style/Theme.Holo.Light" android:screenOrientation="portrait">
 				<!-- <intent-filter /> -->
 			</activity>
 		<activity
 			android:name="com.photoselector.ui.PhotoSelectorActivity"
-			android:label="图片选择" >
+			android:label="图片选择"
+			android:screenOrientation="portrait" >
 		</activity>
 		<activity
 			android:name="com.photoselector.ui.PhotoPreviewActivity"
-			android:label="图片预览" >
+			android:label="图片预览" 
+			android:screenOrientation="portrait" >
 		</activity>
 		<activity
 			android:name="com.photoselector.ui.PhotoSelectorPreview"
-			android:label="点击图片" >
+			android:label="点击图片"
+			android:screenOrientation="portrait" >
 		</activity>
 		</config-file>
 
