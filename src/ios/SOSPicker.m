@@ -76,13 +76,14 @@ extern NSUInteger kDNImageFlowMaxSeletedNumber;
             if (fullImage) {
                 //imgRef = [assetRep fullResolutionImage];
                 //orientation = [assetRep orientation];
-                //                Byte *buffer = (Byte*)malloc(assetRep.size);
-                //                NSUInteger buffered = [assetRep getBytes:buffer fromOffset:0.0 length:assetRep.size error:nil];
-                //                data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
+//                Byte *buffer = (Byte*)malloc(assetRep.size);
+//                NSUInteger buffered = [assetRep getBytes:buffer fromOffset:0.0 length:assetRep.size error:nil];
+//                data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
                 orientation = [[asset valueForProperty:ALAssetPropertyOrientation] intValue];
                 imgRef = [assetRep fullResolutionImage];
                 UIImage *image = [UIImage imageWithCGImage:imgRef scale:1.0f orientation:orientation];
-                data = UIImageJPEGRepresentation(image, 1.0f);
+                UIImage *scaledImage = [self imageByScalingNotCroppingForSize:image toSize:image.size];
+                data = UIImageJPEGRepresentation(scaledImage, 1.0f);
             } else {
                 imgRef = [assetRep fullScreenImage];
                 UIImage* image = [UIImage imageWithCGImage:imgRef scale:1.0f orientation:orientation];
