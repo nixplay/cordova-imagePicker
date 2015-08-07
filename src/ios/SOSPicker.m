@@ -49,7 +49,7 @@ extern NSUInteger kDNImageFlowMaxSeletedNumber;
 
     dispatch_group_t dispatchGroup = dispatch_group_create();
     
-    MBProgressHUD *progressHUD = [MBProgressHUD showHUDAddedTo:self.viewController.presentedViewController.view
+    MBProgressHUD *progressHUD = [MBProgressHUD showHUDAddedTo:self.viewController.presentedViewController.view.superview
                                                       animated:YES];
     progressHUD.mode = MBProgressHUDModeDeterminate;
     progressHUD.dimBackground = YES;
