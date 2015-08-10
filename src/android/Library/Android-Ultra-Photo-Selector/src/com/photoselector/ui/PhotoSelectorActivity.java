@@ -143,6 +143,8 @@ public class PhotoSelectorActivity extends Activity implements
 		photoSelectorDomain.getReccent(reccentListener); // 更新最近照片
 		photoSelectorDomain.updateAlbum(albumListener); // 跟新相册信息
 		progress = new ProgressDialog(this);
+		progress.setCanceledOnTouchOutside(false);
+		progress.setCancelable(false);
 		progress.setTitle(fakeR.getId("string", "progress_title"));
 		progress.setMessage(getString(fakeR.getId("string", "progress_message")));
 	}
