@@ -61,7 +61,6 @@ extern NSUInteger kDNImageFlowMaxSeletedNumber;
                                                        );
     
     dispatch_group_async(dispatchGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        NSData* data = nil;
         NSString* docsPath = [self getDraftsDirectory];
         NSError* err = nil;
         NSFileManager* fileMgr = [[NSFileManager alloc] init];
@@ -88,6 +87,7 @@ extern NSUInteger kDNImageFlowMaxSeletedNumber;
             } while ([fileMgr fileExistsAtPath:filePath]);
             
             @autoreleasepool {
+                NSData* data = nil;
                 ALAssetRepresentation *assetRep = [asset defaultRepresentation];
                 CGImageRef imgRef = NULL;
                 
@@ -124,6 +124,8 @@ extern NSUInteger kDNImageFlowMaxSeletedNumber;
                 } else {
                     [resultStrings addObject:[[NSURL fileURLWithPath:filePath] absoluteString]];
                 }
+
+                data = nil;
             }
             
             current++;
