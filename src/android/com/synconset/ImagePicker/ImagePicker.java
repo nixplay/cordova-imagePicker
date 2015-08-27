@@ -27,6 +27,9 @@ public class ImagePicker extends CordovaPlugin {
 	private JSONObject params;
 
 	public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
+		if(callbackContext == null)
+			return false;
+
 		this.callbackContext = callbackContext;
 		this.params = args.getJSONObject(0);
 		ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
@@ -83,12 +86,18 @@ public class ImagePicker extends CordovaPlugin {
 		if (resultCode == Activity.RESULT_OK && data != null) {
 			ArrayList<String> fileNames = data.getStringArrayListExtra("MULTIPLEFILENAMES");
 			JSONArray res = new JSONArray(fileNames);
+			if(res == null)
+				this.callbackContext.error("No images selected");
 			this.callbackContext.success(res);
 		} else if (resultCode == Activity.RESULT_CANCELED && data != null) {
 			String error = data.getStringExtra("ERRORMESSAGE");
+			if(error == null)
+				this.callbackContext.error("No images selected");
 			this.callbackContext.error(error);
 		} else if (resultCode == Activity.RESULT_CANCELED) {
 			JSONArray res = new JSONArray();
+			if(res == null)
+				this.callbackContext.error("No images selected");
 			this.callbackContext.success(res);
 		} else {
 			this.callbackContext.error("No images selected");
