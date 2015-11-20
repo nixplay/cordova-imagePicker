@@ -99,17 +99,23 @@ extern NSUInteger kDNImageFlowMaxSeletedNumber;
                 //so use UIImageOrientationUp when creating our image below.
                 if (useFullImage) {
                     orientation = [[asset valueForProperty:ALAssetPropertyOrientation] intValue];
-                    imgRef = [assetRep fullResolutionImage];
-                    UIImage *image = [UIImage imageWithCGImage:imgRef scale:1.0f orientation:orientation];
-                    
-                    // Scale image to same size to correct orientation
-                    UIImage *scaledImage = [self imageByScalingNotCroppingForSize:image toSize:image.size];
-                    data = UIImageJPEGRepresentation(scaledImage, 1.0f);
+                    if(orientation == UIImageOrientationUp) {
+                        Byte *buffer = (Byte*)malloc(assetRep.size);
+                        NSUInteger buffered = [assetRep getBytes:buffer fromOffset:0.0 length:assetRep.size error:nil];
+                        data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
+                    } else  {
+                        imgRef = [assetRep fullResolutionImage];
+                        UIImage *image = [UIImage imageWithCGImage:imgRef scale:1.0f orientation:orientation];
+                        
+                        // Scale image to same size to correct orientation
+                        UIImage *scaledImage = [self imageByScalingNotCroppingForSize:image toSize:image.size];
+                        data = UIImageJPEGRepresentation(scaledImage, 9.0f);
+                    }
                 } else {
                     imgRef = [assetRep fullScreenImage];
                     UIImage* image = [UIImage imageWithCGImage:imgRef scale:1.0f orientation:orientation];
                     if ([self checkIfGif:asset]) {
-                        data = UIImageJPEGRepresentation(image, 1.0f);
+                        data = UIImageJPEGRepresentation(image, 0.9f);
                     } else if (self.width == 0 && self.height == 0) {
                         data = UIImageJPEGRepresentation(image, self.quality/100.0f);
                     } else {
