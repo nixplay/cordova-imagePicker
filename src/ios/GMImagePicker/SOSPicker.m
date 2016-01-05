@@ -158,7 +158,7 @@ typedef enum : NSUInteger {
     progressHUD.mode = MBProgressHUDModeDeterminate;
     progressHUD.dimBackground = YES;
     progressHUD.labelText = NSLocalizedStringFromTable(
-                                                       @"loadingAlertTitle",
+                                                       @"picker.selection.processing",
                                                        @"GMImagePicker",
                                                        @"Loading"
                                                        );

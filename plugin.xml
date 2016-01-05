@@ -31,84 +31,171 @@
 		<header-file src="src/ios/SOSPicker.h" />
 		<source-file src="src/ios/SOSPicker.m" />
 
-		<header-file src="src/ios/DNImagePicker/DNAlbumTableViewController.h" />
-		<source-file src="src/ios/DNImagePicker/DNAlbumTableViewController.m" />
+		<header-file src="src/ios/GMImagePicker/UIImage+fixOrientation.h" />
+		<source-file src="src/ios/GMImagePicker/UIImage+fixOrientation.m" />
 
-		<header-file src="src/ios/DNImagePicker/DNAsset.h" />
-		<source-file src="src/ios/DNImagePicker/DNAsset.m" />
+		<header-file src="src/ios/GMImagePicker/GMAlbumsViewCell.h" />
+		<source-file src="src/ios/GMImagePicker/GMAlbumsViewCell.m" />
 
-		<header-file src="src/ios/DNImagePicker/DNImageFlowViewController.h" />
-		<source-file src="src/ios/DNImagePicker/DNImageFlowViewController.m" />
+		<header-file src="src/ios/GMImagePicker/GMAlbumsViewController.h" />
+		<source-file src="src/ios/GMImagePicker/GMAlbumsViewController.m" />
 
-		<header-file src="src/ios/DNImagePicker/DNImagePickerController.h" />
-		<source-file src="src/ios/DNImagePicker/DNImagePickerController.m" />
+		<header-file src="src/ios/GMImagePicker/GMFetchItem.h" />
+		<source-file src="src/ios/GMImagePicker/GMFetchItem.m" />
 
-		<header-file src="src/ios/DNImagePicker/DNPhotoBrowser.h" />
-		<source-file src="src/ios/DNImagePicker/DNPhotoBrowser.m" />
+		<header-file src="src/ios/GMImagePicker/GMGridViewCell.h" />
+		<source-file src="src/ios/GMImagePicker/GMGridViewCell.m" />
 
-		<header-file src="src/ios/DNImagePicker/Extensions/NSURL+DNIMagePickerUrlEqual.h" />
-		<source-file src="src/ios/DNImagePicker/Extensions/NSURL+DNIMagePickerUrlEqual.m" />
+		<header-file src="src/ios/GMImagePicker/GMGridViewController.h" />
+		<source-file src="src/ios/GMImagePicker/GMGridViewController.m" />
 
-		<header-file src="src/ios/DNImagePicker/Extensions/UIColor+Hex.h" />
-		<source-file src="src/ios/DNImagePicker/Extensions/UIColor+Hex.m" />
+		<header-file src="src/ios/GMImagePicker/GMImagePickerController.h" />
+		<source-file src="src/ios/GMImagePicker/GMImagePickerController.m" />
 
-		<header-file src="src/ios/DNImagePicker/Extensions/UIView+DNImagePicker.h" />
-		<source-file src="src/ios/DNImagePicker/Extensions/UIView+DNImagePicker.m" />
+		<header-file src="src/ios/GMImagePicker/PSYBlockTimer.h" />
+		<source-file src="src/ios/GMImagePicker/PSYBlockTimer.m" />
 
-		<header-file src="src/ios/DNImagePicker/Extensions/UIViewController+DNImagePicker.h" />
-		<source-file src="src/ios/DNImagePicker/Extensions/UIViewController+DNImagePicker.m" />
+		<header-file src="src/ios/GMImagePicker/GMPHAsset.h" />
+		<source-file src="src/ios/GMImagePicker/GMPHAsset.m" />
 
-		<header-file src="src/ios/DNImagePicker/Views/DNAssetsViewCell.h" />
-		<source-file src="src/ios/DNImagePicker/Views/DNAssetsViewCell.m" />
+		<resource-file src="src/ios/GMImagePicker/GMEmptyFolder@1x.png" />
+		<resource-file src="src/ios/GMImagePicker/GMEmptyFolder@2x.png" />
 
-		<header-file src="src/ios/DNImagePicker/Views/DNBadgeLabel.h" />
-		<source-file src="src/ios/DNImagePicker/Views/DNBadgeLabel.m" />
+		<resource-file src="src/ios/GMImagePicker/GMSelected.png" />
+		<resource-file src="src/ios/GMImagePicker/GMSelected@2x.png" />
 
-		<header-file src="src/ios/DNImagePicker/Views/DNBrowserCell.h" />
-		<source-file src="src/ios/DNImagePicker/Views/DNBrowserCell.m" />
+		<resource-file src="src/ios/GMImagePicker/GMVideoIcon.png" />
+		<resource-file src="src/ios/GMImagePicker/GMVideoIcon@2x.png" />
 
-		<header-file src="src/ios/DNImagePicker/Views/DNFullImageButton.h" />
-		<source-file src="src/ios/DNImagePicker/Views/DNFullImageButton.m" />
+		<resource-file src="src/ios/GMImagePicker/Base.lproj/GMImagePicker.strings" target="res/strings-base/GMImagePicker.strings" />
+		<asset src="src/ios/GMImagePicker/ca.lproj/GMImagePicker.strings" target="res/strings-ca/GMImagePicker.strings" />
+		<asset src="src/ios/GMImagePicker/de.lproj/GMImagePicker.strings" target="res/strings-de/GMImagePicker.strings" />
+		<asset src="src/ios/GMImagePicker/en.lproj/GMImagePicker.strings" target="res/strings-en/GMImagePicker.strings" />
+		<asset src="src/ios/GMImagePicker/es.lproj/GMImagePicker.strings" target="res/strings-es/GMImagePicker.strings"/>
+		<asset src="src/ios/GMImagePicker/fr.lproj/GMImagePicker.strings" target="res/strings-fr/GMImagePicker.strings" />
+		<asset src="src/ios/GMImagePicker/it.lproj/GMImagePicker.strings" target="res/strings-it/GMImagePicker.strings" />
+		<asset src="src/ios/GMImagePicker/pt.lproj/GMImagePicker.strings" target="res/strings-pt/GMImagePicker.strings" />
 
-		<header-file src="src/ios/DNImagePicker/Views/DNSendButton.h" />
-		<source-file src="src/ios/DNImagePicker/Views/DNSendButton.m" />
+		<!-- NOTE that MRProgress (and its dependency AFNetworking) have been added for a semi-useful
+		     progress indicator. We may remove that if we have trouble with these files for some reason. -->
 
-		<header-file src="src/ios/DNImagePicker/Views/DNUnAuthorizedTipsView.h" />
-		<source-file src="src/ios/DNImagePicker/Views/DNUnAuthorizedTipsView.m" />
+		<!-- AF Networking -->
+		<source-file src="src/ios/GMImagePicker/AFNetworking/LICENSE" target-dir="resources/AFNetworking" />
+		<source-file src="src/ios/GMImagePicker/AFNetworking/README.md" target-dir="resources/AFNetworking" />
 
-		<header-file src="src/ios/DNImagePicker/Views/JKPromptView.h" />
-		<source-file src="src/ios/DNImagePicker/Views/JKPromptView.m" />
+		<header-file src="src/ios/GMImagePicker/AFNetworking/AFNetworking/AFHTTPRequestOperation.h"  target-dir="AFNetworking" />
+		<source-file src="src/ios/GMImagePicker/AFNetworking/AFNetworking/AFHTTPRequestOperation.m" target-dir="AFNetworking"/>
 
-		<header-file src="src/ios/DNImagePicker/Views/MWTapDetectingImageView.h" />
-		<source-file src="src/ios/DNImagePicker/Views/MWTapDetectingImageView.m" />
+		<header-file src="src/ios/GMImagePicker/AFNetworking/AFNetworking/AFHTTPRequestOperationManager.h" target-dir="AFNetworking"/>
+		<source-file src="src/ios/GMImagePicker/AFNetworking/AFNetworking/AFHTTPRequestOperationManager.m" target-dir="AFNetworking"/>
 
-		<resource-file src="src/ios/DNImagePicker/en.lproj/DNImagePicker.strings" />
-		<resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/assets_placeholder_picture.imageset/assets_placeholder_picture@2x.png" />
-		<resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/camera_edit_cut_cancel.imageset/camera_edit_cut_cancel@2x.png" />
-		<resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/camera_edit_cut_cancel_highlighted.imageset/camera_edit_cut_cancel_highlighted@2x.png" />
-		<resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/compose_photo_original.imageset/compose_photo_original@2x.png" />
-		<resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/compose_photo_original.imageset/compose_photo_original@3x.png" />
-		<resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/compose_photo_original_highlighted.imageset/compose_photo_original_highlighted@2x.png" />
-		<resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/compose_photo_original_highlighted.imageset/compose_photo_original_highlighted@3x.png" />
-		<resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/compose_photograph.imageset/compose_photograph@2x.png" />
-		<resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/compose_photograph.imageset/compose_photograph@3x.png" />
-		<resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/compose_photograph_background.imageset/compose_photograph_background@2x.png" />
-		<resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/compose_photograph_highlighted.imageset/compose_photograph_highlighted@2x.png" />
-		<resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/compose_photograph_highlighted.imageset/compose_photograph_highlighted@3x.png" />
-		<resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/navigationbar_arrow_down.imageset/navigationbar_arrow_down@2x.png" />
-		<resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/navigationbar_arrow_up.imageset/navigationbar_arrow_up@2x.png" />
-		<resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/navigationbar_title_highlighted.imageset/navigationbar_title_highlighted@2x.png" />
-		<resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/photo_check_default.imageset/photo_check_default@2x.png" />
-		<resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/photo_check_default.imageset/photo_check_default@3x.png" />
-		<resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/photo_check_selected.imageset/photo_check_selected@2x.png" />
-		<resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/photo_check_selected.imageset/photo_check_selected@3x.png" />
-		<resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/picker_alert_sigh.imageset/picker_alert_sigh@2x.png" />
-		<resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/picker_button_orange.imageset/picker_button_orange@2x.png" />
-		<resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/picker_button_orange_highlighted.imageset/picker_button_orange_highlighted@2x.png" />
-		<resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/picker_image_placeholder.imageset/picker_image_placeholder@2x.png" />
-		<resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/picker_photo_filter_checked.imageset/picker_photo_filter_checked@2x.png" />
-		<resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/back_normal.imageset/back_normal.png" />
-		<resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/back_highlight.imageset/back_highlight.png" />
+		<header-file src="src/ios/GMImagePicker/AFNetworking/AFNetworking/AFHTTPSessionManager.h" target-dir="AFNetworking"/>
+		<source-file src="src/ios/GMImagePicker/AFNetworking/AFNetworking/AFHTTPSessionManager.m" target-dir="AFNetworking"/>
+
+		<header-file src="src/ios/GMImagePicker/AFNetworking/AFNetworking/AFNetworking.h" target-dir="AFNetworking"/>
+
+		<header-file src="src/ios/GMImagePicker/AFNetworking/AFNetworking/AFNetworkReachabilityManager.h" target-dir="AFNetworking"/>
+		<source-file src="src/ios/GMImagePicker/AFNetworking/AFNetworking/AFNetworkReachabilityManager.m" target-dir="AFNetworking"/>
+
+		<header-file src="src/ios/GMImagePicker/AFNetworking/AFNetworking/AFSecurityPolicy.h" target-dir="AFNetworking"/>
+		<source-file src="src/ios/GMImagePicker/AFNetworking/AFNetworking/AFSecurityPolicy.m" target-dir="AFNetworking"/>
+
+		<header-file src="src/ios/GMImagePicker/AFNetworking/AFNetworking/AFURLConnectionOperation.h" target-dir="AFNetworking"/>
+		<source-file src="src/ios/GMImagePicker/AFNetworking/AFNetworking/AFURLConnectionOperation.m" target-dir="AFNetworking"/>
+
+		<header-file src="src/ios/GMImagePicker/AFNetworking/AFNetworking/AFURLRequestSerialization.h" target-dir="AFNetworking"/>
+		<source-file src="src/ios/GMImagePicker/AFNetworking/AFNetworking/AFURLRequestSerialization.m" target-dir="AFNetworking"/>
+
+		<header-file src="src/ios/GMImagePicker/AFNetworking/AFNetworking/AFURLResponseSerialization.h" target-dir="AFNetworking"/>
+		<source-file src="src/ios/GMImagePicker/AFNetworking/AFNetworking/AFURLResponseSerialization.m" target-dir="AFNetworking"/>
+
+		<header-file src="src/ios/GMImagePicker/AFNetworking/AFNetworking/AFURLSessionManager.h" target-dir="AFNetworking"/>
+		<source-file src="src/ios/GMImagePicker/AFNetworking/AFNetworking/AFURLSessionManager.m" target-dir="AFNetworking"/>
+
+		<header-file src="src/ios/GMImagePicker/AFNetworking/UIKit+AFNetworking/AFNetworkActivityIndicatorManager.h" target-dir="AFNetworking"/>
+		<source-file src="src/ios/GMImagePicker/AFNetworking/UIKit+AFNetworking/AFNetworkActivityIndicatorManager.m" target-dir="AFNetworking"/>
+
+		<header-file src="src/ios/GMImagePicker/AFNetworking/UIKit+AFNetworking/UIActivityIndicatorView+AFNetworking.h" target-dir="AFNetworking"/>
+		<source-file src="src/ios/GMImagePicker/AFNetworking/UIKit+AFNetworking/UIActivityIndicatorView+AFNetworking.m" target-dir="AFNetworking"/>
+
+		<header-file src="src/ios/GMImagePicker/AFNetworking/UIKit+AFNetworking/UIAlertView+AFNetworking.h" target-dir="AFNetworking"/>
+		<source-file src="src/ios/GMImagePicker/AFNetworking/UIKit+AFNetworking/UIAlertView+AFNetworking.m" target-dir="AFNetworking"/>
+
+		<header-file src="src/ios/GMImagePicker/AFNetworking/UIKit+AFNetworking/UIButton+AFNetworking.h" target-dir="AFNetworking"/>
+		<source-file src="src/ios/GMImagePicker/AFNetworking/UIKit+AFNetworking/UIButton+AFNetworking.m" target-dir="AFNetworking"/>
+
+		<header-file src="src/ios/GMImagePicker/AFNetworking/UIKit+AFNetworking/UIImageView+AFNetworking.h" target-dir="AFNetworking"/>
+		<source-file src="src/ios/GMImagePicker/AFNetworking/UIKit+AFNetworking/UIImageView+AFNetworking.m" target-dir="AFNetworking"/>
+
+		<header-file src="src/ios/GMImagePicker/AFNetworking/UIKit+AFNetworking/UIKit+AFNetworking.h" target-dir="AFNetworking"/>
+
+		<header-file src="src/ios/GMImagePicker/AFNetworking/UIKit+AFNetworking/UIProgressView+AFNetworking.h" target-dir="AFNetworking"/>
+		<source-file src="src/ios/GMImagePicker/AFNetworking/UIKit+AFNetworking/UIProgressView+AFNetworking.m" target-dir="AFNetworking"/>
+
+		<header-file src="src/ios/GMImagePicker/AFNetworking/UIKit+AFNetworking/UIRefreshControl+AFNetworking.h" target-dir="AFNetworking"/>
+		<source-file src="src/ios/GMImagePicker/AFNetworking/UIKit+AFNetworking/UIRefreshControl+AFNetworking.m" target-dir="AFNetworking" />
+
+		<header-file src="src/ios/GMImagePicker/AFNetworking/UIKit+AFNetworking/UIWebView+AFNetworking.h" target-dir="AFNetworking"/>
+		<source-file src="src/ios/GMImagePicker/AFNetworking/UIKit+AFNetworking/UIWebView+AFNetworking.m" target-dir="AFNetworking"/>
+
+		<!-- mr progress -->
+		<header-file src="src/ios/GMImagePicker/mrprogress/MRProgress.h" target-dir="mrprogress" />
+
+		<header-file src="src/ios/GMImagePicker/mrprogress/Blur/MRBlurView.h" target-dir="mrprogress" />
+		<source-file src="src/ios/GMImagePicker/mrprogress/Blur/MRBlurView.m" target-dir="mrprogress" />
+
+		<header-file src="src/ios/GMImagePicker/mrprogress/Blur/UIImage+MRImageEffects.h" target-dir="mrprogress" />
+		<source-file src="src/ios/GMImagePicker/mrprogress/Blur/UIImage+MRImageEffects.m" target-dir="mrprogress" />
+
+		<header-file src="src/ios/GMImagePicker/mrprogress/Components/MRActivityIndicatorView.h" target-dir="mrprogress" />
+		<source-file src="src/ios/GMImagePicker/mrprogress/Components/MRActivityIndicatorView.m" target-dir="mrprogress" />
+
+		<header-file src="src/ios/GMImagePicker/mrprogress/Components/MRCircularProgressView.h" target-dir="mrprogress" />
+		<source-file src="src/ios/GMImagePicker/mrprogress/Components/MRCircularProgressView.m" target-dir="mrprogress" />
+
+		<header-file src="src/ios/GMImagePicker/mrprogress/Components/MRIconView.h" target-dir="mrprogress" />
+		<source-file src="src/ios/GMImagePicker/mrprogress/Components/MRIconView.m" target-dir="mrprogress" />
+
+		<header-file src="src/ios/GMImagePicker/mrprogress/Components/MRNavigationBarProgressView.h" target-dir="mrprogress" />
+		<source-file src="src/ios/GMImagePicker/mrprogress/Components/MRNavigationBarProgressView.m" target-dir="mrprogress" />
+
+		<header-file src="src/ios/GMImagePicker/mrprogress/Components/MRProgressOverlayView.h" target-dir="mrprogress" />
+		<source-file src="src/ios/GMImagePicker/mrprogress/Components/MRProgressOverlayView.m" target-dir="mrprogress" />
+
+		<header-file src="src/ios/GMImagePicker/mrprogress/Components/MRProgressView.h" target-dir="mrprogress" />
+		<source-file src="src/ios/GMImagePicker/mrprogress/Components/MRProgressView.m" target-dir="mrprogress" />
+
+		<header-file src="src/ios/GMImagePicker/mrprogress/Components/MRStopableView.h" target-dir="mrprogress" />
+
+		<header-file src="src/ios/GMImagePicker/mrprogress/Components/MRStopButton.h" target-dir="mrprogress" />
+		<source-file src="src/ios/GMImagePicker/mrprogress/Components/MRStopButton.m" target-dir="mrprogress" />
+
+		<header-file src="src/ios/GMImagePicker/mrprogress/Support/AFNetworking/MRActivityIndicatorView+AFNetworking.h" target-dir="mrprogress" />
+		<source-file src="src/ios/GMImagePicker/mrprogress/Support/AFNetworking/MRActivityIndicatorView+AFNetworking.m" target-dir="mrprogress" />
+
+		<header-file src="src/ios/GMImagePicker/mrprogress/Support/AFNetworking/MRProgressOverlayView+AFNetworking.h" target-dir="mrprogress" />
+		<source-file src="src/ios/GMImagePicker/mrprogress/Support/AFNetworking/MRProgressOverlayView+AFNetworking.m" target-dir="mrprogress" />
+
+		<header-file src="src/ios/GMImagePicker/mrprogress/Support/AFNetworking/MRProgressView+AFNetworking.h" target-dir="mrprogress" />
+		<source-file src="src/ios/GMImagePicker/mrprogress/Support/AFNetworking/MRProgressView+AFNetworking.m" target-dir="mrprogress" />
+
+		<header-file src="src/ios/GMImagePicker/mrprogress/Utils/MRMessageInterceptor.h" target-dir="mrprogress" />
+		<source-file src="src/ios/GMImagePicker/mrprogress/Utils/MRMessageInterceptor.m" target-dir="mrprogress" />
+
+		<header-file src="src/ios/GMImagePicker/mrprogress/Utils/MRMethodCopier.h" target-dir="mrprogress" />
+		<source-file src="src/ios/GMImagePicker/mrprogress/Utils/MRMethodCopier.m" />
+
+		<header-file src="src/ios/GMImagePicker/mrprogress/Utils/MRProgressHelper.h" target-dir="mrprogress" />
+
+		<header-file src="src/ios/GMImagePicker/mrprogress/Utils/MRWeakProxy.h" target-dir="mrprogress" />
+		<source-file src="src/ios/GMImagePicker/mrprogress/Utils/MRWeakProxy.m" target-dir="mrprogress" />
+
+		<framework src="Accelerate.framework" />
+		<framework src="Security.framework" />
+		<framework src="Photos.framework" />
+		<framework src="SystemConfiguration.framework" />
+		<framework src="QuartzCore.framework" />
+
 	</platform>
 
 	<!-- android -->
@@ -272,7 +359,7 @@
 		</activity>
 		<activity
 			android:name="com.photoselector.ui.PhotoPreviewActivity"
-			android:label="图片预览" 
+			android:label="图片预览"
 			android:screenOrientation="portrait" >
 		</activity>
 		<activity
