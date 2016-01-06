@@ -52,8 +52,8 @@ typedef enum : NSUInteger {
     picker.delegate = self;
     picker.title = title;
     picker.customNavigationBarPrompt = message;
-    picker.colsInPortrait = 4;
-    picker.colsInLandscape = 6;
+    picker.colsInPortrait = 3;
+    picker.colsInLandscape = 5;
     picker.minimumInteritemSpacing = 2.0;
     picker.modalPresentationStyle = UIModalPresentationPopover;
     
@@ -146,6 +146,7 @@ typedef enum : NSUInteger {
     requestOptions = [[PHImageRequestOptions alloc] init];
     requestOptions.resizeMode   = PHImageRequestOptionsResizeModeExact;
     requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    requestOptions.networkAccessAllowed = YES;
     
     // this one is key
     requestOptions.synchronous = true;
@@ -158,19 +159,29 @@ typedef enum : NSUInteger {
     progressHUD.mode = MBProgressHUDModeDeterminate;
     progressHUD.dimBackground = YES;
     progressHUD.labelText = NSLocalizedStringFromTable(
-                                                       @"loadingAlertTitle",
+                                                       @"picker.selection.processing",
                                                        @"GMImagePicker",
                                                        @"Loading"
                                                        );
+    [progressHUD show: YES];
     dispatch_group_async(dispatchGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         NSString* filePath;
         int i = 1;
 
         NSError* err = nil;
         __block NSData *imgData;
-        for (PHAsset *asset in fetchArray) {
-            __block UIImage *image;
-            [manager requestImageDataForAsset:asset
+        // Index for tracking the current image
+        int index = 0;
+        // If image fetching fails then retry 3 times before giving up
+        int retry = 3;
+        do {
+            PHAsset *asset = [fetchArray objectAtIndex:index];
+            if (asset == nil) {
+                result = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:[err localizedDescription]];
+            } else {
+                __block UIImage *image;
+                if (retry > 0) {
+                    [manager requestImageDataForAsset:asset
                                   options:requestOptions
                                 resultHandler:^(NSData *imageData,
                                                     NSString *dataUTI,
@@ -178,43 +189,54 @@ typedef enum : NSUInteger {
                                                     NSDictionary *info) {
                                 imgData = [imageData copy];
                             }];
-            
-
-            do {
-                filePath = [NSString stringWithFormat:@"%@/%@%03d.%@", docsPath, CDV_PHOTO_PREFIX, i++, @"jpg"];
-            } while ([fileMgr fileExistsAtPath:filePath]);
-            
-            @autoreleasepool {
-                NSData* data = nil;
-                if (self.width == 0 && self.height == 0) {
-                    // no scaling required
-                    if (self.quality == 100) {
-                        data = [imgData copy];
-                    } else {
-                        image = [UIImage imageWithData:imgData];
-                        // resample first
-                        data = UIImageJPEGRepresentation(image, self.quality/100.0f);
+                    retry--;
+                    requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
+                } else {
+                    retry = 3;
+                    index++;
+                    requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+                }
+                
+                if (imgData != nil) {
+                    retry = 3;
+                    requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+                    do {
+                        filePath = [NSString stringWithFormat:@"%@/%@%03d.%@", docsPath, CDV_PHOTO_PREFIX, i++, @"jpg"];
+                    } while ([fileMgr fileExistsAtPath:filePath]);
+                    
+                    @autoreleasepool {
+                        NSData* data = nil;
+                        if (self.width == 0 && self.height == 0) {
+                            // no scaling required
+                            if (self.quality == 100) {
+                                data = [imgData copy];
+                            } else {
+                                image = [UIImage imageWithData:imgData];
+                                // resample first
+                                data = UIImageJPEGRepresentation(image, self.quality/100.0f);
+                            }
+                        } else {
+                            image = [UIImage imageWithData:imgData];
+                            // scale
+                            UIImage* scaledImage = [self imageByScalingNotCroppingForSize:image toSize:targetSize];
+                            data = UIImageJPEGRepresentation(scaledImage, self.quality/100.0f);
+                        }
+                        if (![data writeToFile:filePath options:NSAtomicWrite error:&err]) {
+                            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:[err localizedDescription]];
+                            break;
+                        } else {
+                            [resultStrings addObject:[[NSURL fileURLWithPath:filePath] absoluteString]];
+                        }
+                        data = nil;
                     }
-                } else {
-                    image = [UIImage imageWithData:imgData];
-                    // scale
-                    UIImage* scaledImage = [self imageByScalingNotCroppingForSize:image toSize:targetSize];
-                    data = UIImageJPEGRepresentation(scaledImage, self.quality/100.0f);
+//                    index = [NSNumber numberWithInt:[index intValue] + 1];
+                    index++;
                 }
-                if (![data writeToFile:filePath options:NSAtomicWrite error:&err]) {
-                    result = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:[err localizedDescription]];
-                    break;
-                } else {
-                    [resultStrings addObject:[[NSURL fileURLWithPath:filePath] absoluteString]];
-                }
-                data = nil;
             }
-        }
+        } while (index < fetchArray.count);
         
         if (result == nil) {
             result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:resultStrings];
-            progressHUD.progress = 1.f;
-            [progressHUD hide:YES];
         }
     });
     

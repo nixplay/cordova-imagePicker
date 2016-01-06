@@ -138,8 +138,8 @@
     
     GMAlbumsViewController *albumsViewController = [[GMAlbumsViewController alloc] init:self.allow_video];
     
-    self.colsInPortrait = 4;
-    self.colsInLandscape = 6;
+    self.colsInPortrait = 3;
+    self.colsInLandscape = 5;
     
     GMGridViewController *gridViewController = [[GMGridViewController alloc] initWithPicker:self];
     gridViewController.title = @"All Photos";
