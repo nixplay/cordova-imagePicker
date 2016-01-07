@@ -14,7 +14,7 @@
 @import Photos;
 
 
-NSUInteger kGMImageMaxSeletedNumber = 20;
+NSUInteger kGMImageMaxSeletedNumber = 10;
 
 //Helper methods
 @implementation NSIndexSet (Convenience)

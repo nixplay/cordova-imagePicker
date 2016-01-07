@@ -32,11 +32,13 @@ typedef enum : NSUInteger {
 - (void) getPictures:(CDVInvokedUrlCommand *)command {
     
     NSDictionary *options = [command.arguments objectAtIndex: 0];
-  
+    NSInteger maximumImagesCount = [[options objectForKey:@"maximumImagesCount"] integerValue];
+    
     self.outputType = [[options objectForKey:@"outputType"] integerValue];
     BOOL allow_video = [[options objectForKey:@"allow_video" ] boolValue ];
     NSString * title = [options objectForKey:@"title"];
     NSString * message = [options objectForKey:@"message"];
+    kGMImageMaxSeletedNumber = maximumImagesCount;
     if (message == (id)[NSNull null]) {
       message = nil;
     }
