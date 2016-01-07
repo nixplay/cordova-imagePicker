@@ -15,6 +15,8 @@
 
 #define CDV_PHOTO_PREFIX @"cdv_photo_"
 
+extern NSUInteger kGMImageMaxSeletedNumber;
+
 typedef enum : NSUInteger {
     FILE_URI = 0,
     BASE64_STRING = 1
@@ -150,7 +152,6 @@ typedef enum : NSUInteger {
     
     // this one is key
     requestOptions.synchronous = true;
-    NSMutableArray *images = [NSMutableArray arrayWithCapacity:[fetchArray count]];
     
     dispatch_group_t dispatchGroup = dispatch_group_create();
     
@@ -165,7 +166,7 @@ typedef enum : NSUInteger {
                                                        );
     [progressHUD show: YES];
     dispatch_group_async(dispatchGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        NSString* filePath;
+        __block NSString* filePath;
         int i = 1;
 
         NSError* err = nil;
@@ -188,6 +189,9 @@ typedef enum : NSUInteger {
                                                     UIImageOrientation orientation,
                                                     NSDictionary *info) {
                                 imgData = [imageData copy];
+                                NSString* fullFilePath = [info objectForKey:@"PHImageFileURLKey"];
+                                NSString* fileName = [[fullFilePath lastPathComponent] stringByDeletingPathExtension];
+                                filePath = [NSString stringWithFormat:@"%@/%@.%@", docsPath, fileName, @"jpg"];
                             }];
                     retry--;
                     requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
@@ -200,9 +204,9 @@ typedef enum : NSUInteger {
                 if (imgData != nil) {
                     retry = 3;
                     requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-                    do {
-                        filePath = [NSString stringWithFormat:@"%@/%@%03d.%@", docsPath, CDV_PHOTO_PREFIX, i++, @"jpg"];
-                    } while ([fileMgr fileExistsAtPath:filePath]);
+//                    do {
+//                        filePath = [NSString stringWithFormat:@"%@/%@%03d.%@", docsPath, CDV_PHOTO_PREFIX, i++, @"jpg"];
+//                    } while ([fileMgr fileExistsAtPath:filePath]);
                     
                     @autoreleasepool {
                         NSData* data = nil;
