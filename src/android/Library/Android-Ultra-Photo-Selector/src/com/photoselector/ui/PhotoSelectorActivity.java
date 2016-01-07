@@ -511,26 +511,26 @@ public class PhotoSelectorActivity extends Activity implements
 								throw new IOException("Unable to load image into memory.");
 							}
 						}
+						file = this.storeImage(bmp, file);
 					} else {
-						try {
-							bmp = this.tryToGetBitmap(file, null, rotate, false);
-						} catch(OutOfMemoryError e) {
-							options = new BitmapFactory.Options();
-							options.inSampleSize = 2;
-							try {
-								bmp = this.tryToGetBitmap(file, options, rotate, false);
-							} catch(OutOfMemoryError e2) {
-								options = new BitmapFactory.Options();
-								options.inSampleSize = 4;
-								try {
-									bmp = this.tryToGetBitmap(file, options, rotate, false);
-								} catch (OutOfMemoryError e3) {
-									throw new IOException("Unable to load image into memory.");
-								}
-							}
-						}
+//						try {
+//							bmp = this.tryToGetBitmap(file, null, rotate, false);
+//						} catch(OutOfMemoryError e) {
+//							options = new BitmapFactory.Options();
+//							options.inSampleSize = 2;
+//							try {
+//								bmp = this.tryToGetBitmap(file, options, rotate, false);
+//							} catch(OutOfMemoryError e2) {
+//								options = new BitmapFactory.Options();
+//								options.inSampleSize = 4;
+//								try {
+//									bmp = this.tryToGetBitmap(file, options, rotate, false);
+//								} catch (OutOfMemoryError e3) {
+//									throw new IOException("Unable to load image into memory.");
+//								}
+//							}
+//						}
 					}
-					file = this.storeImage(bmp, file.getName());
 					al.add(Uri.fromFile(file).toString());
 					}
 					else
@@ -611,11 +611,16 @@ public class PhotoSelectorActivity extends Activity implements
 		* The software is open source, MIT Licensed.
 		* Copyright (C) 2012, webXells GmbH All Rights Reserved.
 		*/
-		private File storeImage(Bitmap bmp, String fileName) throws IOException {
-			int index = fileName.lastIndexOf('.');
-			String name = "Temp_" + fileName.substring(0, index).replaceAll("([^a-zA-Z0-9])", "");
-			String ext = fileName.substring(index);
-			File file = File.createTempFile(name, ext);
+		private File storeImage(Bitmap bmp, File file) throws IOException {
+			String fileName = file.getName();
+			// int index = fileName.lastIndexOf('.');
+			// String name = "Temp_" + fileName.substring(0, index).replaceAll("([^a-zA-Z0-9])", "");
+			String name = "Temp_" + fileName;
+			// String ext = fileName.substring(index);
+			// File file = File.createTempFile(name, ext);
+			String tDir = System.getProperty("java.io.tmpdir");
+			String fullFilePath = tDir + "/" + name;
+			file = new File(fullFilePath);
 			OutputStream outStream = new FileOutputStream(file);
 			bmp.compress(Bitmap.CompressFormat.JPEG, quality, outStream);
 			outStream.flush();
