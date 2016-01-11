@@ -32,6 +32,12 @@
         self.preferredContentSize = kPopoverContentSize;
     }
     allow_video = allow_v;
+    
+    self.navigationItem.backBarButtonItem =
+    [[UIBarButtonItem alloc] initWithTitle:@"Albums"
+                                     style:UIBarButtonItemStylePlain
+                                    target:nil
+                                    action:nil];
     return self;
 }
 
