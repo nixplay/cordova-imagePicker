@@ -46,13 +46,16 @@ typedef enum : NSUInteger {
     self.height = [[options objectForKey:@"height"] integerValue];
     self.quality = [[options objectForKey:@"quality"] integerValue];
 
+
+    self.preSelectedAssets = [options objectForKey:@"assets"];
+    
     self.callbackId = command.callbackId;
     [self launchGMImagePicker:allow_video title:title message:message];
 }
 
 - (void)launchGMImagePicker:(bool)allow_video title:(NSString *)title message:(NSString *)message
 {
-    GMImagePickerController *picker = [[GMImagePickerController alloc] init:allow_video];
+    GMImagePickerController *picker = [[GMImagePickerController alloc] init:allow_video withAssets: self.preSelectedAssets];
     picker.delegate = self;
     picker.title = title;
     picker.customNavigationBarPrompt = message;
@@ -137,10 +140,9 @@ typedef enum : NSUInteger {
     
     NSLog(@"GMImagePicker: User finished picking assets. Number of selected items is: %lu", (unsigned long)fetchArray.count);
     
-    NSMutableArray * result_all = [[NSMutableArray alloc] init];
-    __block NSMutableArray *resultStrings = [[NSMutableArray alloc] init];
+    __block NSMutableArray *preSelectedAssets = [[NSMutableArray alloc] init];
+    __block NSMutableArray *fileStrings = [[NSMutableArray alloc] init];
     CGSize targetSize = CGSizeMake(self.width, self.height);
-    NSFileManager* fileMgr = [[NSFileManager alloc] init];
     NSString* docsPath = [NSTemporaryDirectory()stringByStandardizingPath];
     
     __block CDVPluginResult* result = nil;
@@ -169,8 +171,6 @@ typedef enum : NSUInteger {
     [progressHUD show: YES];
     dispatch_group_async(dispatchGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         __block NSString* filePath;
-        int i = 1;
-
         NSError* err = nil;
         __block NSData *imgData;
         // Index for tracking the current image
@@ -179,6 +179,7 @@ typedef enum : NSUInteger {
         int retry = 3;
         do {
             PHAsset *asset = [fetchArray objectAtIndex:index];
+            NSString *localIdentifier;
             if (asset == nil) {
                 result = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:[err localizedDescription]];
             } else {
@@ -196,6 +197,8 @@ typedef enum : NSUInteger {
                                 filePath = [NSString stringWithFormat:@"%@/%@.%@", docsPath, fileName, @"jpg"];
                             }];
                     retry--;
+                    localIdentifier = [asset localIdentifier];
+                    NSLog(@"localIdentifier: %@", localIdentifier);
                     requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
                 } else {
                     retry = 3;
@@ -231,7 +234,8 @@ typedef enum : NSUInteger {
                             result = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:[err localizedDescription]];
                             break;
                         } else {
-                            [resultStrings addObject:[[NSURL fileURLWithPath:filePath] absoluteString]];
+                            [fileStrings addObject:[[NSURL fileURLWithPath:filePath] absoluteString]];
+                            [preSelectedAssets addObject: localIdentifier];
                         }
                         data = nil;
                     }
@@ -242,13 +246,13 @@ typedef enum : NSUInteger {
         } while (index < fetchArray.count);
         
         if (result == nil) {
-            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:resultStrings];
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: [NSDictionary dictionaryWithObjectsAndKeys: preSelectedAssets, @"preSelectedAssets", fileStrings, @"images", nil]];
         }
     });
     
     dispatch_group_notify(dispatchGroup, dispatch_get_main_queue(), ^{
         if (nil == result) {
-            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:resultStrings];
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: [NSDictionary dictionaryWithObjectsAndKeys: preSelectedAssets, @"preSelectedAssets", fileStrings, @"images", nil]];
         }
         
         progressHUD.progress = 1.f;

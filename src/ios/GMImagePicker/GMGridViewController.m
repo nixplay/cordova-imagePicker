@@ -102,7 +102,10 @@ NSString * const GMGridViewCellIdentifier = @"GMGridViewCellIdentifier";
     {
         //Compute the thumbnail pixel size:
         CGFloat scale = [UIScreen mainScreen].scale;
-        //NSLog(@"This is @%fx scale device", scale);
+        if (scale == 3.0) {
+            scale = 1.0;
+        }
+        
         AssetGridThumbnailSize = CGSizeMake(layout.itemSize.width * scale, layout.itemSize.height * scale);
         
         self.collectionView.allowsMultipleSelection = picker.allowsMultipleSelection;
@@ -162,7 +165,6 @@ NSString * const GMGridViewCellIdentifier = @"GMGridViewCellIdentifier";
 
 
 #pragma mark - Rotation
-
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -173,6 +175,9 @@ NSString * const GMGridViewCellIdentifier = @"GMGridViewCellIdentifier";
     
     //Update the AssetGridThumbnailSize:
     CGFloat scale = [UIScreen mainScreen].scale;
+    if (scale == 3.0) {
+        scale = 1.0;
+    }
     AssetGridThumbnailSize = CGSizeMake(layout.itemSize.width * scale, layout.itemSize.height * scale);
     
     [self resetCachedAssets];
@@ -363,7 +368,6 @@ NSString * const GMGridViewCellIdentifier = @"GMGridViewCellIdentifier";
     
     return cell;
 }
-
 
 #pragma mark - Collection View Delegate
 

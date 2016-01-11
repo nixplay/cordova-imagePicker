@@ -50,6 +50,7 @@ public class ImagePicker extends CordovaPlugin {
 			int desiredWidth = 0;
 			int desiredHeight = 0;
 			int quality = 100;
+			ArrayList<String>  preSelectedAssets = new ArrayList<String>();
 			if (this.params.has("maximumImagesCount")) {
 				if(totalMegs > 1000) {
 					max = this.params.getInt("maximumImagesCount");
@@ -65,10 +66,21 @@ public class ImagePicker extends CordovaPlugin {
 			if (this.params.has("quality")) {
 				quality = this.params.getInt("quality");
 			}
+			if (this.params.has("assets")) {
+				JSONArray assets = this.params.getJSONArray("assets");
+				if (assets != null) {
+					for(int i=0; i < assets.length(); i++) {
+						preSelectedAssets.add(assets.get(i).toString());
+					}
+				}
+			}
+//			preSelectedAssets.add("file:///storage/emulated/0/Pictures/IMG_20160108_112930.jpg".replaceAll("file://", ""));
+//			preSelectedAssets.add("file:///storage/emulated/0/Pictures/photo-1448975750337-b0290d621d6d.jpeg".replaceAll("file://", ""));
 			intent.putExtra("MAX_IMAGES", max);
 			intent.putExtra("WIDTH", desiredWidth);
 			intent.putExtra("HEIGHT", desiredHeight);
 			intent.putExtra("QUALITY", quality);
+			intent.putExtra("PRE_SELECTED_ASSETS", preSelectedAssets);
 		    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 			/*
 			if (this.cordova != null) {
@@ -85,7 +97,18 @@ public class ImagePicker extends CordovaPlugin {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == Activity.RESULT_OK && data != null) {
 			ArrayList<String> fileNames = data.getStringArrayListExtra("MULTIPLEFILENAMES");
-			JSONArray res = new JSONArray(fileNames);
+			ArrayList<String> preSelectedAssets = data.getStringArrayListExtra("SELECTED_ASSETS");
+			JSONArray jsFileNames = new JSONArray(fileNames);
+			JSONArray jsPreSelectedAssets = new JSONArray(preSelectedAssets);
+			JSONObject res = new JSONObject();
+
+			try {
+				res.put("images", jsFileNames);
+				res.put("preSelectedAssets", jsPreSelectedAssets);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+
 			if(res == null)
 				this.callbackContext.error("No images selected");
 			this.callbackContext.success(res);

@@ -18,12 +18,19 @@
 
 @implementation GMImagePickerController
 
-- (id)init:(bool)allow_v
+- (id)init:(bool)allow_v withAssets: (NSArray*)preSelectedAssets
 {
     if (self = [super init])
     {
         _selectedAssets = [[NSMutableArray alloc] init];
         
+        PHFetchResult *fetchResult = [PHAsset fetchAssetsWithLocalIdentifiers:preSelectedAssets options:nil];
+        
+        for (PHAsset *asset in fetchResult) {
+            [_selectedAssets addObject: asset];
+        }
+        
+        // _selectedAssets = [fetchResult copy];
         _allow_video = allow_v;
         
         // Default values:
@@ -138,9 +145,7 @@
     
     GMAlbumsViewController *albumsViewController = [[GMAlbumsViewController alloc] init:self.allow_video];
     
-    self.colsInPortrait = 3;
-    self.colsInLandscape = 5;
-    
+
     GMGridViewController *gridViewController = [[GMGridViewController alloc] initWithPicker:self];
     gridViewController.title = @"All Photos";
     
@@ -150,9 +155,12 @@
     {
         PHFetchOptions *options = [[PHFetchOptions alloc] init];
         NSPredicate * predicatePHAsset = self.allow_video? nil : [NSPredicate predicateWithFormat:@"mediaType == %d", PHAssetMediaTypeImage];
+        
         options.predicate = predicatePHAsset;
         options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
+        
         PHFetchResult *assetsFetchResult = [PHAsset fetchAssetsWithOptions:options];
+        
         [allFetchResultArray addObject:assetsFetchResult];
         [allFetchResultLabel addObject:NSLocalizedStringFromTableInBundle(@"picker.table.all-photos-label",  @"GMImagePicker", [NSBundle bundleForClass:GMImagePickerController.class], @"All photos")];
     }
@@ -183,6 +191,12 @@
     [_navigationController pushViewController:gridViewController animated:YES];
 }
 
+
+#pragma mark - Rotation
+
+- (BOOL) shouldAutorotate {
+    return NO;
+}
 
 #pragma mark - UIAlertViewDelegate
 
