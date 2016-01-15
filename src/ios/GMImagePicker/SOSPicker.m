@@ -15,6 +15,8 @@
 
 #define CDV_PHOTO_PREFIX @"cdv_photo_"
 
+extern NSUInteger kGMImageMaxSeletedNumber;
+
 typedef enum : NSUInteger {
     FILE_URI = 0,
     BASE64_STRING = 1
@@ -30,11 +32,13 @@ typedef enum : NSUInteger {
 - (void) getPictures:(CDVInvokedUrlCommand *)command {
     
     NSDictionary *options = [command.arguments objectAtIndex: 0];
-  
+    NSInteger maximumImagesCount = [[options objectForKey:@"maximumImagesCount"] integerValue];
+    
     self.outputType = [[options objectForKey:@"outputType"] integerValue];
     BOOL allow_video = [[options objectForKey:@"allow_video" ] boolValue ];
     NSString * title = [options objectForKey:@"title"];
     NSString * message = [options objectForKey:@"message"];
+    kGMImageMaxSeletedNumber = maximumImagesCount;
     if (message == (id)[NSNull null]) {
       message = nil;
     }
@@ -42,18 +46,21 @@ typedef enum : NSUInteger {
     self.height = [[options objectForKey:@"height"] integerValue];
     self.quality = [[options objectForKey:@"quality"] integerValue];
 
+
+    self.preSelectedAssets = [options objectForKey:@"assets"];
+    
     self.callbackId = command.callbackId;
     [self launchGMImagePicker:allow_video title:title message:message];
 }
 
 - (void)launchGMImagePicker:(bool)allow_video title:(NSString *)title message:(NSString *)message
 {
-    GMImagePickerController *picker = [[GMImagePickerController alloc] init:allow_video];
+    GMImagePickerController *picker = [[GMImagePickerController alloc] init:allow_video withAssets: self.preSelectedAssets];
     picker.delegate = self;
     picker.title = title;
     picker.customNavigationBarPrompt = message;
-    picker.colsInPortrait = 4;
-    picker.colsInLandscape = 6;
+    picker.colsInPortrait = 3;
+    picker.colsInLandscape = 5;
     picker.minimumInteritemSpacing = 2.0;
     picker.modalPresentationStyle = UIModalPresentationPopover;
     
@@ -109,22 +116,6 @@ typedef enum : NSUInteger {
     return newImage;
 }
 
-
-#pragma mark - UIImagePickerControllerDelegate
-
-
-- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
-{
-    [picker.presentingViewController dismissViewControllerAnimated:YES completion:nil];
-    NSLog(@"UIImagePickerController: User finished picking assets");
-}
-
-- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
-{
-    [picker.presentingViewController dismissViewControllerAnimated:YES completion:nil];
-    NSLog(@"UIImagePickerController: User pressed cancel button");
-}
-
 #pragma mark - GMImagePickerControllerDelegate
 
 - (void)assetsPickerController:(GMImagePickerController *)picker didFinishPickingAssets:(NSArray *)fetchArray
@@ -133,10 +124,9 @@ typedef enum : NSUInteger {
     
     NSLog(@"GMImagePicker: User finished picking assets. Number of selected items is: %lu", (unsigned long)fetchArray.count);
     
-    NSMutableArray * result_all = [[NSMutableArray alloc] init];
-    __block NSMutableArray *resultStrings = [[NSMutableArray alloc] init];
+    __block NSMutableArray *preSelectedAssets = [[NSMutableArray alloc] init];
+    __block NSMutableArray *fileStrings = [[NSMutableArray alloc] init];
     CGSize targetSize = CGSizeMake(self.width, self.height);
-    NSFileManager* fileMgr = [[NSFileManager alloc] init];
     NSString* docsPath = [NSTemporaryDirectory()stringByStandardizingPath];
     
     __block CDVPluginResult* result = nil;
@@ -146,10 +136,10 @@ typedef enum : NSUInteger {
     requestOptions = [[PHImageRequestOptions alloc] init];
     requestOptions.resizeMode   = PHImageRequestOptionsResizeModeExact;
     requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    requestOptions.networkAccessAllowed = YES;
     
     // this one is key
     requestOptions.synchronous = true;
-    NSMutableArray *images = [NSMutableArray arrayWithCapacity:[fetchArray count]];
     
     dispatch_group_t dispatchGroup = dispatch_group_create();
     
@@ -162,65 +152,88 @@ typedef enum : NSUInteger {
                                                        @"GMImagePicker",
                                                        @"Loading"
                                                        );
+    [progressHUD show: YES];
     dispatch_group_async(dispatchGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        NSString* filePath;
-        int i = 1;
-
+        __block NSString* filePath;
         NSError* err = nil;
         __block NSData *imgData;
-        for (PHAsset *asset in fetchArray) {
-            __block UIImage *image;
-            [manager requestImageDataForAsset:asset
+        // Index for tracking the current image
+        int index = 0;
+        // If image fetching fails then retry 3 times before giving up
+        int retry = 3;
+        do {
+            PHAsset *asset = [fetchArray objectAtIndex:index];
+            NSString *localIdentifier;
+            if (asset == nil) {
+                result = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:[err localizedDescription]];
+            } else {
+                __block UIImage *image;
+                if (retry > 0) {
+                    [manager requestImageDataForAsset:asset
                                   options:requestOptions
                                 resultHandler:^(NSData *imageData,
                                                     NSString *dataUTI,
                                                     UIImageOrientation orientation,
                                                     NSDictionary *info) {
                                 imgData = [imageData copy];
+                                NSString* fullFilePath = [info objectForKey:@"PHImageFileURLKey"];
+                                NSString* fileName = [[fullFilePath lastPathComponent] stringByDeletingPathExtension];
+                                filePath = [NSString stringWithFormat:@"%@/%@.%@", docsPath, fileName, @"jpg"];
                             }];
-            
+                    retry--;
+                    localIdentifier = [asset localIdentifier];
+                    NSLog(@"localIdentifier: %@", localIdentifier);
+                    requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
+                } else {
+                    retry = 3;
+                    index++;
+                    requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+                }
+                
+                if (imgData != nil) {
+                    retry = 3;
+                    requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
 
-            do {
-                filePath = [NSString stringWithFormat:@"%@/%@%03d.%@", docsPath, CDV_PHOTO_PREFIX, i++, @"jpg"];
-            } while ([fileMgr fileExistsAtPath:filePath]);
-            
-            @autoreleasepool {
-                NSData* data = nil;
-                if (self.width == 0 && self.height == 0) {
-                    // no scaling required
-                    if (self.quality == 100) {
-                        data = [imgData copy];
-                    } else {
-                        image = [UIImage imageWithData:imgData];
-                        // resample first
-                        data = UIImageJPEGRepresentation(image, self.quality/100.0f);
+                    @autoreleasepool {
+                        NSData* data = nil;
+                        if (self.width == 0 && self.height == 0) {
+                            // no scaling required
+                            if (self.quality == 100) {
+                                data = [imgData copy];
+                            } else {
+                                image = [UIImage imageWithData:imgData];
+                                // resample first
+                                data = UIImageJPEGRepresentation(image, self.quality/100.0f);
+                            }
+                        } else {
+                            image = [UIImage imageWithData:imgData];
+                            // scale
+                            UIImage* scaledImage = [self imageByScalingNotCroppingForSize:image toSize:targetSize];
+                            data = UIImageJPEGRepresentation(scaledImage, self.quality/100.0f);
+                        }
+                        if (![data writeToFile:filePath options:NSAtomicWrite error:&err]) {
+                            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:[err localizedDescription]];
+                            break;
+                        } else {
+                            [fileStrings addObject:[[NSURL fileURLWithPath:filePath] absoluteString]];
+                            [preSelectedAssets addObject: localIdentifier];
+                        }
+                        data = nil;
                     }
-                } else {
-                    image = [UIImage imageWithData:imgData];
-                    // scale
-                    UIImage* scaledImage = [self imageByScalingNotCroppingForSize:image toSize:targetSize];
-                    data = UIImageJPEGRepresentation(scaledImage, self.quality/100.0f);
+//                    index = [NSNumber numberWithInt:[index intValue] + 1];
+                    index++;
                 }
-                if (![data writeToFile:filePath options:NSAtomicWrite error:&err]) {
-                    result = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:[err localizedDescription]];
-                    break;
-                } else {
-                    [resultStrings addObject:[[NSURL fileURLWithPath:filePath] absoluteString]];
-                }
-                data = nil;
             }
-        }
+        } while (index < fetchArray.count);
         
         if (result == nil) {
-            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:resultStrings];
-            progressHUD.progress = 1.f;
-            [progressHUD hide:YES];
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: [NSDictionary dictionaryWithObjectsAndKeys: preSelectedAssets, @"preSelectedAssets", fileStrings, @"images", nil]];
         }
     });
     
     dispatch_group_notify(dispatchGroup, dispatch_get_main_queue(), ^{
         if (nil == result) {
-            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:resultStrings];
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: [NSDictionary dictionaryWithObjectsAndKeys: preSelectedAssets, @"preSelectedAssets", fileStrings, @"images", nil]];
         }
         
         progressHUD.progress = 1.f;
