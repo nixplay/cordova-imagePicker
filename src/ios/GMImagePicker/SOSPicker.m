@@ -8,14 +8,17 @@
 
 #import "SOSPicker.h"
 
-
+#import "DNImagePickerController.h"
 #import "GMImagePickerController.h"
 #import "GMFetchItem.h"
 #import "MBProgressHUD.h"
+#import <AssetsLibrary/AssetsLibrary.h>
 
 #define CDV_PHOTO_PREFIX @"cdv_photo_"
+#define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 
 extern NSUInteger kGMImageMaxSeletedNumber;
+extern NSUInteger kDNImageFlowMaxSeletedNumber;
 
 typedef enum : NSUInteger {
     FILE_URI = 0,
@@ -39,6 +42,7 @@ typedef enum : NSUInteger {
     NSString * title = [options objectForKey:@"title"];
     NSString * message = [options objectForKey:@"message"];
     kGMImageMaxSeletedNumber = maximumImagesCount;
+    kDNImageFlowMaxSeletedNumber = maximumImagesCount;
     if (message == (id)[NSNull null]) {
       message = nil;
     }
@@ -50,7 +54,12 @@ typedef enum : NSUInteger {
     self.preSelectedAssets = [options objectForKey:@"assets"];
     
     self.callbackId = command.callbackId;
-    [self launchGMImagePicker:allow_video title:title message:message];
+    if ([PHObject class]) {
+        [self launchGMImagePicker:allow_video title:title message:message];
+//        imagePicker.imagePickerDelegate = self;
+    } else {
+        [self launchDNImagePicker:allow_video title:title message:message];
+    }
 }
 
 - (void)launchGMImagePicker:(bool)allow_video title:(NSString *)title message:(NSString *)message
@@ -72,6 +81,32 @@ typedef enum : NSUInteger {
     [self.viewController showViewController:picker sender:nil];
 }
 
+
+- (void)launchDNImagePicker:(bool)allow_video title:(NSString *)title message:(NSString *)message
+{
+    DNImagePickerController *imagePicker = [[DNImagePickerController alloc] init:allow_video withAssets: self.preSelectedAssets];
+    imagePicker.filterType = DNImagePickerFilterTypePhotos;
+    imagePicker.imagePickerDelegate = self;
+//    self.callbackId = command.callbackId;
+    [self.viewController presentViewController:imagePicker animated:YES completion:nil];
+
+//    
+//    GMImagePickerController *picker = [[GMImagePickerController alloc] init:allow_video withAssets: self.preSelectedAssets];
+//    picker.delegate = self;
+//    picker.title = title;
+//    picker.customNavigationBarPrompt = message;
+//    picker.colsInPortrait = 3;
+//    picker.colsInLandscape = 5;
+//    picker.minimumInteritemSpacing = 2.0;
+//    picker.modalPresentationStyle = UIModalPresentationPopover;
+//    
+//    UIPopoverPresentationController *popPC = picker.popoverPresentationController;
+//    popPC.permittedArrowDirections = UIPopoverArrowDirectionAny;
+//    popPC.sourceView = picker.view;
+//    //popPC.sourceRect = nil;
+//    
+//    [self.viewController showViewController:picker sender:nil];
+}
 
 - (UIImage*)imageByScalingNotCroppingForSize:(UIImage*)anImage toSize:(CGSize)frameSize
 {
@@ -114,6 +149,156 @@ typedef enum : NSUInteger {
     // pop the context to get back to the default
     UIGraphicsEndImageContext();
     return newImage;
+}
+
+
+#pragma mark - UIImagePickerControllerDelegate
+
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    [picker.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+    NSLog(@"UIImagePickerController: User finished picking assets");
+}
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
+{
+    [picker.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+    NSLog(@"UIImagePickerController: User pressed cancel button");
+}
+
+#pragma mark - DNImagePickerControllerDelegate
+
+- (void)dnImagePickerController:(DNImagePickerController *)imagePickerController sendImages:(NSArray *)imageAssets isFullImage:(BOOL)fullImage
+{
+    //NSArray *assetsArray = [NSMutableArray arrayWithArray:imageAssets];
+    NSArray *info = [NSMutableArray arrayWithArray:imageAssets];
+    
+    __block CDVPluginResult* result = nil;
+    __block NSMutableArray *resultStrings = [[NSMutableArray alloc] init];
+    __block NSMutableArray *preSelectedAssets = [[NSMutableArray alloc] init];
+    
+    dispatch_group_t dispatchGroup = dispatch_group_create();
+    
+    MBProgressHUD *progressHUD = [MBProgressHUD showHUDAddedTo:self.viewController.presentedViewController.view.superview
+                                                      animated:YES];
+    progressHUD.mode = MBProgressHUDModeDeterminate;
+    progressHUD.dimBackground = YES;
+    progressHUD.labelText = NSLocalizedStringFromTable(
+                                                       @"loadingAlertTitle",
+                                                       @"DNImagePicker",
+                                                       @"Loading"
+                                                       );
+    
+    dispatch_group_async(dispatchGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        NSString* docsPath = [self getDraftsDirectory];
+        NSError* err = nil;
+        NSFileManager* fileMgr = [[NSFileManager alloc] init];
+        NSString* filePath;
+        ALAsset* asset = nil;
+        NSURL* assetUrl = nil;
+        BOOL useFullImage = fullImage;
+        CGSize targetSize = CGSizeMake(self.width, self.height);
+        
+        NSUInteger current = 0;
+        NSUInteger total = info.count;
+        
+        for (NSObject *dict in info) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                progressHUD.progress = (float)current / total;
+            });
+            
+            UIImageOrientation orientation = UIImageOrientationUp;
+            asset = [dict valueForKey:@"ALAsset"];
+            assetUrl = [dict valueForKey:@"url"];
+            // From ELCImagePickerController.m
+            
+            int i = 1;
+            do {
+                filePath = [NSString stringWithFormat:@"%@/%@%03d.%@", docsPath, CDV_PHOTO_PREFIX, i++, @"jpg"];
+            } while ([fileMgr fileExistsAtPath:filePath]);
+            
+            @autoreleasepool {
+                NSData* data = nil;
+                ALAssetRepresentation *assetRep = [asset defaultRepresentation];
+                CGImageRef imgRef = NULL;
+                
+                if (!useFullImage && (self.width == 0 || self.height == 0)) {
+                    useFullImage = YES;
+                }
+                
+                //defaultRepresentation returns image as it appears in photo picker, rotated and sized,
+                //so use UIImageOrientationUp when creating our image below.
+                if (useFullImage) {
+                    orientation = [[asset valueForProperty:ALAssetPropertyOrientation] intValue];
+                    Byte *buffer = (Byte*)malloc(assetRep.size);
+                    NSUInteger buffered = [assetRep getBytes:buffer fromOffset:0.0 length:assetRep.size error:nil];
+                    data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
+                } else {
+                    imgRef = [assetRep fullScreenImage];
+                    UIImage* image = [UIImage imageWithCGImage:imgRef scale:1.0f orientation:orientation];
+                    if ([self checkIfGif:asset]) {
+                        data = UIImageJPEGRepresentation(image, 0.9f);
+                    } else if (self.width == 0 && self.height == 0) {
+                        data = UIImageJPEGRepresentation(image, self.quality/100.0f);
+                    } else {
+                        UIImage* scaledImage = [self imageByScalingNotCroppingForSize:image toSize:targetSize];
+                        data = UIImageJPEGRepresentation(scaledImage, self.quality/100.0f);
+                    }
+                }
+                
+                if (![data writeToFile:filePath options:NSAtomicWrite error:&err]) {
+                    result = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:[err localizedDescription]];
+                    break;
+                } else {
+                    [resultStrings addObject:[[NSURL fileURLWithPath:filePath] absoluteString]];
+                    [preSelectedAssets addObject: [assetUrl absoluteString]];
+                }
+                
+                data = nil;
+            }
+            
+            current++;
+        }
+    });
+    
+    dispatch_group_notify(dispatchGroup, dispatch_get_main_queue(), ^{
+        if (nil == result) {
+//            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:resultStrings];
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: [NSDictionary dictionaryWithObjectsAndKeys: preSelectedAssets, @"preSelectedAssets", resultStrings, @"images", nil]];
+        }
+        
+        progressHUD.progress = 1.f;
+        [progressHUD hide:YES];
+        [self.viewController dismissViewControllerAnimated:YES completion:nil];
+        
+        
+        
+        [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
+        
+    });
+}
+
+- (void)dnImagePickerControllerDidCancel:(DNImagePickerController *)imagePicker
+{
+    CDVPluginResult* pluginResult = nil;
+    NSArray* emptyArray = [NSArray array];
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:emptyArray];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
+    
+    [imagePicker dismissViewControllerAnimated:YES completion:^{
+        
+    }];
+}
+
+- (BOOL)checkIfGif:(ALAsset *)asset{
+    NSArray *strArray = [[NSString stringWithFormat:@"%@", [[asset defaultRepresentation] url]] componentsSeparatedByString:@"="];
+    NSString *ext = [strArray objectAtIndex:([strArray count]-1)];
+    if ([[ext lowercaseString] isEqualToString:@"gif"]) {
+        return YES;
+    } else {
+        return NO;
+    }
 }
 
 #pragma mark - GMImagePickerControllerDelegate
@@ -193,7 +378,10 @@ typedef enum : NSUInteger {
                 if (imgData != nil) {
                     retry = 3;
                     requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-
+//                    do {
+//                        filePath = [NSString stringWithFormat:@"%@/%@%03d.%@", docsPath, CDV_PHOTO_PREFIX, i++, @"jpg"];
+//                    } while ([fileMgr fileExistsAtPath:filePath]);
+                    
                     @autoreleasepool {
                         NSData* data = nil;
                         if (self.width == 0 && self.height == 0) {
@@ -242,6 +430,43 @@ typedef enum : NSUInteger {
         [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
     });
     
+}
+
+
+- (NSString*)createDirectory:(NSString*)dir
+{
+    BOOL isDir = FALSE;
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    BOOL isDirExist = [fileManager fileExistsAtPath:dir isDirectory:&isDir];
+    
+    //If dir is not exist, create it
+    if(!(isDirExist && isDir))
+    {
+        BOOL bCreateDir =[[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
+        if (bCreateDir == NO)
+        {
+            NSLog(@"Failed to create Directory:%@", dir);
+            return nil;
+        }
+    } else{
+        //NSLog(@"Directory exist:%@", dir);
+    }
+    
+    return dir;
+}
+
+- (NSString *)applicationDocumentsDirectory
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
+    return basePath;
+}
+
+- (NSString *)getDraftsDirectory
+{
+    NSString *draftsDirectory = [[self applicationDocumentsDirectory] stringByAppendingPathComponent:@"drafts"];
+    [self createDirectory:draftsDirectory];
+    return draftsDirectory;
 }
 
 //Optional implementation:
