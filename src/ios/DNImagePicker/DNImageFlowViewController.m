@@ -371,7 +371,7 @@ static NSString* const dnAssetsViewCellReuseIdentifier = @"DNAssetsViewCell";
     [self browserPhotoAsstes:self.assetsArray pageIndex:indexPath.row];
 }
 
-#define kSizeThumbnailCollectionView  ([UIScreen mainScreen].bounds.size.width-10)/4
+#define kSizeThumbnailCollectionView  ([UIScreen mainScreen].bounds.size.width-10)/3
 #pragma mark - UICollectionViewDelegateFlowLayout
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
