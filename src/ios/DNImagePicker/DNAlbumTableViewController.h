@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface DNAlbumTableViewController : UITableViewController
-
+@property (nonatomic, strong) ALAssetsLibrary *assetsLibrary;
 @end

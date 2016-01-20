@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 @interface DNImageFlowViewController : UIViewController
+@property (nonatomic, strong) ALAssetsLibrary *assetsLibrary;
 - (instancetype)initWithGroupURL:(NSURL *)assetsGroupURL;
 - (void)addPreSelectedAssetsObject:(ALAsset *)asset;
-@property (nonatomic, strong) ALAssetsLibrary *assetsLibrary;
 @end

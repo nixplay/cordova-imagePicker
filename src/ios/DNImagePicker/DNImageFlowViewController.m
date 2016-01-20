@@ -168,10 +168,27 @@ static NSString* const dnAssetsViewCellReuseIdentifier = @"DNAssetsViewCell";
     return NO;
 }
 
+- (NSInteger)assetAtIndex:(ALAsset *)targetAsset
+{
+    NSInteger idx = 0;
+    for (ALAsset *asset in self.selectedAssetsArray) {
+        NSURL *assetURL = [asset valueForProperty:ALAssetPropertyAssetURL];
+        NSURL *targetAssetURL = [targetAsset valueForProperty:ALAssetPropertyAssetURL];
+        if ([assetURL isEqualToOther:targetAssetURL]) {
+            return idx;
+        }
+        idx++;
+    }
+    return -1;
+}
+
+
 - (void)removeAssetsObject:(ALAsset *)asset
 {
-    if ([self assetIsSelected:asset]) {
-        [self.selectedAssetsArray removeObject:asset];
+    NSInteger idx = [self assetAtIndex:asset];
+    if (idx > -1) {
+        [self.selectedAssetsArray removeObjectAtIndex: idx];
+        // [self.selectedAssetsArray removeObject:asset];
     }
 }
 
