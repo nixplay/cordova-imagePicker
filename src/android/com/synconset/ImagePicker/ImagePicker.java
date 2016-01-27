@@ -25,6 +25,7 @@ public class ImagePicker extends CordovaPlugin {
 
 	private CallbackContext callbackContext;
 	private JSONObject params;
+	private int maxImages;
 
 	public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
 		if(callbackContext == null)
@@ -74,6 +75,7 @@ public class ImagePicker extends CordovaPlugin {
 					}
 				}
 			}
+			maxImages = max;
 //			preSelectedAssets.add("file:///storage/emulated/0/Pictures/IMG_20160108_112930.jpg".replaceAll("file://", ""));
 //			preSelectedAssets.add("file:///storage/emulated/0/Pictures/photo-1448975750337-b0290d621d6d.jpeg".replaceAll("file://", ""));
 			intent.putExtra("MAX_IMAGES", max);
@@ -105,6 +107,7 @@ public class ImagePicker extends CordovaPlugin {
 			try {
 				res.put("images", jsFileNames);
 				res.put("preSelectedAssets", jsPreSelectedAssets);
+				res.put("max", maxImages);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
