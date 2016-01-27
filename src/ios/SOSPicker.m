@@ -349,7 +349,6 @@ typedef enum : NSUInteger {
         // Index for tracking the current image
         int index = 0;
         // If image fetching fails then retry 3 times before giving up
-        int retry = 3;
         do {
             PHAsset *asset = [fetchArray objectAtIndex:index];
             NSString *localIdentifier;
@@ -357,35 +356,26 @@ typedef enum : NSUInteger {
                 result = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:[err localizedDescription]];
             } else {
                 __block UIImage *image;
-                if (retry > 0) {
-                    [manager requestImageDataForAsset:asset
-                                  options:requestOptions
-                                resultHandler:^(NSData *imageData,
-                                                    NSString *dataUTI,
-                                                    UIImageOrientation orientation,
-                                                    NSDictionary *info) {
-                                imgData = [imageData copy];
-                                NSString* fullFilePath = [info objectForKey:@"PHImageFileURLKey"];
-                                NSString* fileName = [[fullFilePath lastPathComponent] stringByDeletingPathExtension];
-                                filePath = [NSString stringWithFormat:@"%@/%@.%@", docsPath, fileName, @"jpg"];
-                            }];
-                    retry--;
-                    localIdentifier = [asset localIdentifier];
-                    NSLog(@"localIdentifier: %@", localIdentifier);
-                    requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
-                } else {
-                    retry = 3;
-                    index++;
-                    requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-                }
+                localIdentifier = [asset localIdentifier];
+                NSLog(@"localIdentifier: %@", localIdentifier);
+                [manager requestImageDataForAsset:asset
+                              options:requestOptions
+                            resultHandler:^(NSData *imageData,
+                                                NSString *dataUTI,
+                                                UIImageOrientation orientation,
+                                                NSDictionary *info) {
+                            imgData = [imageData copy];
+                            NSString* fullFilePath = [info objectForKey:@"PHImageFileURLKey"];
+                            NSLog(@"fullFilePath: %@: " , fullFilePath);
+                            NSString* fileName = [[localIdentifier componentsSeparatedByString:@"/"] objectAtIndex:0];
+                            filePath = [NSString stringWithFormat:@"%@/%@.%@", docsPath, fileName, @"jpg"];
+                        }];
+                
+                
+                requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
                 
                 if (imgData != nil) {
-                    retry = 3;
                     requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-//                    do {
-//                        filePath = [NSString stringWithFormat:@"%@/%@%03d.%@", docsPath, CDV_PHOTO_PREFIX, i++, @"jpg"];
-//                    } while ([fileMgr fileExistsAtPath:filePath]);
-                    
                     @autoreleasepool {
                         NSData* data = nil;
                         if (self.width == 0 && self.height == 0) {
@@ -412,7 +402,6 @@ typedef enum : NSUInteger {
                         }
                         data = nil;
                     }
-//                    index = [NSNumber numberWithInt:[index intValue] + 1];
                     index++;
                 }
             }
