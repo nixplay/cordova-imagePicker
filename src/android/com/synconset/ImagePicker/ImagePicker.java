@@ -9,6 +9,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -32,6 +34,7 @@ public class ImagePicker extends CordovaPlugin {
 			return false;
 
 		this.callbackContext = callbackContext;
+
 		this.params = args.getJSONObject(0);
 		ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
 		ActivityManager activityManager = (ActivityManager) this.cordova.getActivity().getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
@@ -43,6 +46,7 @@ public class ImagePicker extends CordovaPlugin {
 		System.out.println("[NIX] totalMegs: " + totalMegs);
 		// System.out.println("[NIX] availableMegs: " + availableMegs);
 		// System.out.println("[NIX] threshold: " + threshold);
+		cleanupTempStorage();
 
 		if (action.equals("getPictures")) {
 			Intent intent = new Intent(cordova.getActivity(), PhotoSelectorActivity.class);
@@ -83,7 +87,7 @@ public class ImagePicker extends CordovaPlugin {
 			intent.putExtra("HEIGHT", desiredHeight);
 			intent.putExtra("QUALITY", quality);
 			intent.putExtra("PRE_SELECTED_ASSETS", preSelectedAssets);
-		    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+			intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 			/*
 			if (this.cordova != null) {
 				this.cordova.startActivityForResult((CordovaPlugin) this, intent, 0);
@@ -95,6 +99,16 @@ public class ImagePicker extends CordovaPlugin {
 		}
 		return true;
 	}
+
+
+	private void cleanupTempStorage() {
+		File filePath = new File(System.getProperty("java.io.tmpdir"));
+		for(final File fileEntry: filePath.listFiles()) {
+			System.out.println("File Entry: " + fileEntry);
+			fileEntry.delete();
+		}
+	}
+
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == Activity.RESULT_OK && data != null) {
