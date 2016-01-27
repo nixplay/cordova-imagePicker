@@ -7,7 +7,6 @@
 //
 
 #import "SOSPicker.h"
-
 #import "DNImagePickerController.h"
 #import "GMImagePickerController.h"
 #import "GMFetchItem.h"
@@ -33,7 +32,7 @@ typedef enum : NSUInteger {
 @synthesize callbackId;
 
 - (void) getPictures:(CDVInvokedUrlCommand *)command {
-    
+    [self cleanupTempFiles];
     NSDictionary *options = [command.arguments objectAtIndex: 0];
     NSInteger maximumImagesCount = [[options objectForKey:@"maximumImagesCount"] integerValue];
     
@@ -163,6 +162,11 @@ typedef enum : NSUInteger {
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
+    CDVPluginResult* pluginResult = nil;
+    NSArray* emptyArray = [NSArray array];
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:emptyArray];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
+    
     [picker.presentingViewController dismissViewControllerAnimated:YES completion:nil];
     NSLog(@"UIImagePickerController: User pressed cancel button");
 }
@@ -180,7 +184,7 @@ typedef enum : NSUInteger {
     
     dispatch_group_t dispatchGroup = dispatch_group_create();
     
-    MBProgressHUD *progressHUD = [MBProgressHUD showHUDAddedTo:self.viewController.presentedViewController.view.superview
+    MBProgressHUD *progressHUD = [MBProgressHUD showHUDAddedTo:self.viewController.view
                                                       animated:YES];
     progressHUD.mode = MBProgressHUDModeDeterminate;
     progressHUD.dimBackground = YES;
@@ -191,7 +195,7 @@ typedef enum : NSUInteger {
                                                        );
     
     dispatch_group_async(dispatchGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        NSString* docsPath = [self getDraftsDirectory];
+        NSString* docsPath = [NSTemporaryDirectory()stringByStandardizingPath];
         NSError* err = nil;
         NSFileManager* fileMgr = [[NSFileManager alloc] init];
         NSString* filePath;
@@ -328,14 +332,14 @@ typedef enum : NSUInteger {
     
     dispatch_group_t dispatchGroup = dispatch_group_create();
     
-    MBProgressHUD *progressHUD = [MBProgressHUD showHUDAddedTo:self.viewController.presentedViewController.view.superview
+    MBProgressHUD *progressHUD = [MBProgressHUD showHUDAddedTo:self.viewController.view
                                                       animated:YES];
-    progressHUD.mode = MBProgressHUDModeDeterminate;
+    progressHUD.mode = MBProgressHUDModeIndeterminate;
     progressHUD.dimBackground = YES;
     progressHUD.labelText = NSLocalizedStringFromTable(
-                                                       @"picker.selection.processing",
+                                                       @"picker.selection.downloading",
                                                        @"GMImagePicker",
-                                                       @"Loading"
+                                                       @"iCloudLoading"
                                                        );
     [progressHUD show: YES];
     dispatch_group_async(dispatchGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
@@ -467,6 +471,45 @@ typedef enum : NSUInteger {
     NSString *draftsDirectory = [[self applicationDocumentsDirectory] stringByAppendingPathComponent:@"drafts"];
     [self createDirectory:draftsDirectory];
     return draftsDirectory;
+}
+
+
+- (void)cleanupTempFiles {
+    NSString* docsPath = [NSTemporaryDirectory()stringByStandardizingPath];
+    NSFileManager *localFileManager=[[NSFileManager alloc] init];
+    NSDirectoryEnumerator *dirEnum = [localFileManager enumeratorAtPath:docsPath];
+    
+    NSString *file;
+    
+    while ((file = [dirEnum nextObject])) {
+        NSLog(@"FILE NAME: %@", file);
+        NSString *filePath = [[docsPath stringByAppendingString:@"/"] stringByAppendingString:file];
+        NSLog(@"Deleting file at %@", filePath);
+        NSError* err = nil;
+        [localFileManager removeItemAtPath:filePath
+                                     error:&err];
+        if(err) {
+            NSLog(@"Delete returned error: %@", [err localizedDescription]);
+        }
+    }
+    
+    NSString* docsPath2 = [self getDraftsDirectory];
+    NSFileManager *localFileManager2=[[NSFileManager alloc] init];
+    NSDirectoryEnumerator *dirEnum2 = [localFileManager2 enumeratorAtPath:docsPath2];
+    
+    while ((file = [dirEnum2 nextObject])) {
+        if([file.pathExtension isEqual: @"jpg"] || [file.pathExtension isEqual: @"jpeg" ] || [file.pathExtension isEqual: @"png"]) {
+            NSLog(@"FILE NAME: %@", file);
+            NSString *filePath = [[docsPath2 stringByAppendingString:@"/"] stringByAppendingString:file];
+            NSLog(@"Deleting file at %@", filePath);
+            NSError* err = nil;
+            [localFileManager removeItemAtPath:filePath
+                                         error:&err];
+            if(err) {
+                NSLog(@"Delete returned error: %@", [err localizedDescription]);
+            }
+        }
+    }
 }
 
 //Optional implementation:
