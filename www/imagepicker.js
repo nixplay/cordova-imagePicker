@@ -24,6 +24,17 @@ ImagePicker.prototype.validateOutputType = function(options){
 	}
 };
 
+
+/**
+ * Clears temporary files
+ * @param success - success callback, will receive the data sent from the native plugin
+ * @param fail - error callback, will receive an error string describing what went wrong
+ */
+ImagePicker.prototype.cleanupTempFiles = function(success, fail) {
+    return cordova.exec(success, fail, "ImagePicker", "cleanupTempFiles", []);
+};
+
+
 /*
 *	success - success callback
 *	fail - error callback

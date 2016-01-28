@@ -46,7 +46,7 @@ public class ImagePicker extends CordovaPlugin {
 		System.out.println("[NIX] totalMegs: " + totalMegs);
 		// System.out.println("[NIX] availableMegs: " + availableMegs);
 		// System.out.println("[NIX] threshold: " + threshold);
-		cleanupTempStorage();
+
 
 		if (action.equals("getPictures")) {
 			Intent intent = new Intent(cordova.getActivity(), PhotoSelectorActivity.class);
@@ -96,17 +96,20 @@ public class ImagePicker extends CordovaPlugin {
 			if (this.cordova != null) {
 				this.cordova.startActivityForResult((CordovaPlugin) this, intent, 0);
 			}
+		} else if (action.equals("cleanupTempFiles")) {
+			cleanupTempFiles();
 		}
 		return true;
 	}
 
 
-	private void cleanupTempStorage() {
+	private void cleanupTempFiles() {
 		File filePath = new File(System.getProperty("java.io.tmpdir"));
 		for(final File fileEntry: filePath.listFiles()) {
 			System.out.println("File Entry: " + fileEntry);
 			fileEntry.delete();
 		}
+		this.callbackContext.success(new JSONObject());
 	}
 
 

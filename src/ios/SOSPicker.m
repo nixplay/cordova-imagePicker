@@ -32,7 +32,6 @@ typedef enum : NSUInteger {
 @synthesize callbackId;
 
 - (void) getPictures:(CDVInvokedUrlCommand *)command {
-    [self cleanupTempFiles];
     NSDictionary *options = [command.arguments objectAtIndex: 0];
     NSInteger maximumImagesCount = [[options objectForKey:@"maximumImagesCount"] integerValue];
     
@@ -59,6 +58,10 @@ typedef enum : NSUInteger {
     } else {
         [self launchDNImagePicker:allow_video title:title message:message];
     }
+}
+
+- (void) cleanupTempFiles:(CDVInvokedUrlCommand *)command {
+    [self cleanupTempFiles];
 }
 
 - (void)launchGMImagePicker:(bool)allow_video title:(NSString *)title message:(NSString *)message
@@ -471,14 +474,15 @@ typedef enum : NSUInteger {
     NSString *file;
     
     while ((file = [dirEnum nextObject])) {
-        NSLog(@"FILE NAME: %@", file);
-        NSString *filePath = [[docsPath stringByAppendingString:@"/"] stringByAppendingString:file];
-        NSLog(@"Deleting file at %@", filePath);
-        NSError* err = nil;
-        [localFileManager removeItemAtPath:filePath
-                                     error:&err];
-        if(err) {
-            NSLog(@"Delete returned error: %@", [err localizedDescription]);
+        if([file.pathExtension isEqual: @"jpg"] || [file.pathExtension isEqual: @"jpeg" ] || [file.pathExtension isEqual: @"png"]) {
+            NSString *filePath = [[docsPath stringByAppendingString:@"/"] stringByAppendingString:file];
+            NSLog(@"Deleting file at %@", filePath);
+            NSError* err = nil;
+            [localFileManager removeItemAtPath:filePath
+                                         error:&err];
+            if(err) {
+                NSLog(@"Delete returned error: %@", [err localizedDescription]);
+            }
         }
     }
     
@@ -488,7 +492,6 @@ typedef enum : NSUInteger {
     
     while ((file = [dirEnum2 nextObject])) {
         if([file.pathExtension isEqual: @"jpg"] || [file.pathExtension isEqual: @"jpeg" ] || [file.pathExtension isEqual: @"png"]) {
-            NSLog(@"FILE NAME: %@", file);
             NSString *filePath = [[docsPath2 stringByAppendingString:@"/"] stringByAppendingString:file];
             NSLog(@"Deleting file at %@", filePath);
             NSError* err = nil;
@@ -499,6 +502,9 @@ typedef enum : NSUInteger {
             }
         }
     }
+    
+    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:true];
+    [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
 }
 
 //Optional implementation:
