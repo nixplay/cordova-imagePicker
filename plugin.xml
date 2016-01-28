@@ -265,7 +265,7 @@
 
 		<framework src="Accelerate.framework" />
 		<framework src="Security.framework" />
-		<framework src="Photos.framework" />
+		<framework src="Photos.framework" weak="true"/>
 		<framework src="SystemConfiguration.framework" />
 		<framework src="QuartzCore.framework" />
 
