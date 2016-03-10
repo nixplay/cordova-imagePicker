@@ -53,11 +53,40 @@ typedef enum : NSUInteger {
     
     self.callbackId = command.callbackId;
     if ([PHObject class]) {
-        [self launchGMImagePicker:allow_video title:title message:message];
-//        imagePicker.imagePickerDelegate = self;
+        PHAuthorizationStatus authStatus = [PHPhotoLibrary authorizationStatus];
+        // Check if the user has access to photos
+        if (authStatus == PHAuthorizationStatusDenied || authStatus == PHAuthorizationStatusRestricted) {
+            [self showAuthorizationDialog];
+        } else {
+            [self launchGMImagePicker:allow_video title:title message:message];
+        }
+        
     } else {
-        [self launchDNImagePicker:allow_video title:title message:message];
+        
+        if([ALAssetsLibrary authorizationStatus] != PHAuthorizationStatusAuthorized) {
+            NSLog(@"You need access to the gallery");
+        } else {
+            [self launchDNImagePicker:allow_video title:title message:message];
+        }
+        
     }
+}
+
+- (void)showAuthorizationDialog {
+    // If iOS 8+, offer a link to the Settings app
+    NSString* settingsButton = (&UIApplicationOpenSettingsURLString != NULL)
+    ? NSLocalizedString(@"Settings", nil)
+    : nil;
+    
+    // Denied; show an alert
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[[UIAlertView alloc] initWithTitle:[[NSBundle mainBundle]
+                                             objectForInfoDictionaryKey:@"CFBundleDisplayName"]
+                                    message:NSLocalizedString(@"Access to the camera roll has been prohibited; please enable it in the Settings app to continue.", nil)
+                                   delegate:self
+                          cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                          otherButtonTitles:settingsButton, nil] show];
+    });
 }
 
 - (void) cleanupTempFiles:(CDVInvokedUrlCommand *)command {
@@ -515,6 +544,23 @@ typedef enum : NSUInteger {
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:emptyArray];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
     NSLog(@"GMImagePicker: User pressed cancel button");
+}
+
+// Delegate for camera roll permission UIAlertView
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    // If Settings button (on iOS 8), open the settings app
+    if (buttonIndex == 1) {
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+    }
+    
+    // Dismiss the view
+    [self.viewController dismissViewControllerAnimated:YES completion:nil];
+    
+    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"has no access to camera"];   // error callback expects string ATM
+    
+    [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
+    
 }
 
 
