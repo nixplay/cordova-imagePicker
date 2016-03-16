@@ -15,6 +15,7 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
 import android.app.ActivityManager;
@@ -28,6 +29,10 @@ public class ImagePicker extends CordovaPlugin {
 	private CallbackContext callbackContext;
 	private JSONObject params;
 	private int maxImages;
+	private int desiredWidth = 0;
+	private int desiredHeight = 0;
+	private int quality = 100;
+	private ArrayList<String>  preSelectedAssets = new ArrayList<String>();
 
 	public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
 		if(callbackContext == null)
@@ -40,59 +45,45 @@ public class ImagePicker extends CordovaPlugin {
 		ActivityManager activityManager = (ActivityManager) this.cordova.getActivity().getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
 		activityManager.getMemoryInfo(mi);
 		long totalMegs = mi.totalMem / 1048576L;
-		// long availableMegs = mi.availMem / 1048576L;
-		// long threshold = mi.threshold / 1048576L;
 
 		System.out.println("[NIX] totalMegs: " + totalMegs);
-		// System.out.println("[NIX] availableMegs: " + availableMegs);
-		// System.out.println("[NIX] threshold: " + threshold);
-
 
 		if (action.equals("getPictures")) {
 			Intent intent = new Intent(cordova.getActivity(), PhotoSelectorActivity.class);
-			//Intent intent = new Intent(cordova.getActivity(), MultiImageChooserActivity.class);
-			int max = 5;
-			int desiredWidth = 0;
-			int desiredHeight = 0;
-			int quality = 100;
-			ArrayList<String>  preSelectedAssets = new ArrayList<String>();
+			this.maxImages = 5;
+			this.desiredWidth = 0;
+			this.desiredHeight = 0;
+			this.quality = 100;
+			this.preSelectedAssets.clear();
 			if (this.params.has("maximumImagesCount")) {
 				if(totalMegs > 1000) {
-					max = this.params.getInt("maximumImagesCount");
+					this.maxImages = this.params.getInt("maximumImagesCount");
 				}
 			}
-			System.out.println("[NIX] Maximum images: " + max);
+			System.out.println("[NIX] Maximum images: " + this.maxImages);
 			if (this.params.has("width")) {
-				desiredWidth = this.params.getInt("width");
+				this.desiredWidth = this.params.getInt("width");
 			}
 			if (this.params.has("height")) {
-				desiredHeight = this.params.getInt("height");
+				this.desiredHeight = this.params.getInt("height");
 			}
 			if (this.params.has("quality")) {
-				quality = this.params.getInt("quality");
+				this.quality = this.params.getInt("quality");
 			}
 			if (this.params.has("assets")) {
 				JSONArray assets = this.params.getJSONArray("assets");
 				if (assets != null) {
 					for(int i=0; i < assets.length(); i++) {
-						preSelectedAssets.add(assets.get(i).toString());
+						this.preSelectedAssets.add(assets.get(i).toString());
 					}
 				}
 			}
-			maxImages = max;
-//			preSelectedAssets.add("file:///storage/emulated/0/Pictures/IMG_20160108_112930.jpg".replaceAll("file://", ""));
-//			preSelectedAssets.add("file:///storage/emulated/0/Pictures/photo-1448975750337-b0290d621d6d.jpeg".replaceAll("file://", ""));
-			intent.putExtra("MAX_IMAGES", max);
-			intent.putExtra("WIDTH", desiredWidth);
-			intent.putExtra("HEIGHT", desiredHeight);
-			intent.putExtra("QUALITY", quality);
-			intent.putExtra("PRE_SELECTED_ASSETS", preSelectedAssets);
+			intent.putExtra("MAX_IMAGES", this.maxImages);
+			intent.putExtra("WIDTH", this.desiredWidth);
+			intent.putExtra("HEIGHT", this.desiredHeight);
+			intent.putExtra("QUALITY", this.quality);
+			intent.putExtra("PRE_SELECTED_ASSETS", this.preSelectedAssets);
 			intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-			/*
-			if (this.cordova != null) {
-				this.cordova.startActivityForResult((CordovaPlugin) this, intent, 0);
-			}
-			*/
 			if (this.cordova != null) {
 				this.cordova.startActivityForResult((CordovaPlugin) this, intent, 0);
 			}
@@ -112,25 +103,47 @@ public class ImagePicker extends CordovaPlugin {
 		this.callbackContext.success(new JSONObject());
 	}
 
+	public Bundle onSaveInstanceState() {
+		Bundle state = new Bundle();
+
+		state.putInt("maxImages", this.maxImages);
+		state.putInt("desiredWidth", this.desiredWidth);
+		state.putInt("desiredHeight", this.desiredHeight);
+		state.putInt("quality", this.quality);
+		state.putStringArrayList("preSelectedAssets", this.preSelectedAssets);
+
+		return state;
+	}
+
+	public void onRestoreStateForActivityResult(Bundle state, CallbackContext callbackContext) {
+		this.maxImages = state.getInt("maxImages");
+		this.desiredWidth = state.getInt("desiredWidth");
+		this.desiredHeight = state.getInt("desiredHeight");
+		this.quality = state.getInt("quality");
+		this.preSelectedAssets = state.getStringArrayList("preSelectedAssets");
+
+		this.callbackContext = callbackContext;
+	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == Activity.RESULT_OK && data != null) {
 			ArrayList<String> fileNames = data.getStringArrayListExtra("MULTIPLEFILENAMES");
-			ArrayList<String> preSelectedAssets = data.getStringArrayListExtra("SELECTED_ASSETS");
+			this.preSelectedAssets = data.getStringArrayListExtra("SELECTED_ASSETS");
+			ArrayList<String> invalidImages = data.getStringArrayListExtra("INVALID_IMAGES");
 			JSONArray jsFileNames = new JSONArray(fileNames);
-			JSONArray jsPreSelectedAssets = new JSONArray(preSelectedAssets);
+			JSONArray jsPreSelectedAssets = new JSONArray(this.preSelectedAssets);
 			JSONObject res = new JSONObject();
 
 			try {
 				res.put("images", jsFileNames);
 				res.put("preSelectedAssets", jsPreSelectedAssets);
-				res.put("max", maxImages);
+				res.put("maxImages", maxImages);
+				if(invalidImages != null && invalidImages.size() >0)
+					res.put("invalidImages",  new JSONArray(invalidImages));
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
 
-			if(res == null)
-				this.callbackContext.error("No images selected");
 			this.callbackContext.success(res);
 		} else if (resultCode == Activity.RESULT_CANCELED && data != null) {
 			String error = data.getStringExtra("ERRORMESSAGE");

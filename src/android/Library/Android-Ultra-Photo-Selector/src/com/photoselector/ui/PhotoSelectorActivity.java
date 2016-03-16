@@ -466,6 +466,7 @@ public class PhotoSelectorActivity extends Activity implements
 			String filename=null;
 			ArrayList<String> al = new ArrayList<String>();
 			ArrayList<String> selectedAssets  = new ArrayList<String>();
+			ArrayList<String> invalidImages  = new ArrayList<String>();
 			try {
 				for(int i=0; i<fileNames.size();i++)
 				{
@@ -529,13 +530,15 @@ public class PhotoSelectorActivity extends Activity implements
 						selectedAssets.add(filename);
 						al.add(Uri.fromFile(file).toString());
 					} else {
-						al.add(filename);
-						selectedAssets.add(filename);
+						invalidImages.add(filename);
 					}
 				}
 				Map<String, ArrayList<String>> result = new HashMap<String, ArrayList<String>>();
 				result.put("images", al);
 				result.put("preSelectedAssets", selectedAssets);
+				if(invalidImages.size() > 0) {
+					result.put("invalidImages", invalidImages);
+				}
 				return result;
 			} catch(IOException e) {
 				try {
@@ -566,6 +569,7 @@ public class PhotoSelectorActivity extends Activity implements
 				Bundle res = new Bundle();
 				res.putStringArrayList("MULTIPLEFILENAMES", result.get("images"));
 				res.putStringArrayList("SELECTED_ASSETS", result.get("preSelectedAssets"));
+				res.putStringArrayList("INVALID_IMAGES", result.get("invalidImages"));
 				if (selected != null) {
 					res.putInt("TOTALFILES", selected.size());
 				}
