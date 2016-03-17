@@ -53,40 +53,11 @@ typedef enum : NSUInteger {
     
     self.callbackId = command.callbackId;
     if ([PHObject class]) {
-        PHAuthorizationStatus authStatus = [PHPhotoLibrary authorizationStatus];
-        // Check if the user has access to photos
-        if (authStatus == PHAuthorizationStatusDenied || authStatus == PHAuthorizationStatusRestricted) {
-            [self showAuthorizationDialog];
-        } else {
-            [self launchGMImagePicker:allow_video title:title message:message];
-        }
-        
+        [self launchGMImagePicker:allow_video title:title message:message];
+//        imagePicker.imagePickerDelegate = self;
     } else {
-        
-        if([ALAssetsLibrary authorizationStatus] != PHAuthorizationStatusAuthorized) {
-            NSLog(@"You need access to the gallery");
-        } else {
-            [self launchDNImagePicker:allow_video title:title message:message];
-        }
-        
+        [self launchDNImagePicker:allow_video title:title message:message];
     }
-}
-
-- (void)showAuthorizationDialog {
-    // If iOS 8+, offer a link to the Settings app
-    NSString* settingsButton = (&UIApplicationOpenSettingsURLString != NULL)
-    ? NSLocalizedString(@"Settings", nil)
-    : nil;
-    
-    // Denied; show an alert
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [[[UIAlertView alloc] initWithTitle:[[NSBundle mainBundle]
-                                             objectForInfoDictionaryKey:@"CFBundleDisplayName"]
-                                    message:NSLocalizedString(@"Access to the camera roll has been prohibited; please enable it in the Settings app to continue.", nil)
-                                   delegate:self
-                          cancelButtonTitle:NSLocalizedString(@"OK", nil)
-                          otherButtonTitles:settingsButton, nil] show];
-    });
 }
 
 - (void) cleanupTempFiles:(CDVInvokedUrlCommand *)command {
@@ -213,7 +184,7 @@ typedef enum : NSUInteger {
     __block CDVPluginResult* result = nil;
     __block NSMutableArray *resultStrings = [[NSMutableArray alloc] init];
     __block NSMutableArray *preSelectedAssets = [[NSMutableArray alloc] init];
-    
+    __block NSMutableArray *invalidImages = [[NSMutableArray alloc] init];
     dispatch_group_t dispatchGroup = dispatch_group_create();
     
     MBProgressHUD *progressHUD = [MBProgressHUD showHUDAddedTo:self.viewController.view
@@ -247,53 +218,55 @@ typedef enum : NSUInteger {
             UIImageOrientation orientation = UIImageOrientationUp;
             asset = [dict valueForKey:@"ALAsset"];
             assetUrl = [dict valueForKey:@"url"];
-            // From ELCImagePickerController.m
-            
-            int i = 1;
-            do {
-                filePath = [NSString stringWithFormat:@"%@/%@%03d.%@", docsPath, CDV_PHOTO_PREFIX, i++, @"jpg"];
-            } while ([fileMgr fileExistsAtPath:filePath]);
-            
-            @autoreleasepool {
-                NSData* data = nil;
-                ALAssetRepresentation *assetRep = [asset defaultRepresentation];
-                CGImageRef imgRef = NULL;
+            if([[[asset defaultRepresentation] UTI] isEqualToString:@"public.png"] || [[[asset defaultRepresentation] UTI] isEqualToString:@"public.jpeg"] || [[[asset defaultRepresentation] UTI] isEqualToString:@"public.jpeg-2000"]) {
                 
-                if (!useFullImage && (self.width == 0 || self.height == 0)) {
-                    useFullImage = YES;
-                }
+                int i = 1;
+                do {
+                    filePath = [NSString stringWithFormat:@"%@/%@%03d.%@", docsPath, CDV_PHOTO_PREFIX, i++, @"jpg"];
+                } while ([fileMgr fileExistsAtPath:filePath]);
                 
-                //defaultRepresentation returns image as it appears in photo picker, rotated and sized,
-                //so use UIImageOrientationUp when creating our image below.
-                if (useFullImage) {
-                    orientation = [[asset valueForProperty:ALAssetPropertyOrientation] intValue];
-                    Byte *buffer = (Byte*)malloc(assetRep.size);
-                    NSUInteger buffered = [assetRep getBytes:buffer fromOffset:0.0 length:assetRep.size error:nil];
-                    data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
-                } else {
-                    imgRef = [assetRep fullScreenImage];
-                    UIImage* image = [UIImage imageWithCGImage:imgRef scale:1.0f orientation:orientation];
-                    if ([self checkIfGif:asset]) {
-                        data = UIImageJPEGRepresentation(image, 0.9f);
-                    } else if (self.width == 0 && self.height == 0) {
-                        data = UIImageJPEGRepresentation(image, self.quality/100.0f);
-                    } else {
-                        UIImage* scaledImage = [self imageByScalingNotCroppingForSize:image toSize:targetSize];
-                        data = UIImageJPEGRepresentation(scaledImage, self.quality/100.0f);
+                @autoreleasepool {
+                    NSData* data = nil;
+                    ALAssetRepresentation *assetRep = [asset defaultRepresentation];
+                    CGImageRef imgRef = NULL;
+                    
+                    if (!useFullImage && (self.width == 0 || self.height == 0)) {
+                        useFullImage = YES;
                     }
+                    
+                    //defaultRepresentation returns image as it appears in photo picker, rotated and sized,
+                    //so use UIImageOrientationUp when creating our image below.
+                    if (useFullImage) {
+                        orientation = [[asset valueForProperty:ALAssetPropertyOrientation] intValue];
+                        Byte *buffer = (Byte*)malloc(assetRep.size);
+                        NSUInteger buffered = [assetRep getBytes:buffer fromOffset:0.0 length:assetRep.size error:nil];
+                        data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
+                    } else {
+                        imgRef = [assetRep fullScreenImage];
+                        UIImage* image = [UIImage imageWithCGImage:imgRef scale:1.0f orientation:orientation];
+                        if ([self checkIfGif:asset]) {
+                            data = UIImageJPEGRepresentation(image, 0.9f);
+                        } else if (self.width == 0 && self.height == 0) {
+                            data = UIImageJPEGRepresentation(image, self.quality/100.0f);
+                        } else {
+                            UIImage* scaledImage = [self imageByScalingNotCroppingForSize:image toSize:targetSize];
+                            data = UIImageJPEGRepresentation(scaledImage, self.quality/100.0f);
+                        }
+                    }
+                    
+                    if (![data writeToFile:filePath options:NSAtomicWrite error:&err]) {
+                        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:[err localizedDescription]];
+                        break;
+                    } else {
+                        [resultStrings addObject:[[NSURL fileURLWithPath:filePath] absoluteString]];
+                        [preSelectedAssets addObject: [assetUrl absoluteString]];
+                    }
+                    
+                    data = nil;
                 }
-                
-                if (![data writeToFile:filePath options:NSAtomicWrite error:&err]) {
-                    result = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:[err localizedDescription]];
-                    break;
-                } else {
-                    [resultStrings addObject:[[NSURL fileURLWithPath:filePath] absoluteString]];
-                    [preSelectedAssets addObject: [assetUrl absoluteString]];
-                }
-                
-                data = nil;
+            } else {
+                [invalidImages addObject:[assetUrl absoluteString]];
             }
-            
             current++;
         }
     });
@@ -301,7 +274,7 @@ typedef enum : NSUInteger {
     dispatch_group_notify(dispatchGroup, dispatch_get_main_queue(), ^{
         if (nil == result) {
 //            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:resultStrings];
-            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: [NSDictionary dictionaryWithObjectsAndKeys: preSelectedAssets, @"preSelectedAssets", resultStrings, @"images", nil]];
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: [NSDictionary dictionaryWithObjectsAndKeys: preSelectedAssets, @"preSelectedAssets", resultStrings, @"images", invalidImages, @"invalidImages", nil]];
         }
         
         progressHUD.progress = 1.f;
@@ -347,6 +320,7 @@ typedef enum : NSUInteger {
     
     __block NSMutableArray *preSelectedAssets = [[NSMutableArray alloc] init];
     __block NSMutableArray *fileStrings = [[NSMutableArray alloc] init];
+    __block NSMutableArray *invalidImages = [[NSMutableArray alloc] init];
     CGSize targetSize = CGSizeMake(self.width, self.height);
     NSString* docsPath = [NSTemporaryDirectory()stringByStandardizingPath];
     
@@ -379,7 +353,7 @@ typedef enum : NSUInteger {
         NSError* err = nil;
         __block NSData *imgData;
         // Index for tracking the current image
-        int index = 0;
+        __block int index = 0;
         // If image fetching fails then retry 3 times before giving up
         do {
             PHAsset *asset = [fetchArray objectAtIndex:index];
@@ -396,11 +370,17 @@ typedef enum : NSUInteger {
                                                 NSString *dataUTI,
                                                 UIImageOrientation orientation,
                                                 NSDictionary *info) {
-                            imgData = [imageData copy];
-                            NSString* fullFilePath = [info objectForKey:@"PHImageFileURLKey"];
-                            NSLog(@"fullFilePath: %@: " , fullFilePath);
-                            NSString* fileName = [[localIdentifier componentsSeparatedByString:@"/"] objectAtIndex:0];
-                            filePath = [NSString stringWithFormat:@"%@/%@.%@", docsPath, fileName, @"jpg"];
+                            if([dataUTI isEqualToString:@"public.png"] || [dataUTI isEqualToString:@"public.jpeg"] || [dataUTI isEqualToString:@"public.jpeg-2000"]) {
+                                imgData = [imageData copy];
+                                NSString* fullFilePath = [info objectForKey:@"PHImageFileURLKey"];
+                                NSLog(@"fullFilePath: %@: " , fullFilePath);
+                                NSString* fileName = [[localIdentifier componentsSeparatedByString:@"/"] objectAtIndex:0];
+                                filePath = [NSString stringWithFormat:@"%@/%@.%@", docsPath, fileName, @"jpg"];
+                            } else {
+                                imgData = nil;
+                                [invalidImages addObject: localIdentifier];
+                                index++;
+                            }
                         }];
                 
                 
@@ -440,13 +420,13 @@ typedef enum : NSUInteger {
         } while (index < fetchArray.count);
         
         if (result == nil) {
-            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: [NSDictionary dictionaryWithObjectsAndKeys: preSelectedAssets, @"preSelectedAssets", fileStrings, @"images", nil]];
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: [NSDictionary dictionaryWithObjectsAndKeys: preSelectedAssets, @"preSelectedAssets", fileStrings, @"images", invalidImages, @"invalidImages", nil]];
         }
     });
     
     dispatch_group_notify(dispatchGroup, dispatch_get_main_queue(), ^{
         if (nil == result) {
-            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: [NSDictionary dictionaryWithObjectsAndKeys: preSelectedAssets, @"preSelectedAssets", fileStrings, @"images", nil]];
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: [NSDictionary dictionaryWithObjectsAndKeys: preSelectedAssets, @"preSelectedAssets", fileStrings, @"images", invalidImages, @"invalidImages", nil]];
         }
         
         progressHUD.progress = 1.f;
@@ -544,23 +524,6 @@ typedef enum : NSUInteger {
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:emptyArray];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
     NSLog(@"GMImagePicker: User pressed cancel button");
-}
-
-// Delegate for camera roll permission UIAlertView
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    // If Settings button (on iOS 8), open the settings app
-    if (buttonIndex == 1) {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
-    }
-    
-    // Dismiss the view
-    [self.viewController dismissViewControllerAnimated:YES completion:nil];
-    
-    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"has no access to camera"];   // error callback expects string ATM
-    
-    [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
-    
 }
 
 
