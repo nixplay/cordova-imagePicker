@@ -316,21 +316,23 @@ NSString * const GMGridViewCellIdentifier = @"GMGridViewCellIdentifier";
     
     PHAsset *asset = self.assetsFetchResults[indexPath.item];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+    /*if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
      {
-         NSLog(@"Image manager: Requesting FIT image for iPad");
-         [self.imageManager requestImageForAsset:asset
-                                 targetSize:AssetGridThumbnailSize
-                                 contentMode:PHImageContentModeAspectFit
-                                 options:nil
-                                 resultHandler:^(UIImage *result, NSDictionary *info) {
-                                     // Only update the thumbnail if the cell tag hasn't changed. Otherwise, the cell has been re-used.
-                                     if (cell.tag == currentTag) {
-                                         [cell.imageView setImage:result];
-                                     }
-                                 }];
-         
-    } else {
+     NSLog(@"Image manager: Requesting FIT image for iPad");
+     [self.imageManager requestImageForAsset:asset
+     targetSize:AssetGridThumbnailSize
+     contentMode:PHImageContentModeAspectFit
+     options:nil
+     resultHandler:^(UIImage *result, NSDictionary *info) {
+     
+     // Only update the thumbnail if the cell tag hasn't changed. Otherwise, the cell has been re-used.
+     if (cell.tag == currentTag) {
+     [cell.imageView setImage:result];
+     }
+     }];
+     }
+     else*/
+    {
         //NSLog(@"Image manager: Requesting FILL image for iPhone");
         [self.imageManager requestImageForAsset:asset
                                      targetSize:AssetGridThumbnailSize
@@ -388,7 +390,7 @@ NSString * const GMGridViewCellIdentifier = @"GMGridViewCellIdentifier";
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedStringFromTable(@"picker.selection.max-selection.error.title", @"GMImagePicker", nil) message:alertString delegate:self cancelButtonTitle:NSLocalizedStringFromTable(@"picker.selection.max-selection.error.button", @"GMImagePicker", nil) otherButtonTitles:nil, nil];
             [alert show];
             return NO;
-
+            
             return NO;
         } else {
             return YES;
