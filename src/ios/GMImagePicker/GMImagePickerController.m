@@ -119,6 +119,15 @@
     [self updateToolbar];
 }
 
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if ([self.delegate respondsToSelector:@selector(assetsPickerControllerDidCancel:)]) {
+        [self.delegate assetsPickerControllerDidCancel:self];
+    }
+    
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
 - (UIStatusBarStyle)preferredStatusBarStyle {
     return UIStatusBarStyleDefault;
 }
