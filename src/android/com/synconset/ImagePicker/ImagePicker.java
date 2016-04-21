@@ -5,6 +5,7 @@ package com.synconset;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,8 +14,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -33,6 +36,16 @@ public class ImagePicker extends CordovaPlugin {
 	private int desiredHeight = 0;
 	private int quality = 100;
 	private ArrayList<String>  preSelectedAssets = new ArrayList<String>();
+	public static final int PERMISSION_DENIED_ERROR = 20;
+	public static final int SAVE_TO_ALBUM_SEC = 1;
+	private Intent intent;
+
+	protected final static String[] permissions = { Manifest.permission.READ_EXTERNAL_STORAGE };
+
+	protected void getReadPermission(int requestCode)
+	{
+		cordova.requestPermission(this, requestCode, Manifest.permission.READ_EXTERNAL_STORAGE);
+	}
 
 	public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
 		if(callbackContext == null)
@@ -49,7 +62,7 @@ public class ImagePicker extends CordovaPlugin {
 		System.out.println("[NIX] totalMegs: " + totalMegs);
 
 		if (action.equals("getPictures")) {
-			Intent intent = new Intent(cordova.getActivity(), PhotoSelectorActivity.class);
+			intent = new Intent(cordova.getActivity(), PhotoSelectorActivity.class);
 			this.maxImages = 5;
 			this.desiredWidth = 0;
 			this.desiredHeight = 0;
@@ -84,9 +97,13 @@ public class ImagePicker extends CordovaPlugin {
 			intent.putExtra("QUALITY", this.quality);
 			intent.putExtra("PRE_SELECTED_ASSETS", this.preSelectedAssets);
 			intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-			if (this.cordova != null) {
-				this.cordova.startActivityForResult((CordovaPlugin) this, intent, 0);
+			if(cordova.hasPermission(permissions[0])) {
+				this.cordova.startActivityForResult(this, intent, 0);
+			} else if (this.cordova != null) {
+				getReadPermission(SAVE_TO_ALBUM_SEC);
 			}
+
+
 		} else if (action.equals("cleanupTempFiles")) {
 			cleanupTempFiles();
 		}
@@ -102,6 +119,24 @@ public class ImagePicker extends CordovaPlugin {
 		}
 		this.callbackContext.success(new JSONObject());
 	}
+
+	public void onRequestPermissionResult(int requestCode, String[] permissions,
+										  int[] grantResults) throws JSONException {
+		for(int r:grantResults) {
+			if(r == PackageManager.PERMISSION_DENIED) {
+				this.callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, PERMISSION_DENIED_ERROR));
+				return;
+			}
+		}
+		switch(requestCode) {
+			case SAVE_TO_ALBUM_SEC:
+				if(intent != null) {
+					this.cordova.startActivityForResult(this, intent, 0);
+				}
+				break;
+		}
+	}
+
 
 	public Bundle onSaveInstanceState() {
 		Bundle state = new Bundle();
