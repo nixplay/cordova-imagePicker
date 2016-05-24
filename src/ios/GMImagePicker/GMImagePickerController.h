@@ -120,6 +120,8 @@ static CGSize const kPopoverContentSize = {480, 720};
  */
 @property (nonatomic, assign) BOOL autoSelectCameraImages;
 
+@property (nonatomic, assign) BOOL shouldCancelWhenBlur;
+
 /**
  *  Grid customizations:
  *

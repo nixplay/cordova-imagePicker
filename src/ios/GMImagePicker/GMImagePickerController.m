@@ -18,6 +18,8 @@
 
 @implementation GMImagePickerController
 
+
+
 - (id)init:(bool)allow_v withAssets: (NSArray*)preSelectedAssets
 {
     if (self = [super init])
@@ -32,6 +34,8 @@
         
         // _selectedAssets = [fetchResult copy];
         _allow_video = allow_v;
+        
+        _shouldCancelWhenBlur = YES;
         
         // Default values:
         _displaySelectionInfoToolbar = YES;
@@ -121,7 +125,7 @@
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidAppear:animated];
-    if ([self.delegate respondsToSelector:@selector(assetsPickerControllerDidCancel:)]) {
+    if ([self.delegate respondsToSelector:@selector(assetsPickerControllerDidCancel:)] && _shouldCancelWhenBlur) {
         [self.delegate assetsPickerControllerDidCancel:self];
     }
     
@@ -304,6 +308,7 @@
 - (void)finishPickingAssets:(id)sender
 {
     if ([self.delegate respondsToSelector:@selector(assetsPickerController:didFinishPickingAssets:)]) {
+        _shouldCancelWhenBlur = NO;
         [self.delegate assetsPickerController:self didFinishPickingAssets:self.selectedAssets];
     }
 }
