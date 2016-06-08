@@ -11,8 +11,11 @@ import android.os.Bundle;
 import android.provider.MediaStore.Images.ImageColumns;
 import android.util.DisplayMetrics;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
 /**
- * Í¨ÓÃ¹¤¾ßÀà
+ * Í¨ï¿½Ã¹ï¿½ï¿½ï¿½ï¿½ï¿½
  * 
  * @author chenww
  * 
@@ -20,7 +23,7 @@ import android.util.DisplayMetrics;
 public class CommonUtils {
 
 	/**
-	 * ¿ªÆôactivity
+	 * ï¿½ï¿½ï¿½ï¿½activity
 	 */
 	public static void launchActivity(Context context, Class<?> activity) {
 		Intent intent = new Intent(context, activity);
@@ -29,7 +32,7 @@ public class CommonUtils {
 	}
 
 	/**
-	 * ¿ªÆôactivity(´ø²ÎÊý)
+	 * ï¿½ï¿½ï¿½ï¿½activity(ï¿½ï¿½ï¿½ï¿½ï¿½)
 	 */
 	public static void launchActivity(Context context, Class<?> activity, Bundle bundle) {
 		Intent intent = new Intent(context, activity);
@@ -39,7 +42,7 @@ public class CommonUtils {
 	}
 
 	/**
-	 * ¿ªÆôactivity(´ø²ÎÊý)
+	 * ï¿½ï¿½ï¿½ï¿½activity(ï¿½ï¿½ï¿½ï¿½ï¿½)
 	 */
 	public static void launchActivity(Context context, Class<?> activity, String key, int value) {
 		Bundle bundle = new Bundle();
@@ -70,7 +73,7 @@ public class CommonUtils {
 		activity.startActivityForResult(intent, requestCode);
 	}
 
-	/** Æô¶¯Ò»¸ö·þÎñ */
+	/** ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 	public static void launchService(Context context, Class<?> service) {
 		Intent intent = new Intent(context, service);
 		context.startService(intent);
@@ -82,7 +85,7 @@ public class CommonUtils {
 	}
 
 	/**
-	 * ÅÐ¶Ï×Ö·û´®ÊÇ·ñÎª¿Õ
+	 * ï¿½Ð¶ï¿½ï¿½Ö·ï¿½ï¿½Ç·ï¿½Îªï¿½ï¿½
 	 * @param text
 	 * @return true null false !null
 	 */
@@ -92,25 +95,30 @@ public class CommonUtils {
 		return false;
 	}
 
-	/** »ñÈ¡ÆÁÄ»¿í¶È */
+	/** ï¿½ï¿½È¡ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ */
 	public static int getWidthPixels(Activity activity) {
 		DisplayMetrics dm = new DisplayMetrics();
 		activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
 		return dm.widthPixels;
 	}
 
-	/** »ñÈ¡ÆÁÄ»¸ß¶È */
+	/** ï¿½ï¿½È¡ï¿½ï¿½Ä»ï¿½ß¶ï¿½ */
 	public static int getHeightPixels(Activity activity) {
 		DisplayMetrics dm = new DisplayMetrics();
 		activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
 		return dm.heightPixels;
 	}
 
-	/** Í¨¹ýUri»ñÈ¡Í¼Æ¬Â·¾¶ */
+	/** Í¨ï¿½ï¿½Uriï¿½ï¿½È¡Í¼Æ¬Â·ï¿½ï¿½ */
 	public static String query(Context context, Uri uri) {
 		Cursor cursor = context.getContentResolver().query(uri, new String[] { ImageColumns.DATA }, null, null, null);
 		cursor.moveToNext();
 		return cursor.getString(cursor.getColumnIndex(ImageColumns.DATA));
 	}
+
+	//ImageLoader - Configuration
+	public static DisplayImageOptions displayImageOptions;
+	public static ImageLoaderConfiguration config;
+
 
 }

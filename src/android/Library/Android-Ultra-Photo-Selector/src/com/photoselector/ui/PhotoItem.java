@@ -22,7 +22,7 @@ import com.photoselector.model.PhotoModel;
  */
 
 public class PhotoItem extends LinearLayout implements OnCheckedChangeListener,
-		OnLongClickListener {
+		OnLongClickListener, View.OnClickListener {
 
 	private FakeR fakeR;
 	private ImageView ivPhoto;
@@ -50,6 +50,7 @@ public class PhotoItem extends LinearLayout implements OnCheckedChangeListener,
 		cbPhoto = (CheckBox) findViewById(fakeR.getId("id", "cb_photo_lpsi"));
 
 		cbPhoto.setOnCheckedChangeListener(this); // CheckBox选中状态改变监听器
+		ivPhoto.setOnClickListener(this);
 	}
 
 	@Override
@@ -104,6 +105,29 @@ public class PhotoItem extends LinearLayout implements OnCheckedChangeListener,
 	public void setOnClickListener(onItemClickListener l, int position) {
 		this.l = l;
 		this.position = position;
+	}
+
+	@Override
+	public void onClick(View v) {
+
+		if (v.getId() == fakeR.getId("id", "iv_photo_lpsi")){
+
+			if (!photo.isChecked()) {
+				listener.onCheckedChanged(photo, cbPhoto, true); // 调用主界面回调函数
+
+				setDrawingable();
+				ivPhoto.setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
+				photo.setChecked(true);
+				cbPhoto.setChecked(true);
+			}
+			else {
+				listener.onCheckedChanged(photo, cbPhoto, false); // 调用主界面回调函数
+
+				ivPhoto.clearColorFilter();
+				photo.setChecked(false);
+				cbPhoto.setChecked(false);
+			}
+		}
 	}
 
 	// @Override

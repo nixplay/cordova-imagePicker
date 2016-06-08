@@ -162,14 +162,14 @@ public class PhotoSelectorActivity extends Activity implements
 	}
 
 	private void initImageLoader() {
-		DisplayImageOptions imageOptions = new DisplayImageOptions.Builder()
+		CommonUtils.displayImageOptions = new DisplayImageOptions.Builder()
 				.showImageOnLoading(fakeR.getId("drawable", "ic_picture_loading"))
 				.showImageOnFail(fakeR.getId("drawable", "ic_picture_loadfailed"))
 				.cacheInMemory(true).cacheOnDisk(true)
-				.resetViewBeforeLoading(true).considerExifParams(false)
+				.resetViewBeforeLoading(true).considerExifParams(true)
 				.bitmapConfig(Bitmap.Config.RGB_565).build();
 
-		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
+		CommonUtils.config = new ImageLoaderConfiguration.Builder(
 				this)
 				.memoryCacheExtraOptions(400, 400)
 						// default = device screen dimensions
@@ -195,12 +195,9 @@ public class PhotoSelectorActivity extends Activity implements
 				.imageDownloader(new BaseImageDownloader(this))
 						// default
 				.imageDecoder(new BaseImageDecoder(false))
-						// default
-				.defaultDisplayImageOptions(DisplayImageOptions.createSimple())
-						// default
-				.defaultDisplayImageOptions(imageOptions).build();
+				.defaultDisplayImageOptions(CommonUtils.displayImageOptions).build();
 
-		ImageLoader.getInstance().init(config);
+		ImageLoader.getInstance().init(CommonUtils.config);
 	}
 
 	@Override
