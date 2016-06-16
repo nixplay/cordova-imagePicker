@@ -39,7 +39,7 @@ public class AlbumController {
 		List<PhotoModel> photos = new ArrayList<PhotoModel>();
 		cursor.moveToLast();
 		do {
-			if (cursor.getLong(cursor.getColumnIndex(ImageColumns.SIZE)) > 1024 * 10) {
+			if (cursor.getLong(cursor.getColumnIndex(ImageColumns.SIZE)) > 0) { //originally 1024 * 10
 				PhotoModel photoModel = new PhotoModel();
 				photoModel.setOriginalPath(cursor.getString(cursor.getColumnIndex(ImageColumns.DATA)));
 				photos.add(photoModel);
@@ -58,7 +58,7 @@ public class AlbumController {
 		int j = 0;
 		boolean sent = false;
 		do {
-			if (cursor.getLong(cursor.getColumnIndex(ImageColumns.SIZE)) > 1024 * 10) {
+			if (cursor.getLong(cursor.getColumnIndex(ImageColumns.SIZE)) > 0) { //originally 1024 * 10
 				PhotoModel photoModel = new PhotoModel();
 				photoModel.setOriginalPath(cursor.getString(cursor.getColumnIndex(ImageColumns.DATA)));
 				photos.add(photoModel);
@@ -94,7 +94,7 @@ public class AlbumController {
 		AlbumModel current = new AlbumModel(RECCENT_PHOTO, 0, cursor.getString(cursor.getColumnIndex(ImageColumns.DATA)), true); // "最近照片"相册
 		albums.add(current);
 		do {
-			if (cursor.getInt(cursor.getColumnIndex(ImageColumns.SIZE)) < 1024 * 10)
+			if (cursor.getInt(cursor.getColumnIndex(ImageColumns.SIZE)) < 1) //originally 1024 * 10
 				continue;
 
 			current.increaseCount();
@@ -120,7 +120,7 @@ public class AlbumController {
 		List<PhotoModel> photos = new ArrayList<PhotoModel>();
 		cursor.moveToLast();
 		do {
-			if (cursor.getLong(cursor.getColumnIndex(ImageColumns.SIZE)) > 1024 * 10) {
+			if (cursor.getLong(cursor.getColumnIndex(ImageColumns.SIZE)) > 0) { //originally 1024 * 10
 				PhotoModel photoModel = new PhotoModel();
 				photoModel.setOriginalPath(cursor.getString(cursor.getColumnIndex(ImageColumns.DATA)));
 				photos.add(photoModel);
@@ -140,7 +140,7 @@ public class AlbumController {
 		int j = 0;
 		boolean sent = false;
 		do {
-			if (cursor.getLong(cursor.getColumnIndex(ImageColumns.SIZE)) > 1024 * 10) {
+			if (cursor.getLong(cursor.getColumnIndex(ImageColumns.SIZE)) > 0) { //originally 1024 * 10
 				PhotoModel photoModel = new PhotoModel();
 				photoModel.setOriginalPath(cursor.getString(cursor.getColumnIndex(ImageColumns.DATA)));
 				photos.add(photoModel);
