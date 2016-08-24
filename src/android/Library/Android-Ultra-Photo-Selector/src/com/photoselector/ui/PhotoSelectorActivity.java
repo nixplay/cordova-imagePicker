@@ -232,7 +232,7 @@ public class PhotoSelectorActivity extends Activity implements
 			// //--keep all
 			// selected photos
 			// ///////////////////////////////////////////////////////////////////////////////////////////
-			if (selected.size() >= MAX_IMAGE) {
+			if (selected.size() > MAX_IMAGE) {
 				Toast.makeText(
 						this,
 						String.format(
@@ -319,7 +319,7 @@ public class PhotoSelectorActivity extends Activity implements
 	public void onCheckedChanged(PhotoModel photoModel,
 								 CompoundButton buttonView, boolean isChecked) {
 		if (isChecked) {
-			if(imageOrder>MAX_IMAGE-1)
+			if(imageOrder>MAX_IMAGE)
 			{
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
 				Resources res = getResources();
@@ -335,6 +335,8 @@ public class PhotoSelectorActivity extends Activity implements
 				AlertDialog alert = builder.create();
 				alert.show();
 				buttonView.toggle();
+				imageOrder--;
+				selected.remove(photoModel);
 			}
 			else
 			{
