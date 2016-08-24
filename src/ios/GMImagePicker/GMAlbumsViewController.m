@@ -104,7 +104,8 @@ static NSString * const CollectionCellReuseIdentifier = @"CollectionCell";
     PHFetchResult *topLevelUserCollections = [PHCollectionList fetchTopLevelUserCollectionsWithOptions:nil];
     PHFetchResult *smartAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
     PHFetchResult *sharedAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAlbumCloudShared options:nil];
-    self.collectionsFetchResults = @[topLevelUserCollections, smartAlbums, sharedAlbums];
+    PHFetchResult *syncedAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAlbumSyncedAlbum options:nil];
+    self.collectionsFetchResults = @[topLevelUserCollections, smartAlbums, sharedAlbums, syncedAlbums];
     self.collectionsLocalizedTitles = @[ NSLocalizedStringFromTableInBundle(@"picker.table.smart-albums-header",  @"GMImagePicker", [NSBundle bundleForClass:GMImagePickerController.class], @"Smart Albums"), NSLocalizedStringFromTableInBundle(@"picker.table.user-albums-header",  @"GMImagePicker", [NSBundle bundleForClass:GMImagePickerController.class], @"Albums")];
     
     [self updateFetchResults];
@@ -141,6 +142,7 @@ static NSString * const CollectionCellReuseIdentifier = @"CollectionCell";
     PHFetchResult *topLevelUserCollections = [self.collectionsFetchResults objectAtIndex:0];
     PHFetchResult *smartAlbums = [self.collectionsFetchResults objectAtIndex:1];
     PHFetchResult *sharedAlbums = [self.collectionsFetchResults objectAtIndex:2];
+    PHFetchResult *syncedAlbums = [self.collectionsFetchResults objectAtIndex:3];
     
     //All album: Sorted by descending creation date.
     NSMutableArray *allFetchResultArray = [[NSMutableArray alloc] init];
@@ -218,6 +220,23 @@ static NSString * const CollectionCellReuseIdentifier = @"CollectionCell";
             }
         }
     }
+    
+    for(PHCollection *collection in syncedAlbums)
+    {
+        if ([collection isKindOfClass:[PHAssetCollection class]])
+        {
+            PHFetchOptions *options = [[PHFetchOptions alloc] init];
+            options.predicate = allow_video? nil : [NSPredicate predicateWithFormat:@"mediaType == %d", PHAssetMediaTypeImage];
+            PHAssetCollection *assetCollection = (PHAssetCollection *)collection;
+            
+            //Albums collections are allways PHAssetCollectionType=1 & PHAssetCollectionSubtype=2
+            
+            PHFetchResult *assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:options];
+            [sharedFetchResultArray addObject:assetsFetchResult];
+            [sharedFetchResultLabel addObject:collection.localizedTitle];
+        }
+    }
+    
     
     self.collectionsFetchResultsAssets= @[allFetchResultArray,smartFetchResultArray,userFetchResultArray,sharedFetchResultArray];
     self.collectionsFetchResultsTitles= @[allFetchResultLabel,smartFetchResultLabel,userFetchResultLabel, sharedFetchResultLabel];
