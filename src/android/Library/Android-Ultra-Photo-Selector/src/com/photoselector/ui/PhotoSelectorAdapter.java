@@ -57,16 +57,15 @@ public class PhotoSelectorAdapter extends MBaseAdapter<PhotoModel> {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		PhotoItem item = null;
-		if (convertView == null || !(convertView instanceof PhotoItem)) {
-			item = new PhotoItem(context, listener);
-			item.setLayoutParams(itemLayoutParams);
-			convertView = item;
-		} else {
-			item = (PhotoItem) convertView;
-		}
+
+		item = new PhotoItem(context, listener);
+		item.setLayoutParams(itemLayoutParams);
+		convertView = item;
+
 		item.setImageDrawable(models.get(position));
 		item.setSelected(models.get(position).isChecked());
 		item.setOnClickListener(mCallback, position);
+
 		return convertView;
 	}
 }
