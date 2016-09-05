@@ -53,15 +53,15 @@ public class ImagePicker extends CordovaPlugin {
 
 		this.callbackContext = callbackContext;
 
-		this.params = args.getJSONObject(0);
 		ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
 		ActivityManager activityManager = (ActivityManager) this.cordova.getActivity().getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
 		activityManager.getMemoryInfo(mi);
 		long totalMegs = mi.totalMem / 1048576L;
-
 		System.out.println("[NIX] totalMegs: " + totalMegs);
 
 		if (action.equals("getPictures")) {
+			this.params = args.getJSONObject(0);
+
 			intent = new Intent(cordova.getActivity(), PhotoSelectorActivity.class);
 			this.maxImages = 5;
 			this.desiredWidth = 0;
