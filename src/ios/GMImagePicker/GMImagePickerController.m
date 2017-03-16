@@ -166,7 +166,7 @@
     NSMutableArray *allFetchResultLabel = [[NSMutableArray alloc] init];
     {
         PHFetchOptions *options = [[PHFetchOptions alloc] init];
-        NSPredicate * predicatePHAsset = self.allow_video? nil : [NSPredicate predicateWithFormat:@"mediaType == %d", PHAssetMediaTypeImage];
+        NSPredicate * predicatePHAsset = self.allow_video? [NSPredicate predicateWithFormat:@"mediaType == %d", PHAssetMediaTypeVideo] : [NSPredicate predicateWithFormat:@"mediaType == %d", PHAssetMediaTypeImage];
         
         options.predicate = predicatePHAsset;
         options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];

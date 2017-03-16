@@ -149,7 +149,7 @@ static NSString * const CollectionCellReuseIdentifier = @"CollectionCell";
     NSMutableArray *allFetchResultLabel = [[NSMutableArray alloc] init];
     {
         PHFetchOptions *options = [[PHFetchOptions alloc] init];
-        options.predicate = allow_video? nil : [NSPredicate predicateWithFormat:@"mediaType == %d", PHAssetMediaTypeImage];
+        options.predicate = allow_video? [NSPredicate predicateWithFormat:@"mediaType == %d", PHAssetMediaTypeVideo] : [NSPredicate predicateWithFormat:@"mediaType == %d", PHAssetMediaTypeImage];
         options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
         PHFetchResult *assetsFetchResult = [PHAsset fetchAssetsWithOptions:options];
         [allFetchResultArray addObject:assetsFetchResult];
@@ -164,7 +164,7 @@ static NSString * const CollectionCellReuseIdentifier = @"CollectionCell";
         if ([collection isKindOfClass:[PHAssetCollection class]])
         {
             PHFetchOptions *options = [[PHFetchOptions alloc] init];
-            options.predicate = allow_video? nil : [NSPredicate predicateWithFormat:@"mediaType == %d", PHAssetMediaTypeImage];
+            options.predicate = allow_video? [NSPredicate predicateWithFormat:@"mediaType == %d", PHAssetMediaTypeVideo] : [NSPredicate predicateWithFormat:@"mediaType == %d", PHAssetMediaTypeImage];
             PHAssetCollection *assetCollection = (PHAssetCollection *)collection;
             
             //Albums collections are allways PHAssetCollectionType=1 & PHAssetCollectionSubtype=2
@@ -183,7 +183,7 @@ static NSString * const CollectionCellReuseIdentifier = @"CollectionCell";
         if ([collection isKindOfClass:[PHAssetCollection class]])
         {
             PHFetchOptions *options = [[PHFetchOptions alloc] init];
-            options.predicate = allow_video? nil : [NSPredicate predicateWithFormat:@"mediaType == %d", PHAssetMediaTypeImage];
+            options.predicate = allow_video? [NSPredicate predicateWithFormat:@"mediaType == %d", PHAssetMediaTypeVideo] : [NSPredicate predicateWithFormat:@"mediaType == %d", PHAssetMediaTypeImage];
             PHAssetCollection *assetCollection = (PHAssetCollection *)collection;
             
             //Albums collections are allways PHAssetCollectionType=1 & PHAssetCollectionSubtype=2
@@ -208,7 +208,7 @@ static NSString * const CollectionCellReuseIdentifier = @"CollectionCell";
             if(self.picker.customSmartCollections && [self.picker.customSmartCollections containsObject:@(assetCollection.assetCollectionSubtype)])
             {
                 PHFetchOptions *options = [[PHFetchOptions alloc] init];
-                options.predicate = allow_video? nil : [NSPredicate predicateWithFormat:@"mediaType == %d", PHAssetMediaTypeImage];
+                options.predicate = allow_video? [NSPredicate predicateWithFormat:@"mediaType == %d", PHAssetMediaTypeVideo] : [NSPredicate predicateWithFormat:@"mediaType == %d", PHAssetMediaTypeImage];
                 options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
                 
                 PHFetchResult *assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:options];
@@ -226,7 +226,7 @@ static NSString * const CollectionCellReuseIdentifier = @"CollectionCell";
         if ([collection isKindOfClass:[PHAssetCollection class]])
         {
             PHFetchOptions *options = [[PHFetchOptions alloc] init];
-            options.predicate = allow_video? nil : [NSPredicate predicateWithFormat:@"mediaType == %d", PHAssetMediaTypeImage];
+            options.predicate = allow_video? [NSPredicate predicateWithFormat:@"mediaType == %d", PHAssetMediaTypeVideo] : [NSPredicate predicateWithFormat:@"mediaType == %d", PHAssetMediaTypeImage];
             PHAssetCollection *assetCollection = (PHAssetCollection *)collection;
             
             //Albums collections are allways PHAssetCollectionType=1 & PHAssetCollectionSubtype=2

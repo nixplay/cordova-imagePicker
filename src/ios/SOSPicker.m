@@ -36,7 +36,7 @@ typedef enum : NSUInteger {
     NSInteger maximumImagesCount = [[options objectForKey:@"maximumImagesCount"] integerValue];
 
     self.outputType = [[options objectForKey:@"outputType"] integerValue];
-    BOOL allow_video = [[options objectForKey:@"allow_video" ] boolValue ];
+    self.allow_video = [[options objectForKey:@"allow_video" ] boolValue ];
     NSString * title = [options objectForKey:@"title"];
     NSString * message = [options objectForKey:@"message"];
     kGMImageMaxSeletedNumber = maximumImagesCount;
@@ -58,14 +58,14 @@ typedef enum : NSUInteger {
         if (authStatus == PHAuthorizationStatusDenied || authStatus == PHAuthorizationStatusRestricted) {
             [self showAuthorizationDialog];
         } else {
-            [self launchGMImagePicker:allow_video title:title message:message];
+            [self launchGMImagePicker:self.allow_video title:title message:message];
         }
     } else {
 
         if([ALAssetsLibrary authorizationStatus] != PHAuthorizationStatusAuthorized) {
             NSLog(@"You need access to the gallery");
         } else {
-            [self launchDNImagePicker:allow_video title:title message:message];
+            [self launchDNImagePicker:self.allow_video title:title message:message];
         }
     }
 }
@@ -385,65 +385,83 @@ typedef enum : NSUInteger {
         __block int index = 0;
         // If image fetching fails then retry 3 times before giving up
         do {
+            
             PHAsset *asset = [fetchArray objectAtIndex:index];
             NSString *localIdentifier;
-            if (asset == nil) {
-                result = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:[err localizedDescription]];
-            } else {
-                __block UIImage *image;
-                localIdentifier = [asset localIdentifier];
-                NSLog(@"localIdentifier: %@", localIdentifier);
-                [manager requestImageDataForAsset:asset
-                              options:requestOptions
-                            resultHandler:^(NSData *imageData,
-                                                NSString *dataUTI,
-                                                UIImageOrientation orientation,
-                                                NSDictionary *info) {
-                            if([dataUTI isEqualToString:@"public.png"] || [dataUTI isEqualToString:@"public.jpeg"] || [dataUTI isEqualToString:@"public.jpeg-2000"]) {
-                                imgData = [imageData copy];
-                                NSString* fullFilePath = [info objectForKey:@"PHImageFileURLKey"];
-                                NSLog(@"fullFilePath: %@: " , fullFilePath);
-                                NSString* fileName = [[localIdentifier componentsSeparatedByString:@"/"] objectAtIndex:0];
-                                filePath = [NSString stringWithFormat:@"%@/%@.%@", docsPath, fileName, @"jpg"];
-                            } else {
-                                imgData = nil;
-                                [invalidImages addObject: localIdentifier];
-                                index++;
-                            }
-                        }];
+            
+            if(self.allow_video){
+                PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
+                options.deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
+                options.networkAccessAllowed = YES;
+                [manager requestAVAssetForVideo:asset
+                                        options:options
+                                  resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
+                                      if([asset isKindOfClass:[AVURLAsset class]]){
+                                          [fileStrings addObject: [[((AVURLAsset*)asset) URL] absoluteString] ];
+                                          result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: [NSDictionary dictionaryWithObjectsAndKeys: preSelectedAssets, @"preSelectedAssets", fileStrings, @"images", invalidImages, @"invalidImages", nil]];
+                                      }
+                                      
+                }];
+                index++;
+            }else{
+                if (asset == nil) {
+                    result = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:[err localizedDescription]];
+                } else {
+                    __block UIImage *image;
+                    localIdentifier = [asset localIdentifier];
+                    NSLog(@"localIdentifier: %@", localIdentifier);
+                    [manager requestImageDataForAsset:asset
+                                  options:requestOptions
+                                resultHandler:^(NSData *imageData,
+                                                    NSString *dataUTI,
+                                                    UIImageOrientation orientation,
+                                                    NSDictionary *info) {
+                                if([dataUTI isEqualToString:@"public.png"] || [dataUTI isEqualToString:@"public.jpeg"] || [dataUTI isEqualToString:@"public.jpeg-2000"]) {
+                                    imgData = [imageData copy];
+                                    NSString* fullFilePath = [info objectForKey:@"PHImageFileURLKey"];
+                                    NSLog(@"fullFilePath: %@: " , fullFilePath);
+                                    NSString* fileName = [[localIdentifier componentsSeparatedByString:@"/"] objectAtIndex:0];
+                                    filePath = [NSString stringWithFormat:@"%@/%@.%@", docsPath, fileName, @"jpg"];
+                                } else {
+                                    imgData = nil;
+                                    [invalidImages addObject: localIdentifier];
+                                    index++;
+                                }
+                            }];
 
 
-                requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
+                    requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
 
-                if (imgData != nil) {
-                    requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-                    @autoreleasepool {
-                        NSData* data = nil;
-                        if (self.width == 0 && self.height == 0) {
-                            // no scaling required
-                            if (self.quality == 100) {
-                                data = [imgData copy];
+                    if (imgData != nil) {
+                        requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+                        @autoreleasepool {
+                            NSData* data = nil;
+                            if (self.width == 0 && self.height == 0) {
+                                // no scaling required
+                                if (self.quality == 100) {
+                                    data = [imgData copy];
+                                } else {
+                                    image = [UIImage imageWithData:imgData];
+                                    // resample first
+                                    data = UIImageJPEGRepresentation(image, self.quality/100.0f);
+                                }
                             } else {
                                 image = [UIImage imageWithData:imgData];
-                                // resample first
-                                data = UIImageJPEGRepresentation(image, self.quality/100.0f);
+                                // scale
+                                UIImage* scaledImage = [self imageByScalingNotCroppingForSize:image toSize:targetSize];
+                                data = UIImageJPEGRepresentation(scaledImage, self.quality/100.0f);
                             }
-                        } else {
-                            image = [UIImage imageWithData:imgData];
-                            // scale
-                            UIImage* scaledImage = [self imageByScalingNotCroppingForSize:image toSize:targetSize];
-                            data = UIImageJPEGRepresentation(scaledImage, self.quality/100.0f);
+                            if (![data writeToFile:filePath options:NSAtomicWrite error:&err]) {
+                                result = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:[err localizedDescription]];
+                                break;
+                            } else {
+                                [fileStrings addObject:[[NSURL fileURLWithPath:filePath] absoluteString]];
+                                [preSelectedAssets addObject: localIdentifier];
+                            }
+                            data = nil;
                         }
-                        if (![data writeToFile:filePath options:NSAtomicWrite error:&err]) {
-                            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:[err localizedDescription]];
-                            break;
-                        } else {
-                            [fileStrings addObject:[[NSURL fileURLWithPath:filePath] absoluteString]];
-                            [preSelectedAssets addObject: localIdentifier];
-                        }
-                        data = nil;
+                        index++;
                     }
-                    index++;
                 }
             }
         } while (index < fetchArray.count);
