@@ -349,6 +349,8 @@ typedef enum : NSUInteger {
 
     __block NSMutableArray *preSelectedAssets = [[NSMutableArray alloc] init];
     __block NSMutableArray *fileStrings = [[NSMutableArray alloc] init];
+    __block NSMutableArray *livePhotoFileStrings = [[NSMutableArray alloc] init];
+    
     __block NSMutableArray *invalidImages = [[NSMutableArray alloc] init];
     CGSize targetSize = CGSizeMake(self.width, self.height);
     NSString* docsPath = [NSTemporaryDirectory()stringByStandardizingPath];
@@ -410,6 +412,24 @@ typedef enum : NSUInteger {
                     __block UIImage *image;
                     localIdentifier = [asset localIdentifier];
                     NSLog(@"localIdentifier: %@", localIdentifier);
+                    
+                    PHAssetResource *videoResource = nil;
+                    NSArray *resourcesArray = [PHAssetResource assetResourcesForAsset:asset];
+                    const NSInteger livePhotoAssetResourcesCount = 2;
+                    const NSInteger videoPartIndex = 1;
+                    
+                    if (resourcesArray.count == livePhotoAssetResourcesCount) {
+                        videoResource = resourcesArray[videoPartIndex];
+                    }
+                    
+                    if (videoResource) {
+                        NSString * const fileURLKey = @"_fileURL";
+                        NSURL *videoURL = [videoResource valueForKey:fileURLKey];
+                        NSLog(@"videoURL %@",videoURL);
+                        // load video url using AVKit or AVFoundation
+                        [livePhotoFileStrings addObject:[videoURL absoluteString]];
+                    }
+                    
                     [manager requestImageDataForAsset:asset
                                   options:requestOptions
                                 resultHandler:^(NSData *imageData,
@@ -467,13 +487,13 @@ typedef enum : NSUInteger {
         } while (index < fetchArray.count);
 
         if (result == nil) {
-            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: [NSDictionary dictionaryWithObjectsAndKeys: preSelectedAssets, @"preSelectedAssets", fileStrings, @"images", invalidImages, @"invalidImages", nil]];
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: [NSDictionary dictionaryWithObjectsAndKeys: preSelectedAssets, @"preSelectedAssets", fileStrings, @"images", livePhotoFileStrings, @"live_photos", invalidImages, @"invalidImages", nil]];
         }
     });
 
     dispatch_group_notify(dispatchGroup, dispatch_get_main_queue(), ^{
         if (nil == result) {
-            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: [NSDictionary dictionaryWithObjectsAndKeys: preSelectedAssets, @"preSelectedAssets", fileStrings, @"images", invalidImages, @"invalidImages", nil]];
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: [NSDictionary dictionaryWithObjectsAndKeys: preSelectedAssets, @"preSelectedAssets", fileStrings, @"images", livePhotoFileStrings, @"live_photos",  invalidImages, @"invalidImages", nil]];
         }
 
         progressHUD.progress = 1.f;
