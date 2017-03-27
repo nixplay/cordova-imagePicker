@@ -425,9 +425,11 @@ typedef enum : NSUInteger {
                     if (videoResource) {
                         NSString * const fileURLKey = @"_fileURL";
                         NSURL *videoURL = [videoResource valueForKey:fileURLKey];
+//                        videoResource.assetLocalIdentifier
                         NSLog(@"videoURL %@",videoURL);
                         // load video url using AVKit or AVFoundation
-                        [livePhotoFileStrings addObject:[videoURL absoluteString]];
+                        
+                        [livePhotoFileStrings addObject:videoResource.assetLocalIdentifier];
                     }
                     
                     [manager requestImageDataForAsset:asset
