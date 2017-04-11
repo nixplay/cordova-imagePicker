@@ -9,14 +9,12 @@
 #import "SOSPicker.h"
 
 #import "GMImagePickerController.h"
-// #import "GMFetchItem.h"
 #import "MBProgressHUD.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 
 #define CDV_PHOTO_PREFIX @"cdv_photo_"
 #define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 
-extern NSUInteger kGMImageMaxSeletedNumber;
 
 
 typedef enum : NSUInteger {
@@ -39,7 +37,6 @@ typedef enum : NSUInteger {
     self.allow_video = [[options objectForKey:@"allow_video" ] boolValue ];
     NSString * title = [options objectForKey:@"title"];
     NSString * message = [options objectForKey:@"message"];
-    kGMImageMaxSeletedNumber = maximumImagesCount;
     
     if (message == (id)[NSNull null]) {
       message = nil;
