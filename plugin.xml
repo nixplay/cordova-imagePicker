@@ -30,9 +30,9 @@
 
 		<header-file src="src/ios/SOSPicker.h" />
 		<source-file src="src/ios/SOSPicker.m" />
-		<pods-config ios-min-version="9.0" use-frameworks="true">
+		<pods-config ios-min-version="8.0" use-frameworks="true">
         </pods-config>
-		<pod name="DNImagePicker" />
+		
 		<pod name="GMImagePicker" />
 		<pod name="AFNetworking" />
 		<pod name="MRProgress" />

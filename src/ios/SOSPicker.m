@@ -60,14 +60,7 @@ typedef enum : NSUInteger {
         } else {
             [self launchGMImagePicker:self.allow_video title:title message:message];
         }
-    } else {
-
-        if([ALAssetsLibrary authorizationStatus] != PHAuthorizationStatusAuthorized) {
-            NSLog(@"You need access to the gallery");
-        } else {
-            [self launchDNImagePicker:self.allow_video title:title message:message];
-        }
-    }
+    } 
 }
 
 - (void)showAuthorizationDialog {
