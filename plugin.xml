@@ -34,6 +34,7 @@
         </pods-config>
 		<pod name="DNImagePicker" />
 		<pod name="GMImagePicker" />
+		<pod name="AFNetworking" />
 		<pod name="MRProgress" />
 		<pod name="MBProgressHUD" />
 
