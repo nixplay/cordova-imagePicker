@@ -9,7 +9,7 @@
 #import "SOSPicker.h"
 
 #import "GMImagePickerController.h"
-#import "GMFetchItem.h"
+// #import "GMFetchItem.h"
 #import "MBProgressHUD.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 
