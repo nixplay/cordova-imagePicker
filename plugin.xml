@@ -31,12 +31,13 @@
 		<header-file src="src/ios/SOSPicker.h" />
 		<source-file src="src/ios/SOSPicker.m" />
 
-		<pod>DNImagePicker</pod>
-		<pod>GMImagePicker</pod>
-		<pod>MRProgress</pod>
-		<pod>MBProgressHUD.h</pod>
+		<pod name="DNImagePicker" />
+		<pod name="GMImagePicker" />
+		<pod name="MRProgress" />
+		<pod name="MBProgressHUD" />
 
 
+		
 
 		<framework src="Accelerate.framework" />
 		<framework src="Security.framework" />
