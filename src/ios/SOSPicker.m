@@ -38,8 +38,8 @@ typedef enum : NSUInteger {
     self.title = [options objectForKey:@"title"];
     self.message = [options objectForKey:@"message"];
     
-    if (message == (id)[NSNull null]) {
-      message = nil;
+    if (self.message == (id)[NSNull null]) {
+      self.message = nil;
     }
     self.width = [[options objectForKey:@"width"] integerValue];
     self.height = [[options objectForKey:@"height"] integerValue];
