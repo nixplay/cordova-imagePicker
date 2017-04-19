@@ -35,8 +35,8 @@ typedef enum : NSUInteger {
 
     self.outputType = [[options objectForKey:@"outputType"] integerValue];
     self.allow_video = [[options objectForKey:@"allow_video" ] boolValue ];
-    NSString * title = [options objectForKey:@"title"];
-    NSString * message = [options objectForKey:@"message"];
+    self.title = [options objectForKey:@"title"];
+    self.message = [options objectForKey:@"message"];
     
     if (message == (id)[NSNull null]) {
       message = nil;
@@ -55,7 +55,7 @@ typedef enum : NSUInteger {
         if (authStatus == PHAuthorizationStatusDenied || authStatus == PHAuthorizationStatusRestricted) {
             [self showAuthorizationDialog];
         } else {
-            [self launchGMImagePicker:self.allow_video title:title message:message];
+            [self launchGMImagePicker:self.allow_video title:self.title message:self.message];
         }
     } 
 }
@@ -447,5 +447,10 @@ typedef enum : NSUInteger {
 -(BOOL) shouldSelectAllAlbumCell{
     return YES;
 }
-
+ -(NSString*) controllerTitle{
+    return self.title;
+ }
+ -(NSString*) controllerCustomNavigationBarPrompt{
+    return self.message;
+ }
 @end
