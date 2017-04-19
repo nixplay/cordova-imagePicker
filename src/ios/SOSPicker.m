@@ -444,4 +444,8 @@ typedef enum : NSUInteger {
 
 }
 
+-(BOOL) shouldSelectAllAlbumCell{
+    return YES;
+}
+
 @end
