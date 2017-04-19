@@ -83,7 +83,7 @@ typedef enum : NSUInteger {
 
 - (void)launchGMImagePicker:(bool)allow_video title:(NSString *)title message:(NSString *)message
 {
-    GMImagePickerController *picker = [[GMImagePickerController alloc] init:allow_video withAssets: self.preSelectedAssets];
+    GMImagePickerController *picker = [[GMImagePickerController alloc] init:allow_video withAssets: self.preSelectedAssets delegate:self];
     picker.delegate = self;
     picker.title = title;
     picker.customNavigationBarPrompt = message;
