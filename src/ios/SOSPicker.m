@@ -83,15 +83,23 @@ typedef enum : NSUInteger {
 
 - (void)launchGMImagePicker:(bool)allow_video title:(NSString *)title message:(NSString *)message
 {
-    GMImagePickerController *picker = [[GMImagePickerController alloc] init:allow_video withAssets: self.preSelectedAssets delegate:self];
+    
+    __block NSArray *preSelectedAssets = self.preSelectedAssets;
+    GMImagePickerController *picker = [[GMImagePickerController alloc] init:allow_video withAssets:preSelectedAssets delegate:self];
     picker.delegate = self;
     picker.title = title;
+    picker.mediaTypes = @[@(PHAssetMediaTypeImage)];
+    picker.customSmartCollections = @[@(PHAssetCollectionSubtypeSmartAlbumFavorites),
+                                @(PHAssetCollectionSubtypeSmartAlbumRecentlyAdded),
+                                @(PHAssetCollectionSubtypeSmartAlbumPanoramas)];
     picker.customNavigationBarPrompt = message;
     picker.colsInPortrait = 3;
     picker.colsInLandscape = 5;
     picker.minimumInteritemSpacing = 2.0;
+    picker.pickerStatusBarStyle = UIStatusBarStyleDefault;
     picker.modalPresentationStyle = UIModalPresentationPopover;
-
+    
+    
     UIPopoverPresentationController *popPC = picker.popoverPresentationController;
     popPC.permittedArrowDirections = UIPopoverArrowDirectionAny;
     
@@ -100,6 +108,7 @@ typedef enum : NSUInteger {
     CGFloat height = [UIScreen mainScreen].bounds.size.height;
     popPC.sourceRect = CGRectMake(width * 0.45, height * 0.65, 10, 10);
     [self.viewController showViewController:picker sender:nil];
+    
 }
 
 
