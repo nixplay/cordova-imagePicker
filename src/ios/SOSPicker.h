@@ -23,6 +23,7 @@
 @property (nonatomic, assign) NSInteger outputType;
 @property (nonatomic, assign) NSArray *preSelectedAssets;
 @property (nonatomic, assign) BOOL allow_video;
+@property (nonatomic, assign) BOOL shouldExportTempImage;
 @property (nonatomic, assign) NSString* title;
 @property (nonatomic, assign) NSString* message;
 @end
