@@ -2,7 +2,7 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
   xmlns:android="http://schemas.android.com/apk/res/android"
   id="com.synconset.imagepicker"
-  version="1.0.11">
+  version="1.0.12">
 
 	<name>ImagePicker</name>
 
@@ -37,7 +37,7 @@
 		<pod name="AFNetworking" />
 		<pod name="MRProgress" />
 		<pod name="MBProgressHUD" />
-		<pod name="DLFPhotosPicker"/>
+		<pod name="DLFPhotosPicker" git="https://github.com/nixplay/DLFPhotosPicker"/>
 		<framework src="Accelerate.framework" />
 		<framework src="Security.framework" />
 		<framework src="Photos.framework" weak="true"/>
