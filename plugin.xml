@@ -37,10 +37,7 @@
 		<pod name="AFNetworking" />
 		<pod name="MRProgress" />
 		<pod name="MBProgressHUD" />
-
-
-		
-
+		<pod name="DLFPhotosPicker"/>
 		<framework src="Accelerate.framework" />
 		<framework src="Security.framework" />
 		<framework src="Photos.framework" weak="true"/>
