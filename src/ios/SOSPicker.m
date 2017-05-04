@@ -56,8 +56,12 @@ typedef enum : NSUInteger {
         if (authStatus == PHAuthorizationStatusDenied || authStatus == PHAuthorizationStatusRestricted) {
             [self showAuthorizationDialog];
         } else {
-//            [self launchGMImagePicker:self.allow_video title:self.title message:self.message];
-            [self launchDLFPhotosPickerViewController];
+            if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad){
+                [self launchDLFPhotosPickerViewController];
+            }else{
+                [self launchGMImagePicker:self.allow_video title:self.title message:self.message];
+            }
+            
         }
     } 
 }
