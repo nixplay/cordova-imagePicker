@@ -14,7 +14,7 @@
 #import "DLFPhotosPickerViewController.h"
 #define CDV_PHOTO_PREFIX @"cdv_photo_"
 #define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
-
+#define LIGHT_BLUE_COLOR [UIColor colorWithRed:(99/255.0f)  green:(176/255.0f)  blue:(228.0f/255.0f) alpha:1.0]
 
 
 typedef enum : NSUInteger {
@@ -102,10 +102,12 @@ typedef enum : NSUInteger {
     picker.colsInPortrait = 3;
     picker.colsInLandscape = 5;
     picker.minimumInteritemSpacing = 2.0;
+    picker.showCameraButton = YES;
     picker.pickerStatusBarStyle = UIStatusBarStyleDefault;
     picker.modalPresentationStyle = UIModalPresentationPopover;
-
-    
+    picker.navigationBarTintColor = LIGHT_BLUE_COLOR;
+    picker.toolbarTextColor = LIGHT_BLUE_COLOR;
+    picker.toolbarTintColor = LIGHT_BLUE_COLOR;
     UIPopoverPresentationController *popPC = picker.popoverPresentationController;
     popPC.permittedArrowDirections = UIPopoverArrowDirectionAny;
     
