@@ -38,7 +38,7 @@ public class BasePhotoPreviewActivity extends Activity implements OnPageChangeLi
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		fakeR = new FakeR(this);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);// 去掉标题栏
+		requestWindowFeature(Window.FEATURE_NO_TITLE);// 鍘绘帀鏍囬�鏍�
 		setContentView(fakeR.getId("layout", "activity_photopreview"));
 		layoutTop = (RelativeLayout) findViewById(fakeR.getId("id", "layout_top_app"));
 		btnBack = (ImageButton) findViewById(fakeR.getId("id", "btn_back_app"));
@@ -48,11 +48,11 @@ public class BasePhotoPreviewActivity extends Activity implements OnPageChangeLi
 		btnBack.setOnClickListener(this);
 		mViewPager.setOnPageChangeListener(this);
 
-		overridePendingTransition(fakeR.getId("anim", "activity_alpha_action_in"), 0); // 渐入效果
+		overridePendingTransition(fakeR.getId("anim", "activity_alpha_action_in"), 0); // 娓愬叆鏁堟灉
 
 	}
 
-	/** 绑定数据，更新界面 */
+	/** 缁戝畾鏁版嵁锛屾洿鏂扮晫闈� */
 	protected void bindData() {
 		mViewPager.setAdapter(mPagerAdapter);
 		mViewPager.setCurrentItem(current);
@@ -117,7 +117,7 @@ public class BasePhotoPreviewActivity extends Activity implements OnPageChangeLi
 		tvPercent.setText((current + 1) + "/" + photos.size());
 	}
 
-	/** 图片点击事件回调 */
+	/** 鍥剧墖鐐瑰嚮浜嬩欢鍥炶皟 */
 	private OnClickListener photoItemClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {

@@ -31,13 +31,13 @@ public class PhotoPreviewActivity extends BasePhotoPreviewActivity implements On
 		if (extras == null)
 			return;
 
-		if (extras.containsKey("photos")) { // 预览图片
+		if (extras.containsKey("photos")) { // 棰勮�鍥剧墖
 			photos = (List<PhotoModel>) extras.getSerializable("photos");
 			current = extras.getInt("position", 0);
 			updatePercent();
 			bindData();
-		} else if (extras.containsKey("album")) { // 点击图片查看
-			String albumName = extras.getString("album"); // 相册
+		} else if (extras.containsKey("album")) { // 鐐瑰嚮鍥剧墖鏌ョ湅
+			String albumName = extras.getString("album"); // 鐩稿唽
 			this.current = extras.getInt("position");
 			if (!CommonUtils.isNull(albumName) && albumName.equals(PhotoSelectorActivity.RECCENT_PHOTO)) {
 				photoSelectorDomain.getReccent(this);
@@ -51,7 +51,7 @@ public class PhotoPreviewActivity extends BasePhotoPreviewActivity implements On
 	public void onPhotoLoaded(List<PhotoModel> photos) {
 		this.photos = photos;
 		updatePercent();
-		bindData(); // 更新界面
+		bindData(); // 鏇存柊鐣岄潰
 	}
 
 	@Override

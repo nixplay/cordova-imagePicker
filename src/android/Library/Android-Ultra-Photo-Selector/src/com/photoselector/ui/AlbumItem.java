@@ -44,12 +44,12 @@ public class AlbumItem extends LinearLayout {
 		fakeR = new FakeR(context);
 	}
 
-	/** ÉèÖÃÏà²á·âÃæ */
+	/** 脡猫脰脙脧脿虏谩路芒脙忙 */
 	public void setAlbumImage(String path) {
 		ImageLoader.getInstance().displayImage("file://" + path, ivAlbum);
 	}
 
-	/** ³õÊ¼»¯ */
+	/** 鲁玫脢录禄炉 */
 	public void update(AlbumModel album) {
 		setAlbumImage(album.getRecent());
 		setName(album.getName());

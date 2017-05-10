@@ -49,7 +49,7 @@ public class PhotoItem extends LinearLayout implements OnCheckedChangeListener,
 		ivPhoto = (ImageView) findViewById(fakeR.getId("id", "iv_photo_lpsi"));
 		cbPhoto = (CheckBox) findViewById(fakeR.getId("id", "cb_photo_lpsi"));
 
-		cbPhoto.setOnCheckedChangeListener(this); // CheckBox选中状态改变监听器
+		cbPhoto.setOnCheckedChangeListener(this); // CheckBox閫変腑鐘舵�佹敼鍙樼洃鍚�櫒
 		ivPhoto.setOnClickListener(this);
 	}
 
@@ -57,10 +57,10 @@ public class PhotoItem extends LinearLayout implements OnCheckedChangeListener,
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
 		if (!isCheckAll) {
-			listener.onCheckedChanged(photo, buttonView, isChecked); // 调用主界面回调函数
+			listener.onCheckedChanged(photo, buttonView, isChecked); // 璋冪敤涓荤晫闈㈠洖璋冨嚱鏁�
 		}
 		
-		// 让图片变暗或者变亮
+		// 璁╁浘鐗囧彉鏆楁垨鑰呭彉浜�
 		if (buttonView.isChecked()) {
 			setDrawingable();
 			ivPhoto.setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
@@ -71,7 +71,7 @@ public class PhotoItem extends LinearLayout implements OnCheckedChangeListener,
 		}
 	}
 
-	/** 设置路径下的图片对应的缩略图 */
+	/** 璁剧疆璺�緞涓嬬殑鍥剧墖瀵瑰簲鐨勭缉鐣ュ浘 */
 	public void setImageDrawable(final PhotoModel photo) {
 		this.photo = photo;
 		// You may need this setting form some custom ROM(s)
@@ -113,7 +113,7 @@ public class PhotoItem extends LinearLayout implements OnCheckedChangeListener,
 		if (v.getId() == fakeR.getId("id", "iv_photo_lpsi")){
 
 			if (!photo.isChecked()) {
-				listener.onCheckedChanged(photo, cbPhoto, true); // 调用主界面回调函数
+				listener.onCheckedChanged(photo, cbPhoto, true); // 璋冪敤涓荤晫闈㈠洖璋冨嚱鏁�
 
 				setDrawingable();
 				ivPhoto.setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
@@ -121,7 +121,7 @@ public class PhotoItem extends LinearLayout implements OnCheckedChangeListener,
 				cbPhoto.setChecked(true);
 			}
 			else {
-				listener.onCheckedChanged(photo, cbPhoto, false); // 调用主界面回调函数
+				listener.onCheckedChanged(photo, cbPhoto, false); // 璋冪敤涓荤晫闈㈠洖璋冨嚱鏁�
 
 				ivPhoto.clearColorFilter();
 				photo.setChecked(false);
@@ -137,13 +137,13 @@ public class PhotoItem extends LinearLayout implements OnCheckedChangeListener,
 	// l.onItemClick(position);
 	// }
 
-	/** 图片Item选中事件监听器 */
+	/** 鍥剧墖Item閫変腑浜嬩欢鐩戝惉鍣� */
 	public static interface onPhotoItemCheckedListener {
 		public void onCheckedChanged(PhotoModel photoModel,
 				CompoundButton buttonView, boolean isChecked);
 	}
 
-	/** 图片点击事件 */
+	/** 鍥剧墖鐐瑰嚮浜嬩欢 */
 	public interface onItemClickListener {
 		public void onItemClick(int position);
 	}
