@@ -102,7 +102,7 @@ typedef enum : NSUInteger {
     picker.colsInPortrait = 3;
     picker.colsInLandscape = 5;
     picker.minimumInteritemSpacing = 2.0;
-    picker.showCameraButton = YES;
+    picker.showCameraButton = NO;
     picker.pickerStatusBarStyle = UIStatusBarStyleDefault;
     picker.modalPresentationStyle = UIModalPresentationPopover;
     picker.navigationBarTintColor = LIGHT_BLUE_COLOR;
@@ -483,8 +483,7 @@ typedef enum : NSUInteger {
 -(void)assetsPickerControllerDidCancel:(GMImagePickerController *)picker
 {
     CDVPluginResult* pluginResult = nil;
-    NSArray* emptyArray = [NSArray array];
-    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:emptyArray];
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT messageAsString:@"User cancel"];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
     NSLog(@"GMImagePicker: User pressed cancel button");
 }
