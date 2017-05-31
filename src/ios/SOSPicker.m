@@ -483,7 +483,7 @@ typedef enum : NSUInteger {
 -(void)assetsPickerControllerDidCancel:(GMImagePickerController *)picker
 {
     CDVPluginResult* pluginResult = nil;
-    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT messageAsString:@"User cancel"];
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"User cancel"];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
     NSLog(@"GMImagePicker: User pressed cancel button");
 }
