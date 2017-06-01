@@ -32,23 +32,23 @@ typedef enum : NSUInteger {
 - (void) getPictures:(CDVInvokedUrlCommand *)command {
     NSDictionary *options = [command.arguments objectAtIndex: 0];
     NSInteger maximumImagesCount = [[options objectForKey:@"maximumImagesCount"] integerValue];
-
+    
     self.outputType = [[options objectForKey:@"outputType"] integerValue];
     self.allow_video = [[options objectForKey:@"allow_video" ] boolValue ];
     self.title = [options objectForKey:@"title"];
     self.message = [options objectForKey:@"message"];
     
     if (self.message == (id)[NSNull null]) {
-      self.message = nil;
+        self.message = nil;
     }
     self.width = [[options objectForKey:@"width"] integerValue];
     self.height = [[options objectForKey:@"height"] integerValue];
     self.quality = [[options objectForKey:@"quality"] integerValue];
     self.shouldExportTempImage = [[options objectForKey:@"shouldExportTempImage"] boolValue];
     NSLog(@"shouldExportTempImage defualt OFF");
-
+    
     self.preSelectedAssets = [options objectForKey:@"assets"];
-
+    
     self.callbackId = command.callbackId;
     if ([PHObject class]) {
         PHAuthorizationStatus authStatus = [PHPhotoLibrary authorizationStatus];
@@ -63,7 +63,7 @@ typedef enum : NSUInteger {
             }
             
         }
-    } 
+    }
 }
 
 - (void)showAuthorizationDialog {
@@ -71,7 +71,7 @@ typedef enum : NSUInteger {
     NSString* settingsButton = (&UIApplicationOpenSettingsURLString != NULL)
     ? NSLocalizedString(@"Settings", nil)
     : nil;
-
+    
     // Denied; show an alert
     dispatch_async(dispatch_get_main_queue(), ^{
         [[[UIAlertView alloc] initWithTitle:[[NSBundle mainBundle]
@@ -96,13 +96,14 @@ typedef enum : NSUInteger {
     picker.title = title;
     picker.mediaTypes = @[@(PHAssetMediaTypeImage)];
     picker.customSmartCollections = @[@(PHAssetCollectionSubtypeSmartAlbumFavorites),
-                                @(PHAssetCollectionSubtypeSmartAlbumRecentlyAdded),
-                                @(PHAssetCollectionSubtypeSmartAlbumPanoramas)];
+                                      @(PHAssetCollectionSubtypeSmartAlbumRecentlyAdded),
+                                      @(PHAssetCollectionSubtypeSmartAlbumPanoramas)];
     picker.customNavigationBarPrompt = message;
     picker.colsInPortrait = 3;
     picker.colsInLandscape = 5;
     picker.minimumInteritemSpacing = 2.0;
-    picker.showCameraButton = NO;
+    picker.showCameraButton = YES;
+    picker.autoSelectCameraImages = YES;
     picker.pickerStatusBarStyle = UIStatusBarStyleDefault;
     picker.modalPresentationStyle = UIModalPresentationPopover;
     picker.navigationBarTintColor = LIGHT_BLUE_COLOR;
@@ -129,6 +130,9 @@ typedef enum : NSUInteger {
 
 - (void)photosPickerDidCancel:(DLFPhotosPickerViewController *)photosPicker {
     [photosPicker dismissViewControllerAnimated:YES completion:nil];
+    CDVPluginResult* pluginResult = nil;
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"User canceled"];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
 }
 
 - (void)photosPicker:(DLFPhotosPickerViewController *)photosPicker detailViewController:(DLFDetailViewController *)detailViewController didSelectPhotos:(NSArray *)selectedPhotos {
@@ -139,7 +143,7 @@ typedef enum : NSUInteger {
     
     [self processPhotos:selectedPhotos];
     
-
+    
 }
 
 - (void)photosPicker:(DLFPhotosPickerViewController *)photosPicker detailViewController:(DLFDetailViewController *)detailViewController configureCell:(DLFPhotoCell *)cell indexPath:(NSIndexPath *)indexPath asset:(PHAsset *)asset {
@@ -168,11 +172,11 @@ typedef enum : NSUInteger {
     CGFloat targetHeight = frameSize.height;
     CGFloat scaleFactor = 0.0;
     CGSize scaledSize = frameSize;
-
+    
     if (CGSizeEqualToSize(imageSize, frameSize) == NO) {
         CGFloat widthFactor = targetWidth / width;
         CGFloat heightFactor = targetHeight / height;
-
+        
         // opposite comparison to imageByScalingAndCroppingForSize in order to contain the image within the given bounds
         if (widthFactor == 0.0) {
             scaleFactor = heightFactor;
@@ -185,16 +189,16 @@ typedef enum : NSUInteger {
         }
         scaledSize = CGSizeMake(floor(width * scaleFactor), floor(height * scaleFactor));
     }
-
+    
     UIGraphicsBeginImageContext(scaledSize); // this will resize
-
+    
     [sourceImage drawInRect:CGRectMake(0, 0, scaledSize.width, scaledSize.height)];
-
+    
     newImage = UIGraphicsGetImageFromCurrentImageContext();
     if (newImage == nil) {
         NSLog(@"could not scale image");
     }
-
+    
     // pop the context to get back to the default
     UIGraphicsEndImageContext();
     return newImage;
@@ -216,7 +220,7 @@ typedef enum : NSUInteger {
     NSArray* emptyArray = [NSArray array];
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:emptyArray];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
-
+    
     [picker.presentingViewController dismissViewControllerAnimated:YES completion:nil];
     NSLog(@"UIImagePickerController: User pressed cancel button");
 }
@@ -228,10 +232,10 @@ typedef enum : NSUInteger {
 - (void)assetsPickerController:(GMImagePickerController *)picker didFinishPickingAssets:(NSArray *)fetchArray
 {
     [picker.presentingViewController dismissViewControllerAnimated:YES completion:nil];
-
+    
     NSLog(@"GMImagePicker: User finished picking assets. Number of selected items is: %lu", (unsigned long)fetchArray.count);
-
-     [self processPhotos:fetchArray];
+    
+    [self processPhotos:fetchArray];
 }
 
 -(void) processPhotos:(NSArray*) fetchArray{
@@ -398,7 +402,7 @@ typedef enum : NSUInteger {
         [self.viewController dismissViewControllerAnimated:YES completion:nil];
         [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
     });
-
+    
 }
 
 - (NSString*)createDirectory:(NSString*)dir
@@ -406,7 +410,7 @@ typedef enum : NSUInteger {
     BOOL isDir = FALSE;
     NSFileManager *fileManager = [NSFileManager defaultManager];
     BOOL isDirExist = [fileManager fileExistsAtPath:dir isDirectory:&isDir];
-
+    
     //If dir is not exist, create it
     if(!(isDirExist && isDir))
     {
@@ -419,7 +423,7 @@ typedef enum : NSUInteger {
     } else{
         //NSLog(@"Directory exist:%@", dir);
     }
-
+    
     return dir;
 }
 
@@ -442,9 +446,9 @@ typedef enum : NSUInteger {
     NSString* docsPath = [NSTemporaryDirectory()stringByStandardizingPath];
     NSFileManager *localFileManager=[[NSFileManager alloc] init];
     NSDirectoryEnumerator *dirEnum = [localFileManager enumeratorAtPath:docsPath];
-
+    
     NSString *file;
-
+    
     while ((file = [dirEnum nextObject])) {
         if([file.pathExtension isEqual: @"jpg"] || [file.pathExtension isEqual: @"jpeg" ] || [file.pathExtension isEqual: @"png"]) {
             NSString *filePath = [[docsPath stringByAppendingString:@"/"] stringByAppendingString:file];
@@ -457,11 +461,11 @@ typedef enum : NSUInteger {
             }
         }
     }
-
+    
     NSString* docsPath2 = [self getDraftsDirectory];
     NSFileManager *localFileManager2=[[NSFileManager alloc] init];
     NSDirectoryEnumerator *dirEnum2 = [localFileManager2 enumeratorAtPath:docsPath2];
-
+    
     while ((file = [dirEnum2 nextObject])) {
         if([file.pathExtension isEqual: @"jpg"] || [file.pathExtension isEqual: @"jpeg" ] || [file.pathExtension isEqual: @"png"]) {
             NSString *filePath = [[docsPath2 stringByAppendingString:@"/"] stringByAppendingString:file];
@@ -474,7 +478,7 @@ typedef enum : NSUInteger {
             }
         }
     }
-
+    
     CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:true];
     [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
 }
@@ -483,7 +487,7 @@ typedef enum : NSUInteger {
 -(void)assetsPickerControllerDidCancel:(GMImagePickerController *)picker
 {
     CDVPluginResult* pluginResult = nil;
-    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"User cancel"];
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"User canceled"];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
     NSLog(@"GMImagePicker: User pressed cancel button");
 }
@@ -493,25 +497,25 @@ typedef enum : NSUInteger {
 {
     // If Settings button (on iOS 8), open the settings app
     if (buttonIndex == 1) {
-            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
     }
-
+    
     // Dismiss the view
     [self.viewController dismissViewControllerAnimated:YES completion:nil];
-
+    
     CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"has no access to camera"];   // error callback expects string ATM
-
+    
     [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
-
+    
 }
 
 -(BOOL) shouldSelectAllAlbumCell{
     return YES;
 }
- -(NSString*) controllerTitle{
+-(NSString*) controllerTitle{
     return self.title;
- }
- -(NSString*) controllerCustomNavigationBarPrompt{
+}
+-(NSString*) controllerCustomNavigationBarPrompt{
     return self.message;
- }
+}
 @end
