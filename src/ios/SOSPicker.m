@@ -105,17 +105,17 @@ typedef enum : NSUInteger {
     picker.showCameraButton = YES;
     picker.autoSelectCameraImages = YES;
     picker.pickerStatusBarStyle = UIStatusBarStyleDefault;
-    picker.modalPresentationStyle = UIModalPresentationPopover;
+//    picker.modalPresentationStyle = UIModalPresentationPopover;
     picker.navigationBarTintColor = LIGHT_BLUE_COLOR;
     picker.toolbarTextColor = LIGHT_BLUE_COLOR;
     picker.toolbarTintColor = LIGHT_BLUE_COLOR;
-    UIPopoverPresentationController *popPC = picker.popoverPresentationController;
-    popPC.permittedArrowDirections = UIPopoverArrowDirectionAny;
+//    UIPopoverPresentationController *popPC = picker.popoverPresentationController;
+//    popPC.permittedArrowDirections = UIPopoverArrowDirectionAny;
     
-    popPC.sourceView = picker.view;
-    CGFloat width = [UIScreen mainScreen].bounds.size.width;
-    CGFloat height = [UIScreen mainScreen].bounds.size.height;
-    popPC.sourceRect = CGRectMake(width * 0.45, height * 0.65, 10, 10);
+//    popPC.sourceView = picker.view;
+//    CGFloat width = [UIScreen mainScreen].bounds.size.width;
+//    CGFloat height = [UIScreen mainScreen].bounds.size.height;
+//    popPC.sourceRect = CGRectMake(width * 0.45, height * 0.65, 10, 10);
     [self.viewController showViewController:picker sender:nil];
 }
 
