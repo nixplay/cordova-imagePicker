@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.kaopiz.kprogresshud.KProgressHUD;
 import com.kbeanie.multipicker.api.Picker;
 import com.kbeanie.multipicker.api.callbacks.ImagePickerCallback;
 import com.kbeanie.multipicker.api.entity.ChosenImage;
@@ -18,6 +19,7 @@ public class ImagePickerPluginActivity extends Activity {
     public static final int REQUEST_IMAGEPICKER = 0x41;
     private static final String KEY_FILES = "MULTIPLEFILENAMES";
     private com.kbeanie.multipicker.api.ImagePicker imagePicker;
+    private KProgressHUD kProgressHUD;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +30,7 @@ public class ImagePickerPluginActivity extends Activity {
             public void onImagesChosen(List<ChosenImage> images) {
                 //dismiss dialog
                 // Display images
+                kProgressHUD.dismiss();
                 ArrayList<String> imageList = new ArrayList<String>();
                 for (ChosenImage image : images) {
                     File file = new File(image.getOriginalPath());
@@ -65,8 +68,27 @@ public class ImagePickerPluginActivity extends Activity {
         if (resultCode == RESULT_OK && data != null) {
             if (requestCode == Picker.PICK_IMAGE_DEVICE) {
 //                show dialog
+                kProgressHUD = KProgressHUD.create(ImagePickerPluginActivity.this)
+                        .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                        .setDetailsLabel("Downloading data")
+                        .setCancellable(false)
+                        .setAnimationSpeed(2)
+                        .setDimAmount(0.5f)
+                        .show();
+
                 imagePicker.submit(data);
             }
+            else{
+                Intent intent = new Intent();
+                setResult(RESULT_CANCELED, intent);
+                finishActivity(REQUEST_IMAGEPICKER);
+                finish();
+
+            }
+        }else{
+            Intent intent = new Intent();
+            setResult(RESULT_CANCELED, intent);
+            finish();
         }
     }
 }
