@@ -49,15 +49,23 @@
 	<!-- android -->
 	<platform name="android">
 		<!-- <dependency id="android.support.v4" url="https://github.com/MobileChromeApps/cordova-plugin-android-support-v4" /> -->
+		<framework src="com.kbeanie:multipicker:1.1.31@aar"/>
 		<config-file target="res/xml/config.xml" parent="/*">
 			<feature name="ImagePicker">
 				<param name="android-package" value="com.synconset.ImagePicker"/>
 			</feature>
 		</config-file>
-
+		<source-file src="src/android/com/synconset/ImagePicker/ImagePicker.java" target-dir="src/com/synconset" />
+		<source-file src="src/android/com/synconset/ImagePicker/FakeR.java" target-dir="src/com/synconset" />
+		<source-file src="src/android/com/synconset/ImagePicker/ImagePickerPluginActivity.java" target-dir="src/com/synconset" />
 		<config-file target="AndroidManifest.xml" parent="/manifest/application">
+			<activity android:name="com.synconset.ImagePickerPluginActivity" android:theme="@android:style/Theme.Holo.Light" android:screenOrientation="portrait">
+				
+			</activity>
+		</config-file>
+		<!-- <config-file target="AndroidManifest.xml" parent="/manifest/application">
 			<activity android:label="@string/multi_app_name" android:name="com.synconset.MultiImageChooserActivity" android:theme="@android:style/Theme.Holo.Light" android:screenOrientation="portrait">
-				<!-- <intent-filter /> -->
+				
 			</activity>
 		<activity
 			android:name="com.photoselector.ui.PhotoSelectorActivity"
@@ -96,9 +104,6 @@
 			<string name="progress_title">Processing Images</string>
 			<string name="progress_message">This may take a few moments.</string>
 		</config-file>
-		<!-- <framework src="src/android/Library/Android-Ultra-Photo-Selector" custom="true"/> -->
-
-
 		<source-file src="src/android/com/synconset/ImagePicker/ImagePicker.java" target-dir="src/com/synconset" />
 		<source-file src="src/android/com/synconset/ImagePicker/FakeR.java" target-dir="src/com/synconset" />
 
@@ -182,9 +187,7 @@
 		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/layout/view_photopreview.xml" target-dir="res/layout" />
 		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/values/colors.xml" target-dir="res/values" />
 		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/values/dimens.xml" target-dir="res/values" />
-		<!-- <source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/values/strings.xml" target-dir="res/values" /> -->
-		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/values/styles.xml" target-dir="res/values" />
-		<!-- <source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/values-zh/strings.xml" target-dir="res/values-zh" /> -->
+		<source-file src="src/android/Library/Android-Ultra-Photo-Selector/res/values/styles.xml" target-dir="res/values" /> -->
 	</platform>
 
 	<!-- amazon-fireos -->
