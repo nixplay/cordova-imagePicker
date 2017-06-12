@@ -2,6 +2,7 @@ package com.synconset;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -32,11 +33,9 @@ public class ImagePickerPluginActivity extends Activity {
                 // Display images
                 kProgressHUD.dismiss();
                 ArrayList<String> imageList = new ArrayList<String>();
-                for (ChosenImage image : images) {
-                    File file = new File(image.getOriginalPath());
+                for (ChosenImage file : images) {
 
-                    Log.d(TAG, image.toString());
-                    imageList.add("file://" + file.getAbsolutePath());
+                    imageList.add(Uri.fromFile(new File(file.getOriginalPath())).toString());
                 }
                 Bundle conData = new Bundle();
                 conData.putStringArrayList(KEY_FILES, imageList);
