@@ -65,7 +65,7 @@ public class ImagePicker extends CordovaPlugin {
 			this.desiredWidth = 0;
 			this.desiredHeight = 0;
 			this.quality = 100;
-			this.preSelectedAssets.clear();
+//			this.preSelectedAssets.clear();
 //			if (this.params.has("maximumImagesCount")) {
 //				if(totalMegs > 1000) {
 //					this.maxImages = this.params.getInt("maximumImagesCount");

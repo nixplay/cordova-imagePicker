@@ -64,8 +64,6 @@ public class ImagePickerPluginActivity extends Activity {
         });
         if (this.width > 0 && this.height > 0) {
             imagePicker.ensureMaxSize(this.width, this.height);
-
-
         }
         imagePicker.allowMultiple(); // Default is false
         imagePicker.shouldGenerateMetadata(true);
