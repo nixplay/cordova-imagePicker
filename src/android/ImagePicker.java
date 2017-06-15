@@ -58,29 +58,29 @@ public class ImagePicker extends CordovaPlugin {
 		System.out.println("[NIX] totalMegs: " + totalMegs);
 
 		if (action.equals("getPictures")) {
-//			this.params = args.getJSONObject(0);
+			this.params = args.getJSONObject(0);
 //
 //			intent = new Intent(cordova.getActivity(), PhotoSelectorActivity.class);
 //			this.maxImages = 5;
-//			this.desiredWidth = 0;
-//			this.desiredHeight = 0;
-//			this.quality = 100;
-//			this.preSelectedAssets.clear();
+			this.desiredWidth = 0;
+			this.desiredHeight = 0;
+			this.quality = 100;
+			this.preSelectedAssets.clear();
 //			if (this.params.has("maximumImagesCount")) {
 //				if(totalMegs > 1000) {
 //					this.maxImages = this.params.getInt("maximumImagesCount");
 //				}
 //			}
 //			System.out.println("[NIX] Maximum images: " + this.maxImages);
-//			if (this.params.has("width")) {
-//				this.desiredWidth = this.params.getInt("width");
-//			}
-//			if (this.params.has("height")) {
-//				this.desiredHeight = this.params.getInt("height");
-//			}
-//			if (this.params.has("quality")) {
-//				this.quality = this.params.getInt("quality");
-//			}
+			if (this.params.has("width")) {
+				this.desiredWidth = this.params.getInt("width");
+			}
+			if (this.params.has("height")) {
+				this.desiredHeight = this.params.getInt("height");
+			}
+			if (this.params.has("quality")) {
+				this.quality = this.params.getInt("quality");
+			}
 //			if (this.params.has("assets")) {
 //				JSONArray assets = this.params.getJSONArray("assets");
 //				if (assets != null) {
@@ -102,7 +102,10 @@ public class ImagePicker extends CordovaPlugin {
 //			}
 
 			intent = new Intent(cordova.getActivity(), ImagePickerPluginActivity.class);
-
+			intent.putExtra("WIDTH", this.desiredWidth);
+			intent.putExtra("HEIGHT", this.desiredHeight);
+			intent.putExtra("QUALITY", this.quality);
+			intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 			if(cordova.hasPermission(permissions[0])) {
 				this.cordova.startActivityForResult(this, intent, ImagePickerPluginActivity.REQUEST_IMAGEPICKER);
 			} else if (this.cordova != null) {

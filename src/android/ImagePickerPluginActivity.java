@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.kaopiz.kprogresshud.KProgressHUD;
+import com.kbeanie.multipicker.api.CacheLocation;
 import com.kbeanie.multipicker.api.Picker;
 import com.kbeanie.multipicker.api.callbacks.ImagePickerCallback;
 import com.kbeanie.multipicker.api.entity.ChosenImage;
@@ -21,11 +22,18 @@ public class ImagePickerPluginActivity extends Activity {
     private static final String KEY_FILES = "MULTIPLEFILENAMES";
     private com.kbeanie.multipicker.api.ImagePicker imagePicker;
     private KProgressHUD kProgressHUD;
+    private int width;
+    private int height;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         imagePicker = new com.kbeanie.multipicker.api.ImagePicker(this);
+        Bundle bundle = getIntent().getExtras();
+
+        this.width = bundle.getInt("WIDTH");
+        this.height = bundle.getInt("HEIGHT");
+
         imagePicker.setImagePickerCallback(new ImagePickerCallback() {
             @Override
             public void onImagesChosen(List<ChosenImage> images) {
@@ -54,9 +62,14 @@ public class ImagePickerPluginActivity extends Activity {
                 Log.d(TAG, message);
             }
         });
+        if (this.width > 0 && this.height > 0) {
+            imagePicker.ensureMaxSize(this.width, this.height);
 
+
+        }
         imagePicker.allowMultiple(); // Default is false
-        imagePicker.shouldGenerateMetadata(false); // Default is true
+        imagePicker.shouldGenerateMetadata(true);
+        imagePicker.setCacheLocation(CacheLocation.INTERNAL_APP_DIR);//use internal cache directory
         imagePicker.shouldGenerateThumbnails(false); // Default is true
         imagePicker.pickImage();
 
