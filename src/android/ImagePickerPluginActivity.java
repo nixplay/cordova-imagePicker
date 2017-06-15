@@ -2,8 +2,10 @@ package com.synconset;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import com.kaopiz.kprogresshud.KProgressHUD;
@@ -12,7 +14,6 @@ import com.kbeanie.multipicker.api.Picker;
 import com.kbeanie.multipicker.api.callbacks.ImagePickerCallback;
 import com.kbeanie.multipicker.api.entity.ChosenImage;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +44,8 @@ public class ImagePickerPluginActivity extends Activity {
                 ArrayList<String> imageList = new ArrayList<String>();
                 for (ChosenImage file : images) {
 
-                    imageList.add(Uri.fromFile(new File(file.getOriginalPath())).toString());
+                    imageList.add(file.getQueryUri());
+//                    imageList.add(Uri.fromFile(new File(file.getOriginalPath())).toString());
                 }
                 Bundle conData = new Bundle();
                 conData.putStringArrayList(KEY_FILES, imageList);
