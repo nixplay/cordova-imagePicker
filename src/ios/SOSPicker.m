@@ -491,7 +491,20 @@ typedef enum : NSUInteger {
     [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
     NSLog(@"GMImagePicker: User pressed cancel button");
 }
+- (BOOL)shouldAutorotate
+{
+    return NO;
+}
 
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+    return 1 << UIInterfaceOrientationPortrait;
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+}
 // Delegate for camera roll permission UIAlertView
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
