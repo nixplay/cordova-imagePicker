@@ -42,7 +42,8 @@ public class ImagePickerPluginActivity extends Activity {
                 kProgressHUD.dismiss();
                 ArrayList<String> imageList = new ArrayList<String>();
                 for (ChosenImage file : images) {
-                    if (file.getQueryUri().contains("com.google.android.apps.photos.contentprovider")) {
+                    //resolve content parsing
+                    if (file.getQueryUri().contains("com.google.android.apps.photos.contentprovider") || file.getQueryUri().contains("com.google.android.apps.docs.storage.legacy") ) {
                         imageList.add(Uri.fromFile(new File(file.getOriginalPath())).toString());
                     } else {
                         imageList.add(file.getQueryUri());
