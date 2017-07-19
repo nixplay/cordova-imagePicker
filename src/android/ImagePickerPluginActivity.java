@@ -2,10 +2,8 @@ package com.synconset;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 
 import com.kaopiz.kprogresshud.KProgressHUD;
@@ -14,6 +12,7 @@ import com.kbeanie.multipicker.api.Picker;
 import com.kbeanie.multipicker.api.callbacks.ImagePickerCallback;
 import com.kbeanie.multipicker.api.entity.ChosenImage;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,9 +42,12 @@ public class ImagePickerPluginActivity extends Activity {
                 kProgressHUD.dismiss();
                 ArrayList<String> imageList = new ArrayList<String>();
                 for (ChosenImage file : images) {
-
-                    imageList.add(file.getQueryUri());
-//                    imageList.add(Uri.fromFile(new File(file.getOriginalPath())).toString());
+                    if (file.getQueryUri().contains("com.google.android.apps.photos.contentprovider")) {
+                        imageList.add(Uri.fromFile(new File(file.getOriginalPath())).toString());
+                    } else {
+                        imageList.add(file.getQueryUri());
+                    }
+//
                 }
                 Bundle conData = new Bundle();
                 conData.putStringArrayList(KEY_FILES, imageList);
@@ -89,15 +91,14 @@ public class ImagePickerPluginActivity extends Activity {
                         .show();
 
                 imagePicker.submit(data);
-            }
-            else{
+            } else {
                 Intent intent = new Intent();
                 setResult(RESULT_CANCELED, intent);
                 finishActivity(REQUEST_IMAGEPICKER);
                 finish();
 
             }
-        }else{
+        } else {
             Intent intent = new Intent();
             setResult(RESULT_CANCELED, intent);
             finish();
