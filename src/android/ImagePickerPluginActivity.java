@@ -17,12 +17,12 @@ public class ImagePickerPluginActivity extends Activity {
     private KProgressHUD kProgressHUD;
     private int width;
     private int height;
-
+    FakeR fakeR;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        imagePicker = new com.kbeanie.multipicker.api.ImagePicker(this);
-
+        fakeR = new FakeR(this);
         Bundle bundle = getIntent().getExtras();
 
         this.width = bundle.getInt("WIDTH");
@@ -31,14 +31,13 @@ public class ImagePickerPluginActivity extends Activity {
                 .create(this)
                 .returnAfterFirst(false)
                 .folderMode(true) // folder mode (false by default)
-                .folderTitle("Folder") // folder selection title
+                .folderTitle(getString(fakeR.getId("string","ALBUM"))) // folder selection title
                 .imageTitle("Tap to select") // image selection title
                 .multi() // multi mode (default mode)
                 .limit(1000) // max images can be selected (99 by default)
                 .showCamera(true) // show camera or not (true by default)
-                .imageDirectory("Camera") // directory name for captured image  ("Camera" folder by default)
                 .enableLog(false) // disabling log
-
+                .theme(fakeR.getId("style","ImagePickerTheme"))
                 .start(REQUEST_CODE_PICKER); // start image picker activity with request code
 
 
