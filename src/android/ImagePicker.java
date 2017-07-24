@@ -11,6 +11,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
+import com.creedon.Nixplay.R;
+import com.esafirm.imagepicker.model.Image;
+
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
@@ -24,6 +27,7 @@ import java.util.ArrayList;
 import static android.app.Activity.RESULT_OK;
 
 public class ImagePicker extends CordovaPlugin {
+	private static final int REQUEST_CODE_PICKER = 0x111;
 	public static String TAG = "ImagePicker";
 
 	private CallbackContext callbackContext;
@@ -61,17 +65,10 @@ public class ImagePicker extends CordovaPlugin {
 			this.params = args.getJSONObject(0);
 //
 //			intent = new Intent(cordova.getActivity(), PhotoSelectorActivity.class);
-//			this.maxImages = 5;
+			this.maxImages = 100;
 			this.desiredWidth = 0;
 			this.desiredHeight = 0;
 			this.quality = 100;
-//			this.preSelectedAssets.clear();
-//			if (this.params.has("maximumImagesCount")) {
-//				if(totalMegs > 1000) {
-//					this.maxImages = this.params.getInt("maximumImagesCount");
-//				}
-//			}
-//			System.out.println("[NIX] Maximum images: " + this.maxImages);
 			if (this.params.has("width")) {
 				this.desiredWidth = this.params.getInt("width");
 			}
@@ -81,37 +78,19 @@ public class ImagePicker extends CordovaPlugin {
 			if (this.params.has("quality")) {
 				this.quality = this.params.getInt("quality");
 			}
-//			if (this.params.has("assets")) {
-//				JSONArray assets = this.params.getJSONArray("assets");
-//				if (assets != null) {
-//					for(int i=0; i < assets.length(); i++) {
-//						this.preSelectedAssets.add(assets.get(i).toString());
-//					}
-//				}
-//			}
-//			intent.putExtra("MAX_IMAGES", this.maxImages);
-//			intent.putExtra("WIDTH", this.desiredWidth);
-//			intent.putExtra("HEIGHT", this.desiredHeight);
-//			intent.putExtra("QUALITY", this.quality);
-//			intent.putExtra("PRE_SELECTED_ASSETS", this.preSelectedAssets);
-//			intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-//			if(cordova.hasPermission(permissions[0])) {
-//				this.cordova.startActivityForResult(this, intent, 0);
-//			} else if (this.cordova != null) {
-//				getReadPermission(SAVE_TO_ALBUM_SEC);
-//			}
-
-			intent = new Intent(cordova.getActivity(), ImagePickerPluginActivity.class);
-			intent.putExtra("WIDTH", this.desiredWidth);
-			intent.putExtra("HEIGHT", this.desiredHeight);
-			intent.putExtra("QUALITY", this.quality);
-			intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-			if(cordova.hasPermission(permissions[0])) {
-				this.cordova.startActivityForResult(this, intent, ImagePickerPluginActivity.REQUEST_IMAGEPICKER);
-			} else if (this.cordova != null) {
-				getReadPermission(SAVE_TO_ALBUM_SEC);
-			}
-
+			Intent intent = com.esafirm.imagepicker.features.ImagePicker
+					.create(cordova.getActivity())
+					.returnAfterFirst(false)
+					.folderMode(true) // folder mode (false by default)
+					.folderTitle("Album") // folder selection title
+					.multi() // multi mode (default mode)
+					.limit(maxImages) // max images can be selected (99 by default)
+					.showCamera(true) // show camera or not (true by default)
+					.imageDirectory("Camera") // directory name for captured image  ("Camera" folder by default)
+					.enableLog(false) // disabling log
+					.theme(R.style.ImagePickerTheme)
+					.getIntent(cordova.getActivity());
+			this.cordova.startActivityForResult(this, intent, REQUEST_CODE_PICKER);
 
 		} else if (action.equals("cleanupTempFiles")) {
 			cleanupTempFiles();
@@ -171,30 +150,24 @@ public class ImagePicker extends CordovaPlugin {
 	}
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (resultCode == RESULT_OK && data != null && requestCode == ImagePickerPluginActivity.REQUEST_IMAGEPICKER) {
-			ArrayList<String> fileNames = data.getStringArrayListExtra("MULTIPLEFILENAMES");
-			this.preSelectedAssets = data.getStringArrayListExtra("SELECTED_ASSETS");
-			ArrayList<String> invalidImages = data.getStringArrayListExtra("INVALID_IMAGES");
-			JSONArray jsFileNames = new JSONArray(fileNames);
-			JSONArray jsPreSelectedAssets = new JSONArray(this.preSelectedAssets);
+		if (requestCode == REQUEST_CODE_PICKER && resultCode == RESULT_OK && data != null) {
+			ArrayList<String> imageList = new ArrayList<String>();
+			ArrayList<Image> images = (ArrayList<Image>)  com.esafirm.imagepicker.features.ImagePicker.getImages(data);
+			for (int i = 0 ; i < images.size() ; i++){
+				imageList.add(images.get(i).getPath());
+			}
+
+			JSONArray jsFileNames = new JSONArray(imageList);
+			JSONArray jsPreSelectedAssets = new JSONArray();
 			JSONObject res = new JSONObject();
-//
+
 			try {
 				res.put("images", jsFileNames);
 				res.put("preSelectedAssets", jsPreSelectedAssets);
 				res.put("maxImages", maxImages);
-				if(invalidImages != null && invalidImages.size() >0)
-					res.put("invalidImages",  new JSONArray(invalidImages));
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
-
-//			if(resultCode == RESULT_OK) {
-//				if(requestCode == Picker.PICK_IMAGE_DEVICE) {
-//					imagePicker.submit(data);
-//				}
-//			}
-
 			this.callbackContext.success(res);
 		} else if (resultCode == Activity.RESULT_CANCELED && data != null) {
 			String error = data.getStringExtra("ERRORMESSAGE");
