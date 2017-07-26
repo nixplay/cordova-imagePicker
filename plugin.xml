@@ -2,7 +2,7 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
   xmlns:android="http://schemas.android.com/apk/res/android"
   id="com.synconset.imagepicker"
-  version="1.1.3">
+  version="1.2.0">
 
 	<name>ImagePicker</name>
 
@@ -49,7 +49,7 @@
 	<!-- android -->
 	<platform name="android">
 		<!-- <dependency id="android.support.v4" url="https://github.com/MobileChromeApps/cordova-plugin-android-support-v4" /> -->
-		<framework src="com.kbeanie:multipicker:1.1.31@aar"/>
+		<framework src="com.github.esafirm.android-image-picker:imagepicker:1.7.4@aar"/>
 		<framework src="com.kaopiz:kprogresshud:1.0.5"/>
 		<config-file target="res/xml/config.xml" parent="/*">
 			<feature name="ImagePicker">
