@@ -15,7 +15,8 @@
 #define CDV_PHOTO_PREFIX @"cdv_photo_"
 #define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 #define LIGHT_BLUE_COLOR [UIColor colorWithRed:(99/255.0f)  green:(176/255.0f)  blue:(228.0f/255.0f) alpha:1.0]
-
+#define CAMERA_ALERT 0x101
+#define IMAGE_LIMIT_ALERT 0x102
 
 typedef enum : NSUInteger {
     FILE_URI = 0,
@@ -31,8 +32,10 @@ typedef enum : NSUInteger {
 
 - (void) getPictures:(CDVInvokedUrlCommand *)command {
     NSDictionary *options = [command.arguments objectAtIndex: 0];
-    self.maximumImagesCount = [[options objectForKey:@"maximumImagesCount"] integerValue];
-    
+    NSInteger maximumImagesCount = [[options objectForKey:@"maximumImagesCount"] integerValue];
+    #warning debug testing 10 images
+    self.maximumImagesCount = 10;//(maximumImagesCount > 0) ? maximumImagesCount : 100;
+
     self.outputType = [[options objectForKey:@"outputType"] integerValue];
     self.allow_video = [[options objectForKey:@"allow_video" ] boolValue ];
     self.title = [options objectForKey:@"title"];
@@ -74,12 +77,14 @@ typedef enum : NSUInteger {
     
     // Denied; show an alert
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[[UIAlertView alloc] initWithTitle:[[NSBundle mainBundle]
-                                             objectForInfoDictionaryKey:@"CFBundleDisplayName"]
-                                    message:NSLocalizedString(@"Access to the camera roll has been prohibited; please enable it in the Settings app to continue.", nil)
-                                   delegate:self
-                          cancelButtonTitle:NSLocalizedString(@"OK", nil)
-                          otherButtonTitles:settingsButton, nil] show];
+        UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:[[NSBundle mainBundle]
+                                                                     objectForInfoDictionaryKey:@"CFBundleDisplayName"]
+                                                            message:NSLocalizedString(@"ACCESS_TO_THE_CAMERA_ROLL_HAS_BEEN_PROHIBITED_PLEASE_ENABLE_IT_IN_THE_SETTINGS_APP_TO_CONTINUE", nil)
+                                                           delegate:self
+                                                  cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                                                  otherButtonTitles:settingsButton, nil];
+        alertView.tag = CAMERA_ALERT;
+        [alertView show];
     });
 }
 
@@ -105,17 +110,17 @@ typedef enum : NSUInteger {
     picker.showCameraButton = YES;
     picker.autoSelectCameraImages = YES;
     picker.pickerStatusBarStyle = UIStatusBarStyleDefault;
-//    picker.modalPresentationStyle = UIModalPresentationPopover;
+    //    picker.modalPresentationStyle = UIModalPresentationPopover;
     picker.navigationBarTintColor = LIGHT_BLUE_COLOR;
     picker.toolbarTextColor = LIGHT_BLUE_COLOR;
     picker.toolbarTintColor = LIGHT_BLUE_COLOR;
-//    UIPopoverPresentationController *popPC = picker.popoverPresentationController;
-//    popPC.permittedArrowDirections = UIPopoverArrowDirectionAny;
+    //    UIPopoverPresentationController *popPC = picker.popoverPresentationController;
+    //    popPC.permittedArrowDirections = UIPopoverArrowDirectionAny;
     
-//    popPC.sourceView = picker.view;
-//    CGFloat width = [UIScreen mainScreen].bounds.size.width;
-//    CGFloat height = [UIScreen mainScreen].bounds.size.height;
-//    popPC.sourceRect = CGRectMake(width * 0.45, height * 0.65, 10, 10);
+    //    popPC.sourceView = picker.view;
+    //    CGFloat width = [UIScreen mainScreen].bounds.size.width;
+    //    CGFloat height = [UIScreen mainScreen].bounds.size.height;
+    //    popPC.sourceRect = CGRectMake(width * 0.45, height * 0.65, 10, 10);
     [self.viewController showViewController:picker sender:nil];
 }
 
@@ -404,20 +409,26 @@ typedef enum : NSUInteger {
     });
     
 }
-
-- (void)assetsPickerController:(GMImagePickerController *)picker didSelectAsset:(PHAsset *)asset{
-    if([picker.selectedAssets count] > self.maximumImagesCount){
+- (BOOL)assetsPickerController:(GMImagePickerController *)picker shouldSelectAsset:(PHAsset *)asset{
+    if([picker.selectedAssets count] >= self.maximumImagesCount){
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[[UIAlertView alloc] initWithTitle:[[NSBundle mainBundle]
-                                                 objectForInfoDictionaryKey:@"CFBundleDisplayName"]
-                                        message:NSLocalizedString(@"Access to the camera roll has been prohibited; please enable it in the Settings app to continue.", nil)
-                                       delegate:self
-                              cancelButtonTitle:NSLocalizedString(@"OK", nil)
-                              otherButtonTitles:nil, nil] show];
+            UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:[[NSBundle mainBundle]
+                                                                         objectForInfoDictionaryKey:@"CFBundleDisplayName"]
+                                                                message:NSLocalizedString(@"IMAGE_SELECTION_LIMIT", nil)
+                                                               delegate:self
+                                                      cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                                                      otherButtonTitles:nil, nil];
+            alertView.tag = IMAGE_LIMIT_ALERT;
+            [alertView show];
+            
         });
+        return NO;
+        
+    }else{
+        return YES;
     }
-}
 
+}
 - (NSString*)createDirectory:(NSString*)dir
 {
     BOOL isDir = FALSE;
@@ -521,18 +532,21 @@ typedef enum : NSUInteger {
 // Delegate for camera roll permission UIAlertView
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    // If Settings button (on iOS 8), open the settings app
-    if (buttonIndex == 1) {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+    if(alertView.tag == CAMERA_ALERT){
+        // If Settings button (on iOS 8), open the settings app
+        if (buttonIndex == 1) {
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+        }
+        
+        // Dismiss the view
+        [self.viewController dismissViewControllerAnimated:YES completion:nil];
+        
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"has no access to camera"];   // error callback expects string ATM
+        
+        [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
+    }else if(alertView.tag == IMAGE_LIMIT_ALERT){
+        
     }
-    
-    // Dismiss the view
-    [self.viewController dismissViewControllerAnimated:YES completion:nil];
-    
-    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"has no access to camera"];   // error callback expects string ATM
-    
-    [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
-    
 }
 
 -(BOOL) shouldSelectAllAlbumCell{
