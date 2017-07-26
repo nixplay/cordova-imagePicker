@@ -18,6 +18,7 @@
 
 @property (nonatomic, assign) NSInteger width;
 @property (nonatomic, assign) NSInteger height;
+@property (nonatomic, assign) NSInteger maximumImagesCount;
 @property (nonatomic, assign) NSInteger quality;
 @property (nonatomic, strong) NSString* storage;
 @property (nonatomic, assign) NSInteger outputType;

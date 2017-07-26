@@ -31,7 +31,7 @@ typedef enum : NSUInteger {
 
 - (void) getPictures:(CDVInvokedUrlCommand *)command {
     NSDictionary *options = [command.arguments objectAtIndex: 0];
-    NSInteger maximumImagesCount = [[options objectForKey:@"maximumImagesCount"] integerValue];
+    self.maximumImagesCount = [[options objectForKey:@"maximumImagesCount"] integerValue];
     
     self.outputType = [[options objectForKey:@"outputType"] integerValue];
     self.allow_video = [[options objectForKey:@"allow_video" ] boolValue ];
@@ -403,6 +403,19 @@ typedef enum : NSUInteger {
         [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
     });
     
+}
+
+- (void)assetsPickerController:(GMImagePickerController *)picker didSelectAsset:(PHAsset *)asset{
+    if([picker.selectedAssets count] > self.maximumImagesCount){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[[UIAlertView alloc] initWithTitle:[[NSBundle mainBundle]
+                                                 objectForInfoDictionaryKey:@"CFBundleDisplayName"]
+                                        message:NSLocalizedString(@"Access to the camera roll has been prohibited; please enable it in the Settings app to continue.", nil)
+                                       delegate:self
+                              cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                              otherButtonTitles:nil, nil] show];
+        });
+    }
 }
 
 - (NSString*)createDirectory:(NSString*)dir
