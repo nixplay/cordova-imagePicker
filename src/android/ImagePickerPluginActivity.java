@@ -18,6 +18,8 @@ public class ImagePickerPluginActivity extends Activity {
     private int width;
     private int height;
     FakeR fakeR;
+    private int maxImages;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +29,7 @@ public class ImagePickerPluginActivity extends Activity {
 
         this.width = bundle.getInt("WIDTH");
         this.height = bundle.getInt("HEIGHT");
+        this.maxImages = bundle.getInt("MAX_IMAGES");
         com.esafirm.imagepicker.features.ImagePicker
                 .create(this)
                 .returnAfterFirst(false)
@@ -34,7 +37,7 @@ public class ImagePickerPluginActivity extends Activity {
                 .folderTitle(getString(fakeR.getId("string","ALBUM"))) // folder selection title
                 .imageTitle("Tap to select") // image selection title
                 .multi() // multi mode (default mode)
-                .limit(1000) // max images can be selected (99 by default)
+                .limit(maxImages) // max images can be selected (99 by default)
                 .showCamera(true) // show camera or not (true by default)
                 .enableLog(false) // disabling log
                 .theme(fakeR.getId("style","ImagePickerTheme"))
