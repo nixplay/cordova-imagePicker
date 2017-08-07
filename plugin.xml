@@ -2,7 +2,7 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
   xmlns:android="http://schemas.android.com/apk/res/android"
   id="com.synconset.imagepicker"
-  version="1.2.1">
+  version="1.2.2">
 
 	<name>ImagePicker</name>
 
@@ -32,7 +32,7 @@
 		<source-file src="src/ios/SOSPicker.m" />
 		<pods-config ios-min-version="8.0" use-frameworks="true">
         </pods-config>
-		
+
 		<pod name="GMImagePicker" git="https://github.com/nixplay/GMImagePicker" tag="0.0.7"/>
 		<pod name="AFNetworking" />
 		<pod name="MRProgress" />
@@ -61,11 +61,11 @@
 		<source-file src="src/android/ImagePickerPluginActivity.java" target-dir="src/com/synconset" />
 		<config-file target="AndroidManifest.xml" parent="/manifest/application">
 			<activity android:name="com.synconset.ImagePickerPluginActivity" android:theme="@android:style/Theme.Holo.Light" android:screenOrientation="portrait">
-				
+
 			</activity>
 		</config-file>
 		<source-file src="src/android/values/styles.xml" target-dir="res/values" />
-		
+
 	</platform>
 
 </plugin>
