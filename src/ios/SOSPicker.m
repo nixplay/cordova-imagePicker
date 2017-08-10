@@ -98,10 +98,19 @@ typedef enum : NSUInteger {
     GMImagePickerController *picker = [[GMImagePickerController alloc] init:allow_video withAssets:preSelectedAssets delegate:self];
     picker.delegate = self;
     picker.title = title;
-    picker.mediaTypes = @[@(PHAssetMediaTypeImage)];
-    picker.customSmartCollections = @[@(PHAssetCollectionSubtypeSmartAlbumFavorites),
-                                      @(PHAssetCollectionSubtypeSmartAlbumRecentlyAdded),
-                                      @(PHAssetCollectionSubtypeSmartAlbumPanoramas)];
+    if(allow_video){
+        picker.mediaTypes = @[@(PHAssetMediaTypeImage),
+                              @(PHAssetMediaTypeVideo)];
+        picker.customSmartCollections = @[@(PHAssetCollectionSubtypeSmartAlbumVideos),
+                                          @(PHAssetCollectionSubtypeSmartAlbumFavorites),
+                                          @(PHAssetCollectionSubtypeSmartAlbumRecentlyAdded),
+                                          @(PHAssetCollectionSubtypeSmartAlbumPanoramas)];
+    }else{
+        picker.mediaTypes = @[@(PHAssetMediaTypeImage)];
+        picker.customSmartCollections = @[@(PHAssetCollectionSubtypeSmartAlbumFavorites),
+                                          @(PHAssetCollectionSubtypeSmartAlbumRecentlyAdded),
+                                          @(PHAssetCollectionSubtypeSmartAlbumPanoramas)];
+    }
     picker.customNavigationBarPrompt = message;
     picker.colsInPortrait = 3;
     picker.colsInLandscape = 5;
@@ -287,21 +296,22 @@ typedef enum : NSUInteger {
             PHAsset *asset = [fetchArray objectAtIndex:index];
             NSString *localIdentifier;
             
-            if(self.allow_video){
-                PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
-                options.deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
-                options.networkAccessAllowed = YES;
-                [manager requestAVAssetForVideo:asset
-                                        options:options
-                                  resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
-                                      if([asset isKindOfClass:[AVURLAsset class]]){
-                                          [fileStrings addObject: [[((AVURLAsset*)asset) URL] absoluteString] ];
-                                          result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: [NSDictionary dictionaryWithObjectsAndKeys: preSelectedAssets, @"preSelectedAssets", fileStrings, @"images", invalidImages, @"invalidImages", nil]];
-                                      }
-                                      
-                                  }];
-                index++;
-            }else{
+//            if(self.allow_video){
+//                PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
+//                options.deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
+//                options.networkAccessAllowed = YES;
+//                [manager requestAVAssetForVideo:asset
+//                                        options:options
+//                                  resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
+//                                      if([asset isKindOfClass:[AVURLAsset class]]){
+//                                          [fileStrings addObject: [[((AVURLAsset*)asset) URL] absoluteString] ];
+//                                          result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: [NSDictionary dictionaryWithObjectsAndKeys: preSelectedAssets, @"preSelectedAssets", fileStrings, @"images", invalidImages, @"invalidImages", nil]];
+//                                      }
+//                                      
+//                                  }];
+//                index++;
+//            }else
+            {
                 if (asset == nil) {
                     result = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:[err localizedDescription]];
                 } else {
