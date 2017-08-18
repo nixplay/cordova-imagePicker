@@ -33,13 +33,13 @@ public class ImagePickerPluginActivity extends Activity {
         com.esafirm.imagepicker.features.ImagePicker
                 .create(this)
                 .returnAfterFirst(false)
-                .folderMode(true) // folder mode (false by default)
-                .folderTitle(getString(fakeR.getId("string","ALBUM"))) // folder selection title
+//                .folderMode(true) // folder mode (false by default)
+//                .folderTitle(getString(fakeR.getId("string","ALBUM"))) // folder selection title
                 .imageTitle("Tap to select") // image selection title
                 .multi() // multi mode (default mode)
                 .limit(maxImages) // max images can be selected (99 by default)
                 .showCamera(true) // show camera or not (true by default)
-                .enableLog(false) // disabling log
+//                .enableLog(false) // disabling log
                 .theme(fakeR.getId("style","ImagePickerTheme"))
                 .start(REQUEST_CODE_PICKER); // start image picker activity with request code
 
