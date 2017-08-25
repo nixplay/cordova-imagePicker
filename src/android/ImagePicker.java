@@ -67,7 +67,7 @@ public class ImagePicker extends CordovaPlugin {
             } else {
                 this.maxImages = 100;
             }
-			System.out.println("[NIX] Maximum images: " + this.maxImages);
+            System.out.println("[NIX] Maximum images: " + this.maxImages);
             if (this.params.has("width")) {
                 this.desiredWidth = this.params.getInt("width");
             }
@@ -77,25 +77,25 @@ public class ImagePicker extends CordovaPlugin {
             if (this.params.has("quality")) {
                 this.quality = this.params.getInt("quality");
             }
-//			if (this.params.has("assets")) {
-//				JSONArray assets = this.params.getJSONArray("assets");
-//				if (assets != null) {
-//					for(int i=0; i < assets.length(); i++) {
-//						this.preSelectedAssets.add(assets.get(i).toString());
-//					}
-//				}
-//			}
-//			intent.putExtra("MAX_IMAGES", this.maxImages);
-//			intent.putExtra("WIDTH", this.desiredWidth);
-//			intent.putExtra("HEIGHT", this.desiredHeight);
-//			intent.putExtra("QUALITY", this.quality);
-//			intent.putExtra("PRE_SELECTED_ASSETS", this.preSelectedAssets);
-//			intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-//			if(cordova.hasPermission(permissions[0])) {
-//				this.cordova.startActivityForResult(this, intent, 0);
-//			} else if (this.cordova != null) {
-//				getReadPermission(SAVE_TO_ALBUM_SEC);
-//			}
+//          if (this.params.has("assets")) {
+//              JSONArray assets = this.params.getJSONArray("assets");
+//              if (assets != null) {
+//                  for(int i=0; i < assets.length(); i++) {
+//                      this.preSelectedAssets.add(assets.get(i).toString());
+//                  }
+//              }
+//          }
+//          intent.putExtra("MAX_IMAGES", this.maxImages);
+//          intent.putExtra("WIDTH", this.desiredWidth);
+//          intent.putExtra("HEIGHT", this.desiredHeight);
+//          intent.putExtra("QUALITY", this.quality);
+//          intent.putExtra("PRE_SELECTED_ASSETS", this.preSelectedAssets);
+//          intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+//          if(cordova.hasPermission(permissions[0])) {
+//              this.cordova.startActivityForResult(this, intent, 0);
+//          } else if (this.cordova != null) {
+//              getReadPermission(SAVE_TO_ALBUM_SEC);
+//          }
 
             intent = new Intent(cordova.getActivity(), ImagePickerPluginActivity.class);
             intent.putExtra("WIDTH", this.desiredWidth);
@@ -138,7 +138,7 @@ public class ImagePicker extends CordovaPlugin {
             case SAVE_TO_ALBUM_SEC:
                 if (intent != null) {
                     this.cordova.startActivityForResult(this, intent, ImagePickerPluginActivity.REQUEST_IMAGEPICKER);
-//					this.cordova.startActivityForResult(this, intent, 0);
+//                  this.cordova.startActivityForResult(this, intent, 0);
                 }
                 break;
         }
@@ -170,30 +170,41 @@ public class ImagePicker extends CordovaPlugin {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK && data != null && requestCode == ImagePickerPluginActivity.REQUEST_IMAGEPICKER) {
-            ArrayList<String> fileNames = data.getStringArrayListExtra("MULTIPLEFILENAMES");
-            this.preSelectedAssets = data.getStringArrayListExtra("SELECTED_ASSETS");
-            ArrayList<String> invalidImages = data.getStringArrayListExtra("INVALID_IMAGES");
-            JSONArray jsFileNames = new JSONArray(fileNames);
-            JSONArray jsPreSelectedAssets = new JSONArray(this.preSelectedAssets);
-            JSONObject res = new JSONObject();
-//
             try {
-                res.put("images", jsFileNames);
-                res.put("preSelectedAssets", jsPreSelectedAssets);
-                res.put("maxImages", maxImages);
-                if (invalidImages != null && invalidImages.size() > 0)
-                    res.put("invalidImages", new JSONArray(invalidImages));
-            } catch (JSONException e) {
-                e.printStackTrace();
+                ArrayList<String> fileNames = data.getStringArrayListExtra("MULTIPLEFILENAMES");
+                this.preSelectedAssets = data.getStringArrayListExtra("SELECTED_ASSETS");
+                ArrayList<String> invalidImages = data.getStringArrayListExtra("INVALID_IMAGES");
+                JSONArray jsFileNames = new JSONArray(fileNames);
+                JSONArray jsPreSelectedAssets = null;
+                if (this.preSelectedAssets != null) {
+                    jsPreSelectedAssets = new JSONArray(this.preSelectedAssets);
+                } else {
+                    jsPreSelectedAssets = new JSONArray();
+                }
+
+                JSONObject res = new JSONObject();
+//
+                try {
+                    res.put("images", jsFileNames);
+                    res.put("preSelectedAssets", jsPreSelectedAssets);
+                    res.put("maxImages", maxImages);
+                    if (invalidImages != null && invalidImages.size() > 0)
+                        res.put("invalidImages", new JSONArray(invalidImages));
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                this.callbackContext.success(res);
+            }catch (Exception e){
+                this.callbackContext.error("Failed to pick images from device");
             }
+//          if(resultCode == RESULT_OK) {
+//              if(requestCode == Picker.PICK_IMAGE_DEVICE) {
+//                  imagePicker.submit(data);
+//              }
+//          }
 
-//			if(resultCode == RESULT_OK) {
-//				if(requestCode == Picker.PICK_IMAGE_DEVICE) {
-//					imagePicker.submit(data);
-//				}
-//			}
 
-            this.callbackContext.success(res);
         } else if (resultCode == Activity.RESULT_CANCELED && data != null) {
             String error = data.getStringExtra("ERRORMESSAGE");
             if (error == null)
