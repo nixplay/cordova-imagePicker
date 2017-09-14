@@ -34,7 +34,7 @@ typedef enum : NSUInteger {
     NSDictionary *options = [command.arguments objectAtIndex: 0];
     NSInteger maximumImagesCount = [[options objectForKey:@"maximumImagesCount"] integerValue];
     self.maximumImagesCount = (maximumImagesCount > 0) ? maximumImagesCount : 100;
-
+    
     self.outputType = [[options objectForKey:@"outputType"] integerValue];
     self.allow_video = [[options objectForKey:@"allow_video" ] boolValue ];
     self.title = [options objectForKey:@"title"];
@@ -58,11 +58,18 @@ typedef enum : NSUInteger {
         if (authStatus == PHAuthorizationStatusDenied || authStatus == PHAuthorizationStatusRestricted) {
             [self showAuthorizationDialog];
         } else {
-//            if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad){
-//                [self launchDLFPhotosPickerViewController];
-//            }else{
+            PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
+            if (status == PHAuthorizationStatusNotDetermined) {
+                [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+                    if (status == PHAuthorizationStatusAuthorized) {
+                        [self launchGMImagePicker:self.allow_video title:self.title message:self.message];
+                    }else{
+                        [self showAuthorizationDialog];
+                    }
+                }];
+            } else if (status == PHAuthorizationStatusAuthorized) {
                 [self launchGMImagePicker:self.allow_video title:self.title message:self.message];
-//            }
+            }
             
         }
     }
@@ -112,11 +119,9 @@ typedef enum : NSUInteger {
                                           @(PHAssetCollectionSubtypeSmartAlbumPanoramas)];
     }
     picker.customNavigationBarPrompt = message;
-    picker.colsInPortrait = 3;
-    picker.colsInLandscape = 5;
     picker.minimumInteritemSpacing = 2.0;
     picker.showCameraButton = YES;
-    picker.autoSelectCameraImages = YES;
+    picker.autoSelectCameraImages = NO;
     picker.pickerStatusBarStyle = UIStatusBarStyleDefault;
     //    picker.modalPresentationStyle = UIModalPresentationPopover;
     picker.navigationBarTintColor = LIGHT_BLUE_COLOR;
@@ -436,7 +441,7 @@ typedef enum : NSUInteger {
     }else{
         return YES;
     }
-
+    
 }
 - (NSString*)createDirectory:(NSString*)dir
 {
@@ -568,3 +573,4 @@ typedef enum : NSUInteger {
     return self.message;
 }
 @end
+
