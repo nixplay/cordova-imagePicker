@@ -1,8 +1,12 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <style name="ImagePickerTheme" parent="ef_BaseTheme">
-        <item name="colorPrimary">@color/colorAccent</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+	<style name="actionBarTheme" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:textColorPrimary">@android:color/primary_text_dark</item>
+
+    </style>
+    <style name="customTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="actionBarTheme">@style/actionBarTheme</item>
+        <item name="colorPrimary">#62b1e6</item>
+        <item name="colorPrimaryDark">#62b1e6</item>
     </style>
 </resources>
