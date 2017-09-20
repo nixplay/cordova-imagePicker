@@ -33,7 +33,7 @@
 		<pods-config ios-min-version="8.0" use-frameworks="true">
         </pods-config>
 
-		<pod name="GMImagePicker" git="https://github.com/nixplay/GMImagePicker" tag="0.0.15"/>
+		<pod name="GMImagePicker" git="https://github.com/nixplay/GMImagePicker" tag="0.0.16"/>
 		<pod name="AFNetworking" />
 		<pod name="MRProgress" />
 		<pod name="MBProgressHUD" />
