@@ -2,7 +2,7 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
   xmlns:android="http://schemas.android.com/apk/res/android"
   id="com.synconset.imagepicker"
-  version="1.2.17">
+  version="1.2.18">
 
 	<name>ImagePicker</name>
 
@@ -33,7 +33,7 @@
 		<pods-config ios-min-version="8.0" use-frameworks="true">
         </pods-config>
 
-		<pod name="GMImagePicker" git="https://github.com/nixplay/GMImagePicker" tag="0.0.16"/>
+		<pod name="GMImagePicker" git="https://github.com/nixplay/GMImagePicker" tag="0.0.17"/>
 		<pod name="AFNetworking" />
 		<pod name="MRProgress" />
 		<pod name="MBProgressHUD" />
