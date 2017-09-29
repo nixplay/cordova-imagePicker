@@ -2,7 +2,7 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
   xmlns:android="http://schemas.android.com/apk/res/android"
   id="com.synconset.imagepicker"
-  version="1.2.5">
+  version="1.2.20">
 
 	<name>ImagePicker</name>
 
@@ -32,8 +32,8 @@
 		<source-file src="src/ios/SOSPicker.m" />
 		<pods-config ios-min-version="8.0" use-frameworks="true">
         </pods-config>
-
 		<pod name="GMImagePicker" git="https://github.com/nixplay/GMImagePicker" branch="feature/video_upload"/>
+		<pod name="GMImagePicker" git="https://github.com/nixplay/GMImagePicker" tag="0.1.1"/>
 		<pod name="AFNetworking" />
 		<pod name="MRProgress" />
 		<pod name="MBProgressHUD" />
@@ -48,9 +48,7 @@
 
 	<!-- android -->
 	<platform name="android">
-		<!-- <dependency id="android.support.v4" url="https://github.com/MobileChromeApps/cordova-plugin-android-support-v4" /> -->
-		<framework src="com.github.esafirm.android-image-picker:imagepicker:1.7.5@aar"/>
-		<framework src="com.kaopiz:kprogresshud:1.0.5"/>
+		<framework src="src/android/build.gradle" custom="true" type="gradleReference" />
 		<config-file target="res/xml/config.xml" parent="/*">
 			<feature name="ImagePicker">
 				<param name="android-package" value="com.synconset.ImagePicker"/>
@@ -61,8 +59,9 @@
 		<source-file src="src/android/ImagePickerPluginActivity.java" target-dir="src/com/synconset" />
 		<config-file target="AndroidManifest.xml" parent="/manifest/application">
 			<activity android:name="com.synconset.ImagePickerPluginActivity" android:theme="@android:style/Theme.Holo.Light" android:screenOrientation="portrait">
-
 			</activity>
+			<activity android:theme="@style/customTheme" android:name="me.iwf.photopicker.PhotoPickerActivity"/>
+			<activity android:theme="@style/Theme.AppCompat.NoActionBar" android:name="me.iwf.photopicker.PhotoPagerActivity" />
 		</config-file>
 		<source-file src="src/android/values/styles.xml" target-dir="res/values" />
 

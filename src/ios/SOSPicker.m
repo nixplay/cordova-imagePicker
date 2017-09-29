@@ -58,19 +58,7 @@ typedef enum : NSUInteger {
         if (authStatus == PHAuthorizationStatusDenied || authStatus == PHAuthorizationStatusRestricted) {
             [self showAuthorizationDialog];
         } else {
-            PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
-            if (status == PHAuthorizationStatusNotDetermined) {
-                [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
-                    if (status == PHAuthorizationStatusAuthorized) {
-                        [self launchGMImagePicker:self.allow_video title:self.title message:self.message];
-                    }else{
-                        [self showAuthorizationDialog];
-                    }
-                }];
-            } else if (status == PHAuthorizationStatusAuthorized) {
-                [self launchGMImagePicker:self.allow_video title:self.title message:self.message];
-            }
-            
+            [self launchGMImagePicker:self.allow_video title:self.title message:self.message];
         }
     }
 }
@@ -102,39 +90,43 @@ typedef enum : NSUInteger {
 {
     
     __block NSArray *preSelectedAssets = self.preSelectedAssets;
-    GMImagePickerController *picker = [[GMImagePickerController alloc] init:allow_video withAssets:preSelectedAssets delegate:self];
-    picker.delegate = self;
-    picker.title = title;
-    if(allow_video){
-        picker.mediaTypes = @[@(PHAssetMediaTypeImage),
-                              @(PHAssetMediaTypeVideo)];
-        picker.customSmartCollections = @[@(PHAssetCollectionSubtypeSmartAlbumVideos),
-                                          @(PHAssetCollectionSubtypeSmartAlbumFavorites),
-                                          @(PHAssetCollectionSubtypeSmartAlbumRecentlyAdded),
-                                          @(PHAssetCollectionSubtypeSmartAlbumPanoramas)];
-    }else{
-        picker.mediaTypes = @[@(PHAssetMediaTypeImage)];
-        picker.customSmartCollections = @[@(PHAssetCollectionSubtypeSmartAlbumFavorites),
-                                          @(PHAssetCollectionSubtypeSmartAlbumRecentlyAdded),
-                                          @(PHAssetCollectionSubtypeSmartAlbumPanoramas)];
-    }
-    picker.customNavigationBarPrompt = message;
-    picker.minimumInteritemSpacing = 2.0;
-    picker.showCameraButton = YES;
-    picker.autoSelectCameraImages = NO;
-    picker.pickerStatusBarStyle = UIStatusBarStyleDefault;
-    //    picker.modalPresentationStyle = UIModalPresentationPopover;
-    picker.navigationBarTintColor = LIGHT_BLUE_COLOR;
-    picker.toolbarTextColor = LIGHT_BLUE_COLOR;
-    picker.toolbarTintColor = LIGHT_BLUE_COLOR;
-    //    UIPopoverPresentationController *popPC = picker.popoverPresentationController;
-    //    popPC.permittedArrowDirections = UIPopoverArrowDirectionAny;
-    
-    //    popPC.sourceView = picker.view;
-    //    CGFloat width = [UIScreen mainScreen].bounds.size.width;
-    //    CGFloat height = [UIScreen mainScreen].bounds.size.height;
-    //    popPC.sourceRect = CGRectMake(width * 0.45, height * 0.65, 10, 10);
-    [self.viewController showViewController:picker sender:nil];
+    [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+        [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+            
+        } completionHandler:^(BOOL success, NSError *error) {
+            if(success){
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    GMImagePickerController *picker = [[GMImagePickerController alloc] init:allow_video withAssets:preSelectedAssets delegate:self];
+                    picker.delegate = self;
+                    picker.title = title;
+                    if(allow_video){
+                        picker.mediaTypes = @[@(PHAssetMediaTypeImage),
+                                              @(PHAssetMediaTypeVideo)];
+                        picker.customSmartCollections = @[@(PHAssetCollectionSubtypeSmartAlbumVideos),
+                                                          @(PHAssetCollectionSubtypeSmartAlbumFavorites),
+                                                          @(PHAssetCollectionSubtypeSmartAlbumRecentlyAdded),
+                                                          @(PHAssetCollectionSubtypeSmartAlbumPanoramas)];
+                    }else{
+                        picker.mediaTypes = @[@(PHAssetMediaTypeImage)];
+                        picker.customSmartCollections = @[@(PHAssetCollectionSubtypeSmartAlbumFavorites),
+                                                          @(PHAssetCollectionSubtypeSmartAlbumRecentlyAdded),
+                                                          @(PHAssetCollectionSubtypeSmartAlbumPanoramas)];
+                    }
+                    picker.customNavigationBarPrompt = message;
+                    picker.minimumInteritemSpacing = 2.0;
+                    picker.showCameraButton = YES;
+                    picker.autoSelectCameraImages = NO;
+                    picker.pickerStatusBarStyle = UIStatusBarStyleDefault;
+                    picker.navigationBarTintColor = LIGHT_BLUE_COLOR;
+                    picker.toolbarTextColor = LIGHT_BLUE_COLOR;
+                    picker.toolbarTintColor = LIGHT_BLUE_COLOR;
+                    [self.viewController showViewController:picker sender:nil];
+                });
+            }else{
+                [self showAuthorizationDialog];
+            }
+        }];
+    }];
 }
 
 - (void) launchDLFPhotosPickerViewController{
