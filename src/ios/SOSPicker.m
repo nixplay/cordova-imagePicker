@@ -17,7 +17,7 @@
 #define LIGHT_BLUE_COLOR [UIColor colorWithRed:(99/255.0f)  green:(176/255.0f)  blue:(228.0f/255.0f) alpha:1.0]
 #define CAMERA_ALERT 0x101
 #define IMAGE_LIMIT_ALERT 0x102
-
+#define MAX_VIDEO_ALERT 10
 typedef enum : NSUInteger {
     FILE_URI = 0,
     BASE64_STRING = 1
@@ -416,7 +416,21 @@ typedef enum : NSUInteger {
     
 }
 - (BOOL)assetsPickerController:(GMImagePickerController *)picker shouldSelectAsset:(PHAsset *)asset{
-    if([picker.selectedAssets count] >= self.maximumImagesCount){
+    NSPredicate *videoPredicate = [self predicateOfAssetType:PHAssetMediaTypeVideo];
+    NSInteger nVideos = [picker.selectedAssets filteredArrayUsingPredicate:videoPredicate].count;
+    if(nVideos > MAX_VIDEO_ALERT){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:[[NSBundle mainBundle]
+                                                                         objectForInfoDictionaryKey:@"CFBundleDisplayName"]
+                                                                message:NSLocalizedString(@"VIDEO_SELECTION_LIMIT", nil)
+                                                               delegate:self
+                                                      cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                                                      otherButtonTitles:nil, nil];
+            [alertView show];
+            
+        });
+        return NO;
+    }else if([picker.selectedAssets count] >= self.maximumImagesCount){
         dispatch_async(dispatch_get_main_queue(), ^{
             UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:[[NSBundle mainBundle]
                                                                          objectForInfoDictionaryKey:@"CFBundleDisplayName"]
