@@ -418,7 +418,8 @@ typedef enum : NSUInteger {
 - (BOOL)assetsPickerController:(GMImagePickerController *)picker shouldSelectAsset:(PHAsset *)asset{
     NSPredicate *videoPredicate = [self predicateOfAssetType:PHAssetMediaTypeVideo];
     NSInteger nVideos = [picker.selectedAssets filteredArrayUsingPredicate:videoPredicate].count;
-    if(nVideos > MAX_VIDEO_ALERT){
+    
+    if(nVideos >= MAX_VIDEO_ALERT){
         dispatch_async(dispatch_get_main_queue(), ^{
             UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:[[NSBundle mainBundle]
                                                                          objectForInfoDictionaryKey:@"CFBundleDisplayName"]
@@ -430,7 +431,8 @@ typedef enum : NSUInteger {
             
         });
         return NO;
-    }else if([picker.selectedAssets count] >= self.maximumImagesCount){
+    }
+    if([picker.selectedAssets count] >= self.maximumImagesCount){
         dispatch_async(dispatch_get_main_queue(), ^{
             UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:[[NSBundle mainBundle]
                                                                          objectForInfoDictionaryKey:@"CFBundleDisplayName"]
