@@ -418,30 +418,34 @@ typedef enum : NSUInteger {
 - (BOOL)assetsPickerController:(GMImagePickerController *)picker shouldSelectAsset:(PHAsset *)asset{
     NSPredicate *videoPredicate = [self predicateOfAssetType:PHAssetMediaTypeVideo];
     NSInteger nVideos = [picker.selectedAssets filteredArrayUsingPredicate:videoPredicate].count;
-    
-    if(nVideos >= MAX_VIDEO_ALERT){
+    PHAssetMediaType mediaType = [asset mediaType];
+    if(nVideos >= MAX_VIDEO_ALERT && mediaType == PHAssetMediaTypeVideo){
         dispatch_async(dispatch_get_main_queue(), ^{
-            UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:[[NSBundle mainBundle]
-                                                                         objectForInfoDictionaryKey:@"CFBundleDisplayName"]
-                                                                message:NSLocalizedString(@"VIDEO_SELECTION_LIMIT", nil)
-                                                               delegate:self
-                                                      cancelButtonTitle:NSLocalizedString(@"OK", nil)
-                                                      otherButtonTitles:nil, nil];
-            [alertView show];
-            
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]
+                                                                           message:NSLocalizedString(@"VIDEO_SELECTION_LIMIT", nil)
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction * okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+                                                                style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * _Nonnull action) {
+                                                                  [alert dismissViewControllerAnimated:YES completion:nil];
+                                                              }];
+            [alert addAction:okAction];
+            [picker presentViewController:alert animated:YES completion:nil];
         });
         return NO;
-    }
-    if([picker.selectedAssets count] >= self.maximumImagesCount){
+    }else if([picker.selectedAssets count] >= self.maximumImagesCount){
         dispatch_async(dispatch_get_main_queue(), ^{
-            UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:[[NSBundle mainBundle]
-                                                                         objectForInfoDictionaryKey:@"CFBundleDisplayName"]
-                                                                message:NSLocalizedString(@"IMAGE_SELECTION_LIMIT", nil)
-                                                               delegate:self
-                                                      cancelButtonTitle:NSLocalizedString(@"OK", nil)
-                                                      otherButtonTitles:nil, nil];
-            alertView.tag = IMAGE_LIMIT_ALERT;
-            [alertView show];
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:[[NSBundle mainBundle]
+                                                                                    objectForInfoDictionaryKey:@"CFBundleDisplayName"]
+                                                                           message:NSLocalizedString(@"IMAGE_SELECTION_LIMIT", nil)
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction * okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+                                                                style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * _Nonnull action) {
+                                                                  [alert dismissViewControllerAnimated:YES completion:nil];                                                                  
+                                                              }];
+            [alert addAction:okAction];
+            [picker presentViewController:alert animated:YES completion:nil];
             
         });
         return NO;
