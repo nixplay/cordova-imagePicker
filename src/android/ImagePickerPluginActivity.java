@@ -2,20 +2,26 @@ package com.synconset;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.net.Uri;
 import android.os.Bundle;
 
 import com.kaopiz.kprogresshud.KProgressHUD;
+import com.zhihu.matisse.Matisse;
+import com.zhihu.matisse.MimeType;
+import com.zhihu.matisse.engine.impl.GlideEngine;
+import com.zhihu.matisse.internal.entity.CaptureStrategy;
+import com.zhihu.matisse.internal.utils.PathUtils;
 
 import java.util.ArrayList;
-
-import me.iwf.photopicker.PhotoPicker;
-import me.iwf.photopicker.PhotoPreview;
+import java.util.List;
 
 public class ImagePickerPluginActivity extends Activity {
     private static final String TAG = ImagePickerPluginActivity.class.getSimpleName();
     public static final int REQUEST_IMAGEPICKER = 0x41;
     private static final String KEY_FILES = "MULTIPLEFILENAMES";
     private static final int REQUEST_CODE_PICKER = 0x111;
+    private static final int REQUEST_CODE_CHOOSE = 0x111;
     private KProgressHUD kProgressHUD;
     private int width;
     private int height;
@@ -38,15 +44,34 @@ public class ImagePickerPluginActivity extends Activity {
         if(this.preselectedAsset == null){
             preselectedAsset = new ArrayList<String>();
         }
+        Matisse.from(ImagePickerPluginActivity.this)
+                .choose(MimeType.of(
+                        MimeType.JPEG,
+                        MimeType.PNG
 
-        PhotoPicker.builder()
-                .setPhotoCount(this.maxImages)
-                .setGridColumnCount(4)
-                .setShowCamera(true)
-                .setPreviewEnabled(false)
-                .setShowGif(false)
-                .setSelected(this.preselectedAsset)
-                .start(ImagePickerPluginActivity.this);
+                ), false)
+                .countable(true)
+                .capture(true)
+                .captureStrategy(
+                        new CaptureStrategy(true, getApplication().getPackageName()+".fileprovider"))
+                .maxSelectable(this.maxImages)
+                .gridExpectedSize(320)
+                .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+                .thumbnailScale(0.85f)
+                .imageEngine(new GlideEngine())
+                .enablePreview(false)
+                .showUseOrigin(false)
+                .forResult(REQUEST_CODE_CHOOSE);
+//        PhotoPicker.builder()
+//                .setPhotoCount(this.maxImages)
+//                .setGridColumnCount(4)
+//                .setShowCamera(true)
+//                .setPreviewEnabled(false)
+//                .setShowGif(false)
+//                .setSelected(this.preselectedAsset)
+//                .start(ImagePickerPluginActivity.this);
+
+
 //        com.esafirm.imagepicker.features.ImagePicker
 //                .create(this)
 //                .returnAfterFirst(false)
@@ -65,17 +90,15 @@ public class ImagePickerPluginActivity extends Activity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK &&
-                (requestCode == PhotoPicker.REQUEST_CODE || requestCode == PhotoPreview.REQUEST_CODE)) {
-            ArrayList<String> photos = null;
-            if (data != null) {
-                photos = data.getStringArrayListExtra(PhotoPicker.KEY_SELECTED_PHOTOS);
+//        if (resultCode == RESULT_OK && (requestCode == PhotoPicker.REQUEST_CODE || requestCode == PhotoPreview.REQUEST_CODE)) {
+
+        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE_CHOOSE){
+            ArrayList<String> photos = new ArrayList<String>();
+            List<Uri> result = Matisse.obtainResult(data);
+
+            for (int i = 0 ; i < result.size() ; i++){
+                photos.add(PathUtils.getPath(getApplicationContext(),result.get(i)));
             }
-//            ArrayList<String> imageList = new ArrayList<String>();
-//            ArrayList<Image> images = (ArrayList<Image>)  com.esafirm.imagepicker.features.ImagePicker.getImages(data);
-//            for (int i = 0 ; i < images.size() ; i++){
-//                imageList.add(images.get(i).getPath());
-//            }
             Bundle conData = new Bundle();
             conData.putStringArrayList (KEY_FILES, photos);
 
