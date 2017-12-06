@@ -48,5 +48,6 @@
 			<activity android:name="me.iwf.photopicker.PhotoPagerActivity" android:theme="@style/Theme.AppCompat.NoActionBar"/>
 		</config-file>
 		<source-file src="src/android/values/styles.xml" target-dir="res/values"/>
+		<source-file src="src/android/values/dimens.xml" target-dir="res/values"/>
 	</platform>
 </plugin>
