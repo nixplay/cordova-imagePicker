@@ -1,70 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  id="com.synconset.imagepicker"
-  version="1.2.22">
-
+<plugin id="com.synconset.imagepicker" version="1.2.22" xmlns="http://www.phonegap.com/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
 	<name>ImagePicker</name>
-
-	<description>
-		This plugin allows selection of multiple images from the camera roll / gallery in a phonegap app
+	<description>This plugin allows selection of multiple images from the camera roll / gallery in a phonegap app
 	</description>
-
 	<license>MIT</license>
-
 	<engines>
-		<engine name="cordova" version=">=3.0.0" />
+		<engine name="cordova" version="&gt;=3.0.0"/>
 	</engines>
-
-	<js-module src="www/imagepicker.js" name="ImagePicker">
-		<clobbers target="plugins.imagePicker" />
+	<js-module name="ImagePicker" src="www/imagepicker.js">
+		<clobbers target="plugins.imagePicker"/>
 	</js-module>
-
 	<!-- ios -->
 	<platform name="ios">
-		<config-file target="config.xml" parent="/*">
+		<config-file parent="/*" target="config.xml">
 			<feature name="ImagePicker">
 				<param name="ios-package" value="SOSPicker"/>
 			</feature>
 		</config-file>
-
-		<header-file src="src/ios/SOSPicker.h" />
-		<source-file src="src/ios/SOSPicker.m" />
-		<pods-config ios-min-version="8.0" use-frameworks="true">
-        </pods-config>
-
-		<pod name="GMImagePicker" git="https://github.com/nixplay/GMImagePicker" tag="0.1.3"/>
-		<pod name="AFNetworking" />
-		<pod name="MRProgress" />
-		<pod name="MBProgressHUD" />
-		<pod name="DLFPhotosPicker" git="https://github.com/nixplay/DLFPhotosPicker"/>
-		<framework src="Accelerate.framework" />
-		<framework src="Security.framework" />
+		<header-file src="src/ios/SOSPicker.h"/>
+		<source-file src="src/ios/SOSPicker.m"/>
+		<pods-config ios-min-version="8.0" use-frameworks="true"/>
+		<pod git="https://github.com/nixplay/GMImagePicker" name="GMImagePicker" tag="0.1.3"/>
+		<pod name="AFNetworking"/>
+		<pod name="MRProgress"/>
+		<pod name="MBProgressHUD"/>
+		<pod git="https://github.com/nixplay/DLFPhotosPicker" name="DLFPhotosPicker"/>
+		<framework src="Accelerate.framework"/>
+		<framework src="Security.framework"/>
 		<framework src="Photos.framework" weak="true"/>
-		<framework src="SystemConfiguration.framework" />
-		<framework src="QuartzCore.framework" />
-
+		<framework src="SystemConfiguration.framework"/>
+		<framework src="QuartzCore.framework"/>
 	</platform>
-
 	<!-- android -->
 	<platform name="android">
-		<framework src="src/android/build.gradle" custom="true" type="gradleReference" />
-		<config-file target="res/xml/config.xml" parent="/*">
+		<framework custom="true" src="src/android/build.gradle" type="gradleReference"/>
+		<config-file parent="/*" target="res/xml/config.xml">
 			<feature name="ImagePicker">
 				<param name="android-package" value="com.synconset.ImagePicker"/>
 			</feature>
 		</config-file>
-		<source-file src="src/android/ImagePicker.java" target-dir="src/com/synconset" />
-		<source-file src="src/android/FakeR.java" target-dir="src/com/synconset" />
-		<source-file src="src/android/ImagePickerPluginActivity.java" target-dir="src/com/synconset" />
-		<config-file target="AndroidManifest.xml" parent="/manifest/application">
-			<activity android:name="com.synconset.ImagePickerPluginActivity" android:theme="@android:style/Theme.Holo.Light" android:screenOrientation="portrait">
-			</activity>
-			<activity android:theme="@style/customTheme" android:name="me.iwf.photopicker.PhotoPickerActivity"/>
-			<activity android:theme="@style/Theme.AppCompat.NoActionBar" android:name="me.iwf.photopicker.PhotoPagerActivity" />
+		<source-file src="src/android/ImagePicker.java" target-dir="src/com/synconset"/>
+		<source-file src="src/android/FakeR.java" target-dir="src/com/synconset"/>
+		<source-file src="src/android/ImagePickerPluginActivity.java" target-dir="src/com/synconset"/>
+		<config-file parent="/manifest/application" target="AndroidManifest.xml">
+			<activity android:name="com.synconset.ImagePickerPluginActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Holo.Light"/>
+			<activity android:name="me.iwf.photopicker.PhotoPickerActivity" android:theme="@style/customTheme"/>
+			<activity android:name="me.iwf.photopicker.PhotoPagerActivity" android:theme="@style/Theme.AppCompat.NoActionBar"/>
 		</config-file>
-		<source-file src="src/android/values/styles.xml" target-dir="res/values" />
-
+		<source-file src="src/android/values/styles.xml" target-dir="res/values"/>
+		<config-file parent="/resources" target="res/values/dimens.xml">
+			<dimen name="grid_expected_size">120dp</dimen>
+		</config-file>
 	</platform>
-
 </plugin>
