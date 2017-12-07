@@ -55,7 +55,7 @@ public class ImagePickerPluginActivity extends Activity {
                 .captureStrategy(
                         new CaptureStrategy(true, getApplication().getPackageName()+".fileprovider"))
                 .maxSelectable(this.maxImages)
-                .gridExpectedSize(getResources().getDimensionPixelSize(getResources().getIdentifier("grid_expected_size", "dimen", getPackageName())))
+                .gridExpectedSize(.gridExpectedSize(convertDpToPixel(120,ImagePickerPluginActivity.this)))
                 .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
                 .thumbnailScale(0.85f)
                 .imageEngine(new GlideEngine())
@@ -115,5 +115,18 @@ public class ImagePickerPluginActivity extends Activity {
             finish();
         }
 
+    }
+    /**
+     * This method converts dp unit to equivalent pixels, depending on device density.
+     *
+     * @param dp A value in dp (density independent pixels) unit. Which we need to convert into pixels
+     * @param context Context to get resources and device specific display metrics
+     * @return A float value to represent px equivalent to dp depending on device density
+     */
+    public static float convertDpToPixel(float dp, Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float px = dp * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        return px;
     }
 }
