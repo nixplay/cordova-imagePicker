@@ -52,7 +52,7 @@ public class ImagePickerPluginActivity extends Activity {
                         MimeType.JPEG,
                         MimeType.PNG
 
-                ), false)
+                ), true)
                 .countable(true)
                 .capture(true)
                 .captureStrategy(
