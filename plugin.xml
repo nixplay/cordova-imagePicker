@@ -65,15 +65,15 @@
 		<config-file target="AndroidManifest.xml" parent="application">
           <provider
               android:name="android.support.v4.content.FileProvider"
-              android:authorities="${applicationId}.fileprovider"
+              android:authorities="${applicationId}.provider"
               android:exported="false"
               android:grantUriPermissions="true" >
               <meta-data
                   android:name="android.support.FILE_PROVIDER_PATHS"
-                  android:resource="@xml/file_paths_public"/>
+                  android:resource="@xml/provider_paths"/>
           </provider>
         </config-file>
-        <source-file src="src/android/xml/file_paths_public.xml" target-dir="res/xml" />
+        <source-file src="src/android/xml/provider_paths.xml" target-dir="res/xml" />
 	</platform>
 
 </plugin>
