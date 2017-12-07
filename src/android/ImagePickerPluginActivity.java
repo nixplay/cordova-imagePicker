@@ -13,8 +13,6 @@ import com.kaopiz.kprogresshud.KProgressHUD;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.engine.impl.GlideEngine;
-import com.zhihu.matisse.internal.entity.CaptureStrategy;
-import com.zhihu.matisse.internal.utils.PathUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +21,7 @@ public class ImagePickerPluginActivity extends Activity {
     private static final String TAG = ImagePickerPluginActivity.class.getSimpleName();
     public static final int REQUEST_IMAGEPICKER = 0x41;
     private static final String KEY_FILES = "MULTIPLEFILENAMES";
+    private static final String KEY_SELECTED_ASSETS = "SELECTED_ASSETS";
     private static final int REQUEST_CODE_PICKER = 0x111;
     private static final int REQUEST_CODE_CHOOSE = 0x111;
     private KProgressHUD kProgressHUD;
@@ -54,9 +53,9 @@ public class ImagePickerPluginActivity extends Activity {
 
                 ), true)
                 .countable(true)
-                .capture(true)
-                .captureStrategy(
-                        new CaptureStrategy(true, getApplication().getPackageName()+".fileprovider"))
+//                .capture(true)
+//                .captureStrategy(
+//                        new CaptureStrategy(true, getApplication().getPackageName()+".provider"))
                 .maxSelectable(this.maxImages)
                 .gridExpectedSize((int) convertDpToPixel(120,ImagePickerPluginActivity.this.getApplicationContext()))
                 .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
@@ -72,14 +71,16 @@ public class ImagePickerPluginActivity extends Activity {
 //        if (resultCode == RESULT_OK && (requestCode == PhotoPicker.REQUEST_CODE || requestCode == PhotoPreview.REQUEST_CODE)) {
 
         if (resultCode == RESULT_OK && requestCode == REQUEST_CODE_CHOOSE){
-            ArrayList<String> photos = new ArrayList<String>();
+            ArrayList<String> photos = new ArrayList<String>( Matisse.obtainPathResult(data) );
+            ArrayList<String> uris = new ArrayList<String>();
             List<Uri> result = Matisse.obtainResult(data);
 
             for (int i = 0 ; i < result.size() ; i++){
-                photos.add(PathUtils.getPath(getApplicationContext(),result.get(i)));
+                uris.add(result.get(i).toString());
             }
             Bundle conData = new Bundle();
             conData.putStringArrayList (KEY_FILES, photos);
+            conData.putStringArrayList (KEY_SELECTED_ASSETS, uris);
 
             Intent intent = new Intent();
             intent.putExtras(conData);
