@@ -57,7 +57,7 @@ public class ImagePickerPluginActivity extends Activity {
                 .countable(true)
                 .capture(true)
                 .captureStrategy(
-                        new CaptureStrategy(true, getApplication().getPackageName()+".provider"))
+                        new CaptureStrategy(true, getApplication().getPackageName()+".fileprovider"))
                 .maxSelectable(this.maxImages)
                 .gridExpectedSize((int) convertDpToPixel(120,ImagePickerPluginActivity.this.getApplicationContext()))
                 .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)

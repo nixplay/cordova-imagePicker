@@ -62,7 +62,18 @@
 			</activity>
 		</config-file>
 		<source-file src="src/android/values/styles.xml" target-dir="res/values" />
-
+		<config-file target="AndroidManifest.xml" parent="application">
+          <provider
+              android:name="android.support.v4.content.FileProvider"
+              android:authorities="${applicationId}.fileprovider"
+              android:exported="false"
+              android:grantUriPermissions="true" >
+              <meta-data
+                  android:name="android.support.FILE_PROVIDER_PATHS"
+                  android:resource="@xml/file_paths_public"/>
+          </provider>
+        </config-file>
+        <source-file src="src/android/xml/file_paths_public.xml" target-dir="res/xml" />
 	</platform>
 
 </plugin>
