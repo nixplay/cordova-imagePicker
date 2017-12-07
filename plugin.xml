@@ -59,11 +59,8 @@
 		<config-file target="AndroidManifest.xml" parent="/manifest/application">
 			<activity android:name="com.synconset.ImagePickerPluginActivity" android:theme="@android:style/Theme.Holo.Light" android:screenOrientation="portrait">
 			</activity>
-			<activity android:theme="@style/customTheme" android:name="me.iwf.photopicker.PhotoPickerActivity"/>
-			<activity android:theme="@style/Theme.AppCompat.NoActionBar" android:name="me.iwf.photopicker.PhotoPagerActivity" />
 		</config-file>
 		<source-file src="src/android/values/styles.xml" target-dir="res/values" />
-
 	</platform>
 
 </plugin>
