@@ -48,8 +48,5 @@
 			<activity android:name="me.iwf.photopicker.PhotoPagerActivity" android:theme="@style/Theme.AppCompat.NoActionBar"/>
 		</config-file>
 		<source-file src="src/android/values/styles.xml" target-dir="res/values"/>
-		<config-file target="res/values/dimens.xml" parent="/resources">
-			<dimen name="grid_expected_sizedeimens">120dp</dimen>
-		</config-file>
 	</platform>
 </plugin>
