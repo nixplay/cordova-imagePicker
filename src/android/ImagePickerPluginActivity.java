@@ -1,10 +1,13 @@
 package com.synconset;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 
 import com.kaopiz.kprogresshud.KProgressHUD;
 import com.zhihu.matisse.Matisse;
@@ -55,37 +58,13 @@ public class ImagePickerPluginActivity extends Activity {
                 .captureStrategy(
                         new CaptureStrategy(true, getApplication().getPackageName()+".fileprovider"))
                 .maxSelectable(this.maxImages)
-                .gridExpectedSize(.gridExpectedSize(convertDpToPixel(120,ImagePickerPluginActivity.this)))
+                .gridExpectedSize((int) convertDpToPixel(120,ImagePickerPluginActivity.this.getApplicationContext()))
                 .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
                 .thumbnailScale(0.85f)
                 .imageEngine(new GlideEngine())
                 .enablePreview(false)
                 .showUseOrigin(false)
                 .forResult(REQUEST_CODE_CHOOSE);
-//        PhotoPicker.builder()
-//                .setPhotoCount(this.maxImages)
-//                .setGridColumnCount(4)
-//                .setShowCamera(true)
-//                .setPreviewEnabled(false)
-//                .setShowGif(false)
-//                .setSelected(this.preselectedAsset)
-//                .start(ImagePickerPluginActivity.this);
-
-
-//        com.esafirm.imagepicker.features.ImagePicker
-//                .create(this)
-//                .returnAfterFirst(false)
-////                .folderMode(true) // folder mode (false by default)
-////                .folderTitle(getString(fakeR.getId("string","ALBUM"))) // folder selection title
-//                .imageTitle("Tap to select") // image selection title
-//                .multi() // multi mode (default mode)
-//                .limit(maxImages) // max images can be selected (99 by default)
-//                .showCamera(true) // show camera or not (true by default)
-////                .enableLog(false) // disabling log
-//                .theme(fakeR.getId("style","ImagePickerTheme"))
-//                .start(REQUEST_CODE_PICKER); // start image picker activity with request code
-
-
     }
 
     @Override
