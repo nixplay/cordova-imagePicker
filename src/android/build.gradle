@@ -30,9 +30,6 @@ dependencies {
 	compile 'me.relex:circleindicator:1.2.2@aar'
 	compile 'jp.wasabeef:fresco-processors:2.0.0'
 	compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
-    compile 'com.android.support:appcompat-v7:27.0.1'
-    compile 'com.android.support:recyclerview-v7:27.0.1'
-    compile 'com.android.support:design:27.0.1'
     compile 'com.nineoldandroids:library:2.4.0'
 	compile 'com.kaopiz:kprogresshud:1.0.5'
 
