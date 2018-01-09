@@ -49,9 +49,10 @@ public class ImagePickerPluginActivity extends Activity {
         Matisse.from(ImagePickerPluginActivity.this)
                 .choose(MimeType.of(
                         MimeType.JPEG,
-                        MimeType.PNG
+                        MimeType.PNG,
+                        MimeType.MP4
 
-                ), true)
+                ), false)
                 .countable(true)
 //                .capture(true)
 //                .captureStrategy(
