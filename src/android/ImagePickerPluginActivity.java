@@ -54,6 +54,7 @@ public class ImagePickerPluginActivity extends Activity {
 
                 ), false)
                 .countable(true)
+                .showSingleMediaType(true)
 //                .capture(true)
 //                .captureStrategy(
 //                        new CaptureStrategy(true, getApplication().getPackageName()+".provider"))
