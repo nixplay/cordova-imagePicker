@@ -65,20 +65,24 @@ typedef enum : NSUInteger {
 
 - (void)showAuthorizationDialog {
     // If iOS 8+, offer a link to the Settings app
-    NSString* settingsButton = (&UIApplicationOpenSettingsURLString != NULL)
-    ? NSLocalizedString(@"Settings", nil)
-    : nil;
+    NSString* settingsButton = NSLocalizedString(@"Settings", nil);
     
     // Denied; show an alert
     dispatch_async(dispatch_get_main_queue(), ^{
-        UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:[[NSBundle mainBundle]
-                                                                     objectForInfoDictionaryKey:@"CFBundleDisplayName"]
-                                                            message:NSLocalizedString(@"ACCESS_TO_THE_CAMERA_ROLL_HAS_BEEN_PROHIBITED_PLEASE_ENABLE_IT_IN_THE_SETTINGS_APP_TO_CONTINUE", nil)
-                                                           delegate:self
-                                                  cancelButtonTitle:NSLocalizedString(@"OK", nil)
-                                                  otherButtonTitles:settingsButton, nil];
-        alertView.tag = CAMERA_ALERT;
-        [alertView show];
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"] message:NSLocalizedString(@"ACCESS_TO_THE_CAMERA_ROLL_HAS_BEEN_PROHIBITED_PLEASE_ENABLE_IT_IN_THE_SETTINGS_APP_TO_CONTINUE", nil) preferredStyle:UIAlertControllerStyleAlert];
+        [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [self.viewController dismissViewControllerAnimated:YES completion:nil];
+            
+            CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"has no access to camera"];   // error callback expects string ATM
+            
+            [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
+        }]];
+        [alertController addAction:[UIAlertAction actionWithTitle:settingsButton style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+            // Dismiss the view
+            
+        }]];
+        [self.viewController presentViewController:alertController animated:YES completion:nil];
     });
 }
 
@@ -274,13 +278,13 @@ typedef enum : NSUInteger {
     MBProgressHUD *progressHUD = [MBProgressHUD showHUDAddedTo:self.viewController.view
                                                       animated:YES];
     progressHUD.mode = MBProgressHUDModeIndeterminate;
-    progressHUD.dimBackground = YES;
-    progressHUD.labelText = NSLocalizedStringFromTable(
-                                                       @"picker.selection.downloading",
-                                                       @"GMImagePicker",
-                                                       @"iCloudLoading"
-                                                       );
-    [progressHUD show: YES];
+    progressHUD.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.3f];
+    progressHUD.label.text = NSLocalizedStringFromTable(
+                                                        @"picker.selection.downloading",
+                                                        @"GMImagePicker",
+                                                        @"iCloudLoading"
+                                                        );
+    [progressHUD showAnimated: YES];
     dispatch_group_async(dispatchGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         __block NSString* filePath;
         NSError* err = nil;
@@ -293,21 +297,6 @@ typedef enum : NSUInteger {
             PHAsset *asset = [fetchArray objectAtIndex:index];
             NSString *localIdentifier;
             
-            //            if(self.allow_video){
-            //                PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
-            //                options.deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
-            //                options.networkAccessAllowed = YES;
-            //                [manager requestAVAssetForVideo:asset
-            //                                        options:options
-            //                                  resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
-            //                                      if([asset isKindOfClass:[AVURLAsset class]]){
-            //                                          [fileStrings addObject: [[((AVURLAsset*)asset) URL] absoluteString] ];
-            //                                          result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: [NSDictionary dictionaryWithObjectsAndKeys: preSelectedAssets, @"preSelectedAssets", fileStrings, @"images", invalidImages, @"invalidImages", nil]];
-            //                                      }
-            //
-            //                                  }];
-            //                index++;
-            //            }else
             {
                 if (asset == nil) {
                     result = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:[err localizedDescription]];
@@ -409,7 +398,7 @@ typedef enum : NSUInteger {
         }
         
         progressHUD.progress = 1.f;
-        [progressHUD hide:YES];
+        [progressHUD hideAnimated:YES];
         [self.viewController dismissViewControllerAnimated:YES completion:nil];
         [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
     });
@@ -442,7 +431,7 @@ typedef enum : NSUInteger {
             UIAlertAction * okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
                                                                 style:UIAlertActionStyleDefault
                                                               handler:^(UIAlertAction * _Nonnull action) {
-                                                                  [alert dismissViewControllerAnimated:YES completion:nil];                                                                  
+                                                                  [alert dismissViewControllerAnimated:YES completion:nil];
                                                               }];
             [alert addAction:okAction];
             [picker presentViewController:alert animated:YES completion:nil];
