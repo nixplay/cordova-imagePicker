@@ -497,7 +497,7 @@ typedef enum : NSUInteger {
     NSString *file;
     
     while ((file = [dirEnum nextObject])) {
-        if([file.pathExtension isEqual: @"jpg"] || [file.pathExtension isEqual: @"jpeg" ] || [file.pathExtension isEqual: @"png"]) {
+        if([file.pathExtension isEqual: @"jpg"] || [file.pathExtension isEqual: @"jpeg" ] || [file.pathExtension isEqual: @"png"] || [file.pathExtension isEqual: @"mp4"]) {
             NSString *filePath = [[docsPath stringByAppendingString:@"/"] stringByAppendingString:file];
             NSLog(@"Deleting file at %@", filePath);
             NSError* err = nil;
