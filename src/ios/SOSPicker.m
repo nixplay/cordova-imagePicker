@@ -17,7 +17,7 @@
 #define LIGHT_BLUE_COLOR [UIColor colorWithRed:(99/255.0f)  green:(176/255.0f)  blue:(228.0f/255.0f) alpha:1.0]
 #define CAMERA_ALERT 0x101
 #define IMAGE_LIMIT_ALERT 0x102
-
+#define MAX_VIDEO_ALERT 10
 typedef enum : NSUInteger {
     FILE_URI = 0,
     BASE64_STRING = 1
@@ -65,20 +65,24 @@ typedef enum : NSUInteger {
 
 - (void)showAuthorizationDialog {
     // If iOS 8+, offer a link to the Settings app
-    NSString* settingsButton = (&UIApplicationOpenSettingsURLString != NULL)
-    ? NSLocalizedString(@"Settings", nil)
-    : nil;
+    NSString* settingsButton = NSLocalizedString(@"Settings", nil);
     
     // Denied; show an alert
     dispatch_async(dispatch_get_main_queue(), ^{
-        UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:[[NSBundle mainBundle]
-                                                                     objectForInfoDictionaryKey:@"CFBundleDisplayName"]
-                                                            message:NSLocalizedString(@"ACCESS_TO_THE_CAMERA_ROLL_HAS_BEEN_PROHIBITED_PLEASE_ENABLE_IT_IN_THE_SETTINGS_APP_TO_CONTINUE", nil)
-                                                           delegate:self
-                                                  cancelButtonTitle:NSLocalizedString(@"OK", nil)
-                                                  otherButtonTitles:settingsButton, nil];
-        alertView.tag = CAMERA_ALERT;
-        [alertView show];
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"] message:NSLocalizedString(@"ACCESS_TO_THE_CAMERA_ROLL_HAS_BEEN_PROHIBITED_PLEASE_ENABLE_IT_IN_THE_SETTINGS_APP_TO_CONTINUE", nil) preferredStyle:UIAlertControllerStyleAlert];
+        [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [self.viewController dismissViewControllerAnimated:YES completion:nil];
+            
+            CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"has no access to camera"];   // error callback expects string ATM
+            
+            [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
+        }]];
+        [alertController addAction:[UIAlertAction actionWithTitle:settingsButton style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+            // Dismiss the view
+            
+        }]];
+        [self.viewController presentViewController:alertController animated:YES completion:nil];
     });
 }
 
@@ -99,26 +103,27 @@ typedef enum : NSUInteger {
                     GMImagePickerController *picker = [[GMImagePickerController alloc] init:allow_video withAssets:preSelectedAssets delegate:self];
                     picker.delegate = self;
                     picker.title = title;
-                    picker.mediaTypes = @[@(PHAssetMediaTypeImage)];
-                    picker.customSmartCollections = @[@(PHAssetCollectionSubtypeSmartAlbumFavorites),
-                                                      @(PHAssetCollectionSubtypeSmartAlbumRecentlyAdded),
-                                                      @(PHAssetCollectionSubtypeSmartAlbumPanoramas)];
+                    if(allow_video){
+                        picker.mediaTypes = @[@(PHAssetMediaTypeImage),
+                                              @(PHAssetMediaTypeVideo)];
+                        picker.customSmartCollections = @[@(PHAssetCollectionSubtypeSmartAlbumVideos),
+                                                          @(PHAssetCollectionSubtypeSmartAlbumFavorites),
+                                                          @(PHAssetCollectionSubtypeSmartAlbumRecentlyAdded),
+                                                          @(PHAssetCollectionSubtypeSmartAlbumPanoramas)];
+                    }else{
+                        picker.mediaTypes = @[@(PHAssetMediaTypeImage)];
+                        picker.customSmartCollections = @[@(PHAssetCollectionSubtypeSmartAlbumFavorites),
+                                                          @(PHAssetCollectionSubtypeSmartAlbumRecentlyAdded),
+                                                          @(PHAssetCollectionSubtypeSmartAlbumPanoramas)];
+                    }
                     picker.customNavigationBarPrompt = message;
                     picker.minimumInteritemSpacing = 2.0;
                     picker.showCameraButton = YES;
                     picker.autoSelectCameraImages = NO;
                     picker.pickerStatusBarStyle = UIStatusBarStyleDefault;
-                    //    picker.modalPresentationStyle = UIModalPresentationPopover;
                     picker.navigationBarTintColor = LIGHT_BLUE_COLOR;
                     picker.toolbarTextColor = LIGHT_BLUE_COLOR;
                     picker.toolbarTintColor = LIGHT_BLUE_COLOR;
-                    //    UIPopoverPresentationController *popPC = picker.popoverPresentationController;
-                    //    popPC.permittedArrowDirections = UIPopoverArrowDirectionAny;
-                    
-                    //    popPC.sourceView = picker.view;
-                    //    CGFloat width = [UIScreen mainScreen].bounds.size.width;
-                    //    CGFloat height = [UIScreen mainScreen].bounds.size.height;
-                    //    popPC.sourceRect = CGRectMake(width * 0.45, height * 0.65, 10, 10);
                     [self.viewController showViewController:picker sender:nil];
                 });
             }else{
@@ -273,13 +278,13 @@ typedef enum : NSUInteger {
     MBProgressHUD *progressHUD = [MBProgressHUD showHUDAddedTo:self.viewController.view
                                                       animated:YES];
     progressHUD.mode = MBProgressHUDModeIndeterminate;
-    progressHUD.dimBackground = YES;
-    progressHUD.labelText = NSLocalizedStringFromTable(
-                                                       @"picker.selection.downloading",
-                                                       @"GMImagePicker",
-                                                       @"iCloudLoading"
-                                                       );
-    [progressHUD show: YES];
+    progressHUD.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.3f];
+    progressHUD.label.text = NSLocalizedStringFromTable(
+                                                        @"picker.selection.downloading",
+                                                        @"GMImagePicker",
+                                                        @"iCloudLoading"
+                                                        );
+    [progressHUD showAnimated: YES];
     dispatch_group_async(dispatchGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         __block NSString* filePath;
         NSError* err = nil;
@@ -292,21 +297,7 @@ typedef enum : NSUInteger {
             PHAsset *asset = [fetchArray objectAtIndex:index];
             NSString *localIdentifier;
             
-            if(self.allow_video){
-                PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
-                options.deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
-                options.networkAccessAllowed = YES;
-                [manager requestAVAssetForVideo:asset
-                                        options:options
-                                  resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
-                                      if([asset isKindOfClass:[AVURLAsset class]]){
-                                          [fileStrings addObject: [[((AVURLAsset*)asset) URL] absoluteString] ];
-                                          result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: [NSDictionary dictionaryWithObjectsAndKeys: preSelectedAssets, @"preSelectedAssets", fileStrings, @"images", invalidImages, @"invalidImages", nil]];
-                                      }
-                                      
-                                  }];
-                index++;
-            }else{
+            {
                 if (asset == nil) {
                     result = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:[err localizedDescription]];
                 } else {
@@ -407,23 +398,43 @@ typedef enum : NSUInteger {
         }
         
         progressHUD.progress = 1.f;
-        [progressHUD hide:YES];
+        [progressHUD hideAnimated:YES];
         [self.viewController dismissViewControllerAnimated:YES completion:nil];
         [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
     });
     
 }
 - (BOOL)assetsPickerController:(GMImagePickerController *)picker shouldSelectAsset:(PHAsset *)asset{
-    if([picker.selectedAssets count] >= self.maximumImagesCount){
+    NSPredicate *videoPredicate = [self predicateOfAssetType:PHAssetMediaTypeVideo];
+    NSInteger nVideos = [picker.selectedAssets filteredArrayUsingPredicate:videoPredicate].count;
+    PHAssetMediaType mediaType = [asset mediaType];
+    if(nVideos >= MAX_VIDEO_ALERT && mediaType == PHAssetMediaTypeVideo){
         dispatch_async(dispatch_get_main_queue(), ^{
-            UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:[[NSBundle mainBundle]
-                                                                         objectForInfoDictionaryKey:@"CFBundleDisplayName"]
-                                                                message:NSLocalizedString(@"IMAGE_SELECTION_LIMIT", nil)
-                                                               delegate:self
-                                                      cancelButtonTitle:NSLocalizedString(@"OK", nil)
-                                                      otherButtonTitles:nil, nil];
-            alertView.tag = IMAGE_LIMIT_ALERT;
-            [alertView show];
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]
+                                                                           message:NSLocalizedString(@"VIDEO_SELECTION_LIMIT", nil)
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction * okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+                                                                style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * _Nonnull action) {
+                                                                  [alert dismissViewControllerAnimated:YES completion:nil];
+                                                              }];
+            [alert addAction:okAction];
+            [picker presentViewController:alert animated:YES completion:nil];
+        });
+        return NO;
+    }else if([picker.selectedAssets count] >= self.maximumImagesCount){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:[[NSBundle mainBundle]
+                                                                                    objectForInfoDictionaryKey:@"CFBundleDisplayName"]
+                                                                           message:NSLocalizedString(@"IMAGE_SELECTION_LIMIT", nil)
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction * okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+                                                                style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * _Nonnull action) {
+                                                                  [alert dismissViewControllerAnimated:YES completion:nil];
+                                                              }];
+            [alert addAction:okAction];
+            [picker presentViewController:alert animated:YES completion:nil];
             
         });
         return NO;
@@ -433,6 +444,14 @@ typedef enum : NSUInteger {
     }
     
 }
+
+- (NSPredicate *)predicateOfAssetType:(PHAssetMediaType)type
+{
+    return [NSPredicate predicateWithBlock:^BOOL(PHAsset *asset, NSDictionary *bindings) {
+        return (asset.mediaType == type);
+    }];
+}
+
 - (NSString*)createDirectory:(NSString*)dir
 {
     BOOL isDir = FALSE;
@@ -478,7 +497,7 @@ typedef enum : NSUInteger {
     NSString *file;
     
     while ((file = [dirEnum nextObject])) {
-        if([file.pathExtension isEqual: @"jpg"] || [file.pathExtension isEqual: @"jpeg" ] || [file.pathExtension isEqual: @"png"]) {
+        if([file.pathExtension isEqual: @"jpg"] || [file.pathExtension isEqual: @"jpeg" ] || [file.pathExtension isEqual: @"png"] || [file.pathExtension isEqual: @"mp4"]) {
             NSString *filePath = [[docsPath stringByAppendingString:@"/"] stringByAppendingString:file];
             NSLog(@"Deleting file at %@", filePath);
             NSError* err = nil;
